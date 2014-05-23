@@ -1,1 +1,1 @@
-python C:\hst\RTMA\lang\python\ctypesgen/ctypesgen.py --includedir="C:\hst\include" -a -o RTMA_config.py C:\hst\src\Common\include\rp3_hst_config.h
+python C:\hst2\RTMA\lang\python\ctypesgen/ctypesgen.py --includedir="C:\hst2\include" -a -o RTMA_config2.py C:\hst2\src\Common\include\rp3_hst_config.h
