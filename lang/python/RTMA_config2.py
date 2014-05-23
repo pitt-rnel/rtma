@@ -1360,6 +1360,23 @@ struct_anon_37._fields_ = [
 
 MDF_CERESTIM_ERROR = struct_anon_37 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 463
 
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 471
+class struct_anon_38(Structure):
+    pass
+
+struct_anon_38.__slots__ = [
+    'pathname',
+    'pathname_length',
+    'reserved',
+]
+struct_anon_38._fields_ = [
+    ('pathname', c_char * 256),
+    ('pathname_length', c_int),
+    ('reserved', c_int),
+]
+
+MDF_TDMS_CREATE = struct_anon_38 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 471
+
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 479
 class struct_anon_39(Structure):
     pass
@@ -1430,1117 +1447,1117 @@ struct_anon_42._fields_ = [
 
 MDF_AJA_STATUS = struct_anon_42 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 496
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __STDC__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __STDC_HOSTED__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GNUC__ = 4
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GNUC_MINOR__ = 8
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GNUC_PATCHLEVEL__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __VERSION__ = '4.8.1'
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __ATOMIC_RELAXED = 0
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __ATOMIC_SEQ_CST = 5
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __ATOMIC_ACQUIRE = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __ATOMIC_RELEASE = 3
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __ATOMIC_ACQ_REL = 4
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __ATOMIC_CONSUME = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FINITE_MATH_ONLY__ = 0
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SIZEOF_INT__ = 4
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SIZEOF_LONG__ = 4
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SIZEOF_LONG_LONG__ = 8
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SIZEOF_SHORT__ = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SIZEOF_FLOAT__ = 4
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SIZEOF_DOUBLE__ = 8
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SIZEOF_LONG_DOUBLE__ = 12
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SIZEOF_SIZE_T__ = 4
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __CHAR_BIT__ = 8
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __BIGGEST_ALIGNMENT__ = 16
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __ORDER_LITTLE_ENDIAN__ = 1234
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __ORDER_BIG_ENDIAN__ = 4321
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __ORDER_PDP_ENDIAN__ = 3412
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __BYTE_ORDER__ = __ORDER_LITTLE_ENDIAN__
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLOAT_WORD_ORDER__ = __ORDER_LITTLE_ENDIAN__
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SIZEOF_POINTER__ = 4
 except:
     pass
 
-__SIZE_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__SIZE_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__PTRDIFF_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__PTRDIFF_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__WCHAR_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__WCHAR_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__WINT_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__WINT_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__INTMAX_TYPE__ = c_longlong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__INTMAX_TYPE__ = c_longlong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__UINTMAX_TYPE__ = c_ulonglong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__UINTMAX_TYPE__ = c_ulonglong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__CHAR16_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__CHAR16_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__CHAR32_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__CHAR32_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__SIG_ATOMIC_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__SIG_ATOMIC_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__INT8_TYPE__ = c_char # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__INT8_TYPE__ = c_char # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__INT16_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__INT16_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__INT32_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__INT32_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__INT64_TYPE__ = c_longlong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__INT64_TYPE__ = c_longlong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__UINT8_TYPE__ = c_ubyte # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__UINT8_TYPE__ = c_ubyte # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__UINT16_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__UINT16_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__UINT32_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__UINT32_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__UINT64_TYPE__ = c_ulonglong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__UINT64_TYPE__ = c_ulonglong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__INT_LEAST8_TYPE__ = c_char # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__INT_LEAST8_TYPE__ = c_char # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__INT_LEAST16_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__INT_LEAST16_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__INT_LEAST32_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__INT_LEAST32_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__INT_LEAST64_TYPE__ = c_longlong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__INT_LEAST64_TYPE__ = c_longlong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__UINT_LEAST8_TYPE__ = c_ubyte # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__UINT_LEAST8_TYPE__ = c_ubyte # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__UINT_LEAST16_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__UINT_LEAST16_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__UINT_LEAST32_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__UINT_LEAST32_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__UINT_LEAST64_TYPE__ = c_ulonglong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__UINT_LEAST64_TYPE__ = c_ulonglong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__INT_FAST8_TYPE__ = c_char # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__INT_FAST8_TYPE__ = c_char # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__INT_FAST16_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__INT_FAST16_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__INT_FAST32_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__INT_FAST32_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__INT_FAST64_TYPE__ = c_longlong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__INT_FAST64_TYPE__ = c_longlong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__UINT_FAST8_TYPE__ = c_ubyte # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__UINT_FAST8_TYPE__ = c_ubyte # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__UINT_FAST16_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__UINT_FAST16_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__UINT_FAST32_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__UINT_FAST32_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__UINT_FAST64_TYPE__ = c_ulonglong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__UINT_FAST64_TYPE__ = c_ulonglong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__INTPTR_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__INTPTR_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-__UINTPTR_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+__UINTPTR_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GXX_ABI_VERSION = 1002
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SCHAR_MAX__ = 127
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SHRT_MAX__ = 32767
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __INT_MAX__ = 2147483647
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __LONG_MAX__ = 2147483647L
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __LONG_LONG_MAX__ = 9223372036854775807L
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __WCHAR_MAX__ = 65535
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __WCHAR_MIN__ = 0
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __WINT_MAX__ = 65535
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __WINT_MIN__ = 0
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __PTRDIFF_MAX__ = 2147483647
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SIZE_MAX__ = 4294967295L
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __INTMAX_MAX__ = 9223372036854775807L
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __UINTMAX_MAX__ = 18446744073709551615L
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SIG_ATOMIC_MAX__ = 2147483647
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SIG_ATOMIC_MIN__ = ((-__SIG_ATOMIC_MAX__) - 1)
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __INT8_MAX__ = 127
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __INT16_MAX__ = 32767
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __INT32_MAX__ = 2147483647
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __INT64_MAX__ = 9223372036854775807L
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __UINT8_MAX__ = 255
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __UINT16_MAX__ = 65535
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __UINT32_MAX__ = 4294967295L
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __UINT64_MAX__ = 18446744073709551615L
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __INT_LEAST8_MAX__ = 127
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 def __INT8_C(c):
     return c
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __INT_LEAST16_MAX__ = 32767
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 def __INT16_C(c):
     return c
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __INT_LEAST32_MAX__ = 2147483647
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 def __INT32_C(c):
     return c
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __INT_LEAST64_MAX__ = 9223372036854775807L
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __UINT_LEAST8_MAX__ = 255
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 def __UINT8_C(c):
     return c
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __UINT_LEAST16_MAX__ = 65535
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 def __UINT16_C(c):
     return c
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __UINT_LEAST32_MAX__ = 4294967295L
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __UINT_LEAST64_MAX__ = 18446744073709551615L
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __INT_FAST8_MAX__ = 127
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __INT_FAST16_MAX__ = 32767
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __INT_FAST32_MAX__ = 2147483647
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __INT_FAST64_MAX__ = 9223372036854775807L
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __UINT_FAST8_MAX__ = 255
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __UINT_FAST16_MAX__ = 65535
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __UINT_FAST32_MAX__ = 4294967295L
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __UINT_FAST64_MAX__ = 18446744073709551615L
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __INTPTR_MAX__ = 2147483647
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __UINTPTR_MAX__ = 4294967295L
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLT_EVAL_METHOD__ = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DEC_EVAL_METHOD__ = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLT_RADIX__ = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLT_MANT_DIG__ = 24
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLT_DIG__ = 6
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLT_MIN_EXP__ = (-125)
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLT_MIN_10_EXP__ = (-37)
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLT_MAX_EXP__ = 128
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLT_MAX_10_EXP__ = 38
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLT_DECIMAL_DIG__ = 9
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLT_MAX__ = 3.4028234663852886e+38
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLT_MIN__ = 1.1754943508222875e-38
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLT_EPSILON__ = 1.1920928955078125e-07
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLT_DENORM_MIN__ = 1.401298464324817e-45
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLT_HAS_DENORM__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLT_HAS_INFINITY__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __FLT_HAS_QUIET_NAN__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DBL_MANT_DIG__ = 53
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DBL_DIG__ = 15
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DBL_MIN_EXP__ = (-1021)
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DBL_MIN_10_EXP__ = (-307)
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DBL_MAX_EXP__ = 1024
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DBL_MAX_10_EXP__ = 308
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DBL_DECIMAL_DIG__ = 17
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DBL_MAX__ = 1.7976931348623157e+308
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DBL_MIN__ = 2.2250738585072014e-308
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DBL_EPSILON__ = 2.220446049250313e-16
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DBL_DENORM_MIN__ = 5e-324
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DBL_HAS_DENORM__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DBL_HAS_INFINITY__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DBL_HAS_QUIET_NAN__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __LDBL_MANT_DIG__ = 64
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __LDBL_DIG__ = 18
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __LDBL_MIN_EXP__ = (-16381)
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __LDBL_MIN_10_EXP__ = (-4931)
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __LDBL_MAX_EXP__ = 16384
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __LDBL_MAX_10_EXP__ = 4932
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DECIMAL_DIG__ = 21
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __LDBL_MAX__ = float('inf')
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __LDBL_MIN__ = 0.0
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __LDBL_EPSILON__ = 1.0842021724855044e-19
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __LDBL_DENORM_MIN__ = 0.0
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __LDBL_HAS_DENORM__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __LDBL_HAS_INFINITY__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __LDBL_HAS_QUIET_NAN__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DEC32_MANT_DIG__ = 7
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DEC32_MIN_EXP__ = (-94)
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DEC32_MAX_EXP__ = 97
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DEC64_MANT_DIG__ = 16
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DEC64_MIN_EXP__ = (-382)
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DEC64_MAX_EXP__ = 385
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DEC128_MANT_DIG__ = 34
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DEC128_MIN_EXP__ = (-6142)
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DEC128_MAX_EXP__ = 6145
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GNUC_GNU_INLINE__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __NO_INLINE__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GCC_HAVE_SYNC_COMPARE_AND_SWAP_1 = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GCC_HAVE_SYNC_COMPARE_AND_SWAP_2 = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GCC_HAVE_SYNC_COMPARE_AND_SWAP_4 = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GCC_HAVE_SYNC_COMPARE_AND_SWAP_8 = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GCC_ATOMIC_BOOL_LOCK_FREE = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GCC_ATOMIC_CHAR_LOCK_FREE = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GCC_ATOMIC_CHAR16_T_LOCK_FREE = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GCC_ATOMIC_CHAR32_T_LOCK_FREE = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GCC_ATOMIC_WCHAR_T_LOCK_FREE = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GCC_ATOMIC_SHORT_LOCK_FREE = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GCC_ATOMIC_INT_LOCK_FREE = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GCC_ATOMIC_LONG_LOCK_FREE = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GCC_ATOMIC_LLONG_LOCK_FREE = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GCC_ATOMIC_TEST_AND_SET_TRUEVAL = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GCC_ATOMIC_POINTER_LOCK_FREE = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GCC_HAVE_DWARF2_CFI_ASM = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __PRAGMA_REDEFINE_EXTNAME = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SIZEOF_WCHAR_T__ = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SIZEOF_WINT_T__ = 2
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __SIZEOF_PTRDIFF_T__ = 4
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __i386 = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __i386__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     i386 = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __ATOMIC_HLE_ACQUIRE = 65536
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __ATOMIC_HLE_RELEASE = 131072
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __i686 = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __i686__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __pentiumpro = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __pentiumpro__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __code_model_32__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     _X86_ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GXX_MERGED_TYPEINFO_NAMES = 0
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __GXX_TYPEINFO_EQUALITY_INLINE = 0
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __MSVCRT__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __MINGW32__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     _WIN32 = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __WIN32 = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __WIN32__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     WIN32 = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __WINNT = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __WINNT__ = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     WINNT = 1
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     _INTEGRAL_MAX_BITS = 64
 except:
     pass
 
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpksezmu.h: 1
+# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
 try:
     __DECIMAL_BID_FORMAT__ = 1
 except:
@@ -2551,6 +2568,12 @@ __const = c_int # <command-line>: 5
 # <command-line>: 8
 try:
     CTYPESGEN = 1
+except:
+    pass
+
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 2
+try:
+    MAX_LOGGER_FILENAME_LENGTH = 256
 except:
     pass
 
