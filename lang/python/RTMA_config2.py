@@ -591,7 +591,7 @@ add_library_search_dirs([])
 
 # No modules
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 152
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 146
 class struct_anon_1(Structure):
     pass
 
@@ -604,9 +604,9 @@ struct_anon_1._fields_ = [
     ('reserved', c_int),
 ]
 
-MSG_HEADER = struct_anon_1 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 152
+MSG_HEADER = struct_anon_1 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 146
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 156
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 150
 class struct_anon_2(Structure):
     pass
 
@@ -617,9 +617,9 @@ struct_anon_2._fields_ = [
     ('filename', c_char * 256),
 ]
 
-MDF_PLAYSOUND = struct_anon_2 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 156
+MDF_PLAYSOUND = struct_anon_2 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 150
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 161
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 155
 class struct_anon_3(Structure):
     pass
 
@@ -632,9 +632,9 @@ struct_anon_3._fields_ = [
     ('timer', c_double),
 ]
 
-MDF_PICDISPLAY = struct_anon_3 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 161
+MDF_PICDISPLAY = struct_anon_3 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 155
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 168
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 162
 class struct_anon_4(Structure):
     pass
 
@@ -651,9 +651,9 @@ struct_anon_4._fields_ = [
     ('interphase', c_double * 12),
 ]
 
-MDF_STIMDATA = struct_anon_4 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 168
+MDF_STIMDATA = struct_anon_4 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 162
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 174
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 168
 class struct_anon_5(Structure):
     pass
 
@@ -668,9 +668,9 @@ struct_anon_5._fields_ = [
     ('freq', c_double * 20),
 ]
 
-MDF_TFD = struct_anon_5 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 174
+MDF_TFD = struct_anon_5 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 168
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 180
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 174
 class struct_anon_6(Structure):
     pass
 
@@ -685,9 +685,9 @@ struct_anon_6._fields_ = [
     ('log', c_char * 512),
 ]
 
-MDF_HSTLOG = struct_anon_6 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 180
+MDF_HSTLOG = struct_anon_6 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 174
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 186
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 180
 class struct_anon_7(Structure):
     pass
 
@@ -702,9 +702,9 @@ struct_anon_7._fields_ = [
     ('data', c_char * 256),
 ]
 
-MDF_EM_CONFIGURATION = struct_anon_7 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 186
+MDF_EM_CONFIGURATION = struct_anon_7 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 180
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 200
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 194
 class struct_anon_8(Structure):
     pass
 
@@ -735,9 +735,9 @@ struct_anon_8._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_TASK_STATE_CONFIG = struct_anon_8 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 200
+MDF_TASK_STATE_CONFIG = struct_anon_8 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 194
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 206
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 200
 class struct_anon_9(Structure):
     pass
 
@@ -752,9 +752,9 @@ struct_anon_9._fields_ = [
     ('decoder_loc', c_char * 256),
 ]
 
-MDF_EXTRACTION_RESPONSE = struct_anon_9 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 206
+MDF_EXTRACTION_RESPONSE = struct_anon_9 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 200
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 220
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 214
 class struct_anon_10(Structure):
     pass
 
@@ -785,9 +785,9 @@ struct_anon_10._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_PHASE_RESULT = struct_anon_10 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 220
+MDF_PHASE_RESULT = struct_anon_10 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 214
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 227
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 221
 class struct_anon_11(Structure):
     pass
 
@@ -804,9 +804,9 @@ struct_anon_11._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_CONTROL_SPACE_COMMAND = struct_anon_11 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 227
+MDF_CONTROL_SPACE_COMMAND = struct_anon_11 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 221
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 234
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 228
 class struct_anon_12(Structure):
     pass
 
@@ -823,9 +823,9 @@ struct_anon_12._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_CONTROL_SPACE_POS_COMMAND = struct_anon_12 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 234
+MDF_CONTROL_SPACE_POS_COMMAND = struct_anon_12 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 228
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 241
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 235
 class struct_anon_13(Structure):
     pass
 
@@ -842,9 +842,9 @@ struct_anon_13._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_FINISHED_COMMAND = struct_anon_13 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 241
+MDF_FINISHED_COMMAND = struct_anon_13 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 235
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 248
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 242
 class struct_anon_14(Structure):
     pass
 
@@ -859,9 +859,9 @@ struct_anon_14._fields_ = [
     ('velocity', c_double * 30),
 ]
 
-MDF_CONTROL_SPACE_FEEDBACK = struct_anon_14 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 248
+MDF_CONTROL_SPACE_FEEDBACK = struct_anon_14 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 242
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 256
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 250
 class struct_anon_15(Structure):
     pass
 
@@ -880,9 +880,9 @@ struct_anon_15._fields_ = [
     ('temperature', c_double * 54),
 ]
 
-MDF_MPL_RAW_PERCEPT = struct_anon_15 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 256
+MDF_MPL_RAW_PERCEPT = struct_anon_15 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 250
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 271
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 265
 class struct_anon_16(Structure):
     pass
 
@@ -901,11 +901,11 @@ struct_anon_16.__slots__ = [
 ]
 struct_anon_16._fields_ = [
     ('header', MSG_HEADER),
-    ('ind_force', c_double * 3),
-    ('mid_force', c_double * 3),
-    ('rng_force', c_double * 3),
-    ('lit_force', c_double * 3),
-    ('thb_force', c_double * 3),
+    ('ind_force', c_double * 14),
+    ('mid_force', c_double * 14),
+    ('rng_force', c_double * 14),
+    ('lit_force', c_double * 14),
+    ('thb_force', c_double * 14),
     ('ind_accel', c_double * 3),
     ('mid_accel', c_double * 3),
     ('rng_accel', c_double * 3),
@@ -913,176 +913,56 @@ struct_anon_16._fields_ = [
     ('thb_accel', c_double * 3),
 ]
 
-MDF_MPL_SEGMENT_PERCEPTS = struct_anon_16 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 271
+MDF_MPL_SEGMENT_PERCEPTS = struct_anon_16 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 265
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 277
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 272
 class struct_anon_17(Structure):
     pass
 
 struct_anon_17.__slots__ = [
-    'wrist_position',
-    'joint_position',
-]
-struct_anon_17._fields_ = [
-    ('wrist_position', c_double * 3),
-    ('joint_position', c_double * 6),
-]
-
-MDF_ARMEO_FEEDBACK = struct_anon_17 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 277
-
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 283
-class struct_anon_18(Structure):
-    pass
-
-struct_anon_18.__slots__ = [
-    'header',
-    'wrist_position',
-    'joint_position',
-]
-struct_anon_18._fields_ = [
-    ('header', MSG_HEADER),
-    ('wrist_position', c_double * 3),
-    ('joint_position', c_double * 6),
-]
-
-MDF_ARMEO_SERIAL_FEEDBACK = struct_anon_18 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 283
-
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 292
-class struct_anon_19(Structure):
-    pass
-
-struct_anon_19.__slots__ = [
-    'header',
-    'position_mode',
-    'reserved',
-    'position_command',
-    'joint_command',
-    'j_angle_command',
-]
-struct_anon_19._fields_ = [
-    ('header', MSG_HEADER),
-    ('position_mode', c_int),
-    ('reserved', c_int),
-    ('position_command', c_double * 3),
-    ('joint_command', c_double * 6),
-    ('j_angle_command', c_double),
-]
-
-MDF_ARMEO_COMMAND = struct_anon_19 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 292
-
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 299
-class struct_anon_20(Structure):
-    pass
-
-struct_anon_20.__slots__ = [
-    'mode',
-    'joint',
-    'stiffness',
-    'damping',
-]
-struct_anon_20._fields_ = [
-    ('mode', c_int),
-    ('joint', c_int),
-    ('stiffness', c_double),
-    ('damping', c_double),
-]
-
-MDF_ARMEO_CONFIG = struct_anon_20 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 299
-
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 306
-class struct_anon_21(Structure):
-    pass
-
-struct_anon_21.__slots__ = [
-    'min_edge',
-    'max_edge',
-    'wrist_range',
-    'pro_sup_range',
-]
-struct_anon_21._fields_ = [
-    ('min_edge', c_double * 3),
-    ('max_edge', c_double * 3),
-    ('wrist_range', c_double * 2),
-    ('pro_sup_range', c_double * 2),
-]
-
-MDF_ARMEO_WKSPC = struct_anon_21 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 306
-
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 317
-class struct_anon_22(Structure):
-    pass
-
-struct_anon_22.__slots__ = [
-    'header',
-    'endpts',
-    't_hold',
-    'velocity',
-    'joint',
-    'n_reps',
-    'start',
-    'reserved',
-]
-struct_anon_22._fields_ = [
-    ('header', MSG_HEADER),
-    ('endpts', c_double * 2),
-    ('t_hold', c_double * 2),
-    ('velocity', c_double),
-    ('joint', c_int),
-    ('n_reps', c_int),
-    ('start', c_int),
-    ('reserved', c_int),
-]
-
-MDF_ARMEO_JOINT_CONFIG = struct_anon_22 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 317
-
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 325
-class struct_anon_23(Structure):
-    pass
-
-struct_anon_23.__slots__ = [
     'source_index',
     'reserved',
     'source_timestamp',
     'data',
 ]
-struct_anon_23._fields_ = [
+struct_anon_17._fields_ = [
     ('source_index', c_int),
     ('reserved', c_int),
     ('source_timestamp', c_double),
     ('data', c_short * (10 * 128)),
 ]
 
-MDF_RAW_CTSDATA = struct_anon_23 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 325
+MDF_RAW_CTSDATA = struct_anon_17 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 272
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 331
-class struct_anon_24(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 278
+class struct_anon_18(Structure):
     pass
 
-struct_anon_24.__slots__ = [
+struct_anon_18.__slots__ = [
     'header',
     'source_timestamp',
     'data',
 ]
-struct_anon_24._fields_ = [
+struct_anon_18._fields_ = [
     ('header', MSG_HEADER),
-    ('source_timestamp', c_double),
+    ('source_timestamp', c_double * 2),
     ('data', c_short * (((2 * 10) * 2) * 128)),
 ]
 
-MDF_SPM_CTSDATA = struct_anon_24 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 331
+MDF_SPM_CTSDATA = struct_anon_18 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 278
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 339
-class struct_anon_25(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 286
+class struct_anon_19(Structure):
     pass
 
-struct_anon_25.__slots__ = [
+struct_anon_19.__slots__ = [
     'source_index',
     'reserved',
     'source_timestamp',
     'count_interval',
     'counts',
 ]
-struct_anon_25._fields_ = [
+struct_anon_19._fields_ = [
     ('source_index', c_int),
     ('reserved', c_int),
     ('source_timestamp', c_double),
@@ -1090,34 +970,34 @@ struct_anon_25._fields_ = [
     ('counts', c_ubyte * (128 * 5)),
 ]
 
-MDF_RAW_SPIKECOUNT = struct_anon_25 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 339
+MDF_RAW_SPIKECOUNT = struct_anon_19 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 286
 
-SPIKE_COUNT_DATA_TYPE = c_ubyte # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 341
+SPIKE_COUNT_DATA_TYPE = c_ubyte # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 288
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 347
-class struct_anon_26(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 294
+class struct_anon_20(Structure):
     pass
 
-struct_anon_26.__slots__ = [
+struct_anon_20.__slots__ = [
     'header',
     'source_timestamp',
     'count_interval',
     'counts',
 ]
-struct_anon_26._fields_ = [
+struct_anon_20._fields_ = [
     ('header', MSG_HEADER),
-    ('source_timestamp', c_double),
+    ('source_timestamp', c_double * 2),
     ('count_interval', c_double),
     ('counts', SPIKE_COUNT_DATA_TYPE * (2 * (128 * 5))),
 ]
 
-MDF_SPM_SPIKECOUNT = struct_anon_26 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 347
+MDF_SPM_SPIKECOUNT = struct_anon_20 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 294
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 360
-class struct_anon_27(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 307
+class struct_anon_21(Structure):
     pass
 
-struct_anon_27.__slots__ = [
+struct_anon_21.__slots__ = [
     'source_index',
     'channel',
     'unit',
@@ -1129,7 +1009,7 @@ struct_anon_27.__slots__ = [
     'reserved2',
     'snippet',
 ]
-struct_anon_27._fields_ = [
+struct_anon_21._fields_ = [
     ('source_index', c_int),
     ('channel', c_short),
     ('unit', c_ubyte),
@@ -1142,26 +1022,26 @@ struct_anon_27._fields_ = [
     ('snippet', c_short * 48),
 ]
 
-SPIKE_SNIPPET = struct_anon_27 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 360
+SPIKE_SNIPPET = struct_anon_21 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 307
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 364
-class struct_anon_28(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 311
+class struct_anon_22(Structure):
     pass
 
-struct_anon_28.__slots__ = [
+struct_anon_22.__slots__ = [
     'ss',
 ]
-struct_anon_28._fields_ = [
+struct_anon_22._fields_ = [
     ('ss', SPIKE_SNIPPET * 25),
 ]
 
-MDF_SPIKE_SNIPPET = struct_anon_28 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 364
+MDF_SPIKE_SNIPPET = struct_anon_22 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 311
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 379
-class struct_anon_29(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 325
+class struct_anon_23(Structure):
     pass
 
-struct_anon_29.__slots__ = [
+struct_anon_23.__slots__ = [
     'source_index',
     'channel',
     'unit',
@@ -1173,7 +1053,7 @@ struct_anon_29.__slots__ = [
     'rejectType',
     'snippet',
 ]
-struct_anon_29._fields_ = [
+struct_anon_23._fields_ = [
     ('source_index', c_int),
     ('channel', c_short),
     ('unit', c_ubyte),
@@ -1186,33 +1066,33 @@ struct_anon_29._fields_ = [
     ('snippet', c_short * 48),
 ]
 
-REJECTED_SNIPPET = struct_anon_29 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 379
+REJECTED_SNIPPET = struct_anon_23 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 325
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 383
-class struct_anon_30(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 329
+class struct_anon_24(Structure):
     pass
 
-struct_anon_30.__slots__ = [
+struct_anon_24.__slots__ = [
     'rs',
 ]
-struct_anon_30._fields_ = [
+struct_anon_24._fields_ = [
     ('rs', REJECTED_SNIPPET * 25),
 ]
 
-MDF_REJECTED_SNIPPET = struct_anon_30 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 383
+MDF_REJECTED_SNIPPET = struct_anon_24 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 329
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 392
-class struct_anon_31(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 337
+class struct_anon_25(Structure):
     pass
 
-struct_anon_31.__slots__ = [
+struct_anon_25.__slots__ = [
     'source_index',
     'channel',
     'source_timestamp',
     'data',
     'reserved',
 ]
-struct_anon_31._fields_ = [
+struct_anon_25._fields_ = [
     ('source_index', c_int),
     ('channel', c_int),
     ('source_timestamp', c_double),
@@ -1220,30 +1100,74 @@ struct_anon_31._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_DIGITAL_EVENT = struct_anon_31 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 392
+MDF_RAW_DIGITAL_EVENT = struct_anon_25 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 337
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 398
-class struct_anon_32(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 346
+class struct_anon_26(Structure):
     pass
 
-struct_anon_32.__slots__ = [
+struct_anon_26.__slots__ = [
+    'header',
+    'source_index',
+    'source_timestamp',
+    'data',
+    'num_events',
+    'reserved',
+]
+struct_anon_26._fields_ = [
+    ('header', MSG_HEADER),
+    ('source_index', c_int * 10),
+    ('source_timestamp', c_double * 2),
+    ('data', c_uint * 10),
+    ('num_events', c_int),
+    ('reserved', c_int),
+]
+
+MDF_SPM_DIGITAL_EVENT = struct_anon_26 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 346
+
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 354
+class struct_anon_27(Structure):
+    pass
+
+struct_anon_27.__slots__ = [
+    'source_index',
+    'channel',
+    'source_timestamp',
+    'data',
+    'reserved',
+]
+struct_anon_27._fields_ = [
+    ('source_index', c_int),
+    ('channel', c_int),
+    ('source_timestamp', c_double),
+    ('data', c_uint),
+    ('reserved', c_int),
+]
+
+MDF_STIM_SYNC_EVENT = struct_anon_27 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 354
+
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 360
+class struct_anon_28(Structure):
+    pass
+
+struct_anon_28.__slots__ = [
     'header',
     'tag',
     'dof_vals',
 ]
-struct_anon_32._fields_ = [
+struct_anon_28._fields_ = [
     ('header', MSG_HEADER),
     ('tag', c_char * 64),
     ('dof_vals', c_double * 30),
 ]
 
-MDF_INPUT_DOF_DATA = struct_anon_32 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 398
+MDF_INPUT_DOF_DATA = struct_anon_28 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 360
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 409
-class struct_anon_33(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 371
+class struct_anon_29(Structure):
     pass
 
-struct_anon_33.__slots__ = [
+struct_anon_29.__slots__ = [
     'header',
     'tag',
     'raw_vals',
@@ -1253,7 +1177,7 @@ struct_anon_33.__slots__ = [
     'hand',
     'reserved',
 ]
-struct_anon_33._fields_ = [
+struct_anon_29._fields_ = [
     ('header', MSG_HEADER),
     ('tag', c_char * 64),
     ('raw_vals', c_double * 18),
@@ -1264,13 +1188,13 @@ struct_anon_33._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_DATAGLOVE = struct_anon_33 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 409
+MDF_DATAGLOVE = struct_anon_29 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 371
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 437
-class struct_anon_34(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 384
+class struct_anon_30(Structure):
     pass
 
-struct_anon_34.__slots__ = [
+struct_anon_30.__slots__ = [
     'configID',
     'amp1',
     'amp2',
@@ -1281,7 +1205,7 @@ struct_anon_34.__slots__ = [
     'width2',
     'interphase',
 ]
-struct_anon_34._fields_ = [
+struct_anon_30._fields_ = [
     ('configID', c_int * 16),
     ('amp1', c_int * 16),
     ('amp2', c_int * 16),
@@ -1293,13 +1217,13 @@ struct_anon_34._fields_ = [
     ('interphase', c_int),
 ]
 
-MDF_CERESTIM_CONFIG_MODULE = struct_anon_34 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 437
+MDF_CERESTIM_CONFIG_MODULE = struct_anon_30 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 384
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 447
-class struct_anon_35(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 394
+class struct_anon_31(Structure):
     pass
 
-struct_anon_35.__slots__ = [
+struct_anon_31.__slots__ = [
     'header',
     'stop',
     'numChans',
@@ -1308,7 +1232,7 @@ struct_anon_35.__slots__ = [
     'reps',
     'reserved',
 ]
-struct_anon_35._fields_ = [
+struct_anon_31._fields_ = [
     ('header', MSG_HEADER),
     ('stop', c_int),
     ('numChans', c_int),
@@ -1318,13 +1242,13 @@ struct_anon_35._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_CERESTIM_CONFIG_CHAN = struct_anon_35 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 447
+MDF_CERESTIM_CONFIG_CHAN = struct_anon_31 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 394
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 457
-class struct_anon_36(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 404
+class struct_anon_32(Structure):
     pass
 
-struct_anon_36.__slots__ = [
+struct_anon_32.__slots__ = [
     'header',
     'stop',
     'numChans',
@@ -1333,7 +1257,7 @@ struct_anon_36.__slots__ = [
     'reps',
     'reserved',
 ]
-struct_anon_36._fields_ = [
+struct_anon_32._fields_ = [
     ('header', MSG_HEADER),
     ('stop', c_int),
     ('numChans', c_int),
@@ -1343,1233 +1267,128 @@ struct_anon_36._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_CERESTIM_CONFIG_CHAN_PRESAFETY = struct_anon_36 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 457
+MDF_CERESTIM_CONFIG_CHAN_PRESAFETY = struct_anon_32 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 404
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 463
-class struct_anon_37(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 410
+class struct_anon_33(Structure):
     pass
 
-struct_anon_37.__slots__ = [
+struct_anon_33.__slots__ = [
     'error',
     'config',
 ]
-struct_anon_37._fields_ = [
+struct_anon_33._fields_ = [
     ('error', c_int),
     ('config', c_int),
 ]
 
-MDF_CERESTIM_ERROR = struct_anon_37 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 463
+MDF_CERESTIM_ERROR = struct_anon_33 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 410
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 471
-class struct_anon_38(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 417
+class struct_anon_34(Structure):
     pass
 
-struct_anon_38.__slots__ = [
+struct_anon_34.__slots__ = [
     'pathname',
     'pathname_length',
     'reserved',
 ]
-struct_anon_38._fields_ = [
+struct_anon_34._fields_ = [
     ('pathname', c_char * 256),
     ('pathname_length', c_int),
     ('reserved', c_int),
 ]
 
-MDF_TDMS_CREATE = struct_anon_38 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 471
+MDF_TDMS_CREATE = struct_anon_34 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 417
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 479
-class struct_anon_39(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 426
+class struct_anon_35(Structure):
     pass
 
-struct_anon_39.__slots__ = [
+struct_anon_35.__slots__ = [
     'handp',
     'handd',
     'head',
     'arms',
     'tag',
+    'flipframe',
 ]
-struct_anon_39._fields_ = [
+struct_anon_35._fields_ = [
     ('handp', c_char * 56),
     ('handd', c_char * 24),
     ('head', c_char * 16),
     ('arms', c_char * 24),
     ('tag', c_int),
+    ('flipframe', c_int),
 ]
 
-MDF_RF_REPORT = struct_anon_39 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 479
+MDF_RF_REPORT = struct_anon_35 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 426
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 485
-class struct_anon_40(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 432
+class struct_anon_36(Structure):
     pass
 
-struct_anon_40.__slots__ = [
+struct_anon_36.__slots__ = [
     'record',
     'stop',
     'filename',
 ]
-struct_anon_40._fields_ = [
+struct_anon_36._fields_ = [
     ('record', c_int),
     ('stop', c_int),
     ('filename', c_char * 256),
 ]
 
-MDF_AJA_CONFIG = struct_anon_40 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 485
+MDF_AJA_CONFIG = struct_anon_36 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 432
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 490
-class struct_anon_41(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 437
+class struct_anon_37(Structure):
     pass
 
-struct_anon_41.__slots__ = [
+struct_anon_37.__slots__ = [
     'header',
     'timecode',
 ]
-struct_anon_41._fields_ = [
+struct_anon_37._fields_ = [
     ('header', MSG_HEADER),
     ('timecode', c_char * 128),
 ]
 
-MDF_AJA_TIMECODE = struct_anon_41 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 490
+MDF_AJA_TIMECODE = struct_anon_37 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 437
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 496
-class struct_anon_42(Structure):
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 443
+class struct_anon_38(Structure):
     pass
 
-struct_anon_42.__slots__ = [
+struct_anon_38.__slots__ = [
     'status',
     'reserved',
     'clipname',
 ]
-struct_anon_42._fields_ = [
+struct_anon_38._fields_ = [
     ('status', c_int),
     ('reserved', c_int),
     ('clipname', c_char * 256),
 ]
 
-MDF_AJA_STATUS = struct_anon_42 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 496
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __STDC__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __STDC_HOSTED__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GNUC__ = 4
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GNUC_MINOR__ = 8
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GNUC_PATCHLEVEL__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __VERSION__ = '4.8.1'
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __ATOMIC_RELAXED = 0
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __ATOMIC_SEQ_CST = 5
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __ATOMIC_ACQUIRE = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __ATOMIC_RELEASE = 3
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __ATOMIC_ACQ_REL = 4
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __ATOMIC_CONSUME = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FINITE_MATH_ONLY__ = 0
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SIZEOF_INT__ = 4
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SIZEOF_LONG__ = 4
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SIZEOF_LONG_LONG__ = 8
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SIZEOF_SHORT__ = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SIZEOF_FLOAT__ = 4
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SIZEOF_DOUBLE__ = 8
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SIZEOF_LONG_DOUBLE__ = 12
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SIZEOF_SIZE_T__ = 4
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __CHAR_BIT__ = 8
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __BIGGEST_ALIGNMENT__ = 16
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __ORDER_LITTLE_ENDIAN__ = 1234
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __ORDER_BIG_ENDIAN__ = 4321
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __ORDER_PDP_ENDIAN__ = 3412
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __BYTE_ORDER__ = __ORDER_LITTLE_ENDIAN__
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLOAT_WORD_ORDER__ = __ORDER_LITTLE_ENDIAN__
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SIZEOF_POINTER__ = 4
-except:
-    pass
-
-__SIZE_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__PTRDIFF_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__WCHAR_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__WINT_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__INTMAX_TYPE__ = c_longlong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__UINTMAX_TYPE__ = c_ulonglong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__CHAR16_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__CHAR32_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__SIG_ATOMIC_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__INT8_TYPE__ = c_char # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__INT16_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__INT32_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__INT64_TYPE__ = c_longlong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__UINT8_TYPE__ = c_ubyte # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__UINT16_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__UINT32_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__UINT64_TYPE__ = c_ulonglong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__INT_LEAST8_TYPE__ = c_char # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__INT_LEAST16_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__INT_LEAST32_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__INT_LEAST64_TYPE__ = c_longlong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__UINT_LEAST8_TYPE__ = c_ubyte # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__UINT_LEAST16_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__UINT_LEAST32_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__UINT_LEAST64_TYPE__ = c_ulonglong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__INT_FAST8_TYPE__ = c_char # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__INT_FAST16_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__INT_FAST32_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__INT_FAST64_TYPE__ = c_longlong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__UINT_FAST8_TYPE__ = c_ubyte # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__UINT_FAST16_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__UINT_FAST32_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__UINT_FAST64_TYPE__ = c_ulonglong # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__INTPTR_TYPE__ = c_int # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-__UINTPTR_TYPE__ = c_uint # c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GXX_ABI_VERSION = 1002
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SCHAR_MAX__ = 127
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SHRT_MAX__ = 32767
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __INT_MAX__ = 2147483647
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __LONG_MAX__ = 2147483647L
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __LONG_LONG_MAX__ = 9223372036854775807L
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __WCHAR_MAX__ = 65535
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __WCHAR_MIN__ = 0
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __WINT_MAX__ = 65535
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __WINT_MIN__ = 0
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __PTRDIFF_MAX__ = 2147483647
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SIZE_MAX__ = 4294967295L
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __INTMAX_MAX__ = 9223372036854775807L
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __UINTMAX_MAX__ = 18446744073709551615L
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SIG_ATOMIC_MAX__ = 2147483647
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SIG_ATOMIC_MIN__ = ((-__SIG_ATOMIC_MAX__) - 1)
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __INT8_MAX__ = 127
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __INT16_MAX__ = 32767
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __INT32_MAX__ = 2147483647
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __INT64_MAX__ = 9223372036854775807L
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __UINT8_MAX__ = 255
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __UINT16_MAX__ = 65535
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __UINT32_MAX__ = 4294967295L
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __UINT64_MAX__ = 18446744073709551615L
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __INT_LEAST8_MAX__ = 127
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-def __INT8_C(c):
-    return c
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __INT_LEAST16_MAX__ = 32767
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-def __INT16_C(c):
-    return c
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __INT_LEAST32_MAX__ = 2147483647
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-def __INT32_C(c):
-    return c
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __INT_LEAST64_MAX__ = 9223372036854775807L
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __UINT_LEAST8_MAX__ = 255
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-def __UINT8_C(c):
-    return c
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __UINT_LEAST16_MAX__ = 65535
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-def __UINT16_C(c):
-    return c
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __UINT_LEAST32_MAX__ = 4294967295L
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __UINT_LEAST64_MAX__ = 18446744073709551615L
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __INT_FAST8_MAX__ = 127
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __INT_FAST16_MAX__ = 32767
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __INT_FAST32_MAX__ = 2147483647
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __INT_FAST64_MAX__ = 9223372036854775807L
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __UINT_FAST8_MAX__ = 255
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __UINT_FAST16_MAX__ = 65535
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __UINT_FAST32_MAX__ = 4294967295L
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __UINT_FAST64_MAX__ = 18446744073709551615L
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __INTPTR_MAX__ = 2147483647
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __UINTPTR_MAX__ = 4294967295L
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLT_EVAL_METHOD__ = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DEC_EVAL_METHOD__ = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLT_RADIX__ = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLT_MANT_DIG__ = 24
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLT_DIG__ = 6
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLT_MIN_EXP__ = (-125)
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLT_MIN_10_EXP__ = (-37)
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLT_MAX_EXP__ = 128
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLT_MAX_10_EXP__ = 38
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLT_DECIMAL_DIG__ = 9
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLT_MAX__ = 3.4028234663852886e+38
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLT_MIN__ = 1.1754943508222875e-38
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLT_EPSILON__ = 1.1920928955078125e-07
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLT_DENORM_MIN__ = 1.401298464324817e-45
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLT_HAS_DENORM__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLT_HAS_INFINITY__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __FLT_HAS_QUIET_NAN__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DBL_MANT_DIG__ = 53
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DBL_DIG__ = 15
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DBL_MIN_EXP__ = (-1021)
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DBL_MIN_10_EXP__ = (-307)
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DBL_MAX_EXP__ = 1024
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DBL_MAX_10_EXP__ = 308
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DBL_DECIMAL_DIG__ = 17
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DBL_MAX__ = 1.7976931348623157e+308
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DBL_MIN__ = 2.2250738585072014e-308
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DBL_EPSILON__ = 2.220446049250313e-16
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DBL_DENORM_MIN__ = 5e-324
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DBL_HAS_DENORM__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DBL_HAS_INFINITY__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DBL_HAS_QUIET_NAN__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __LDBL_MANT_DIG__ = 64
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __LDBL_DIG__ = 18
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __LDBL_MIN_EXP__ = (-16381)
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __LDBL_MIN_10_EXP__ = (-4931)
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __LDBL_MAX_EXP__ = 16384
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __LDBL_MAX_10_EXP__ = 4932
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DECIMAL_DIG__ = 21
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __LDBL_MAX__ = float('inf')
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __LDBL_MIN__ = 0.0
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __LDBL_EPSILON__ = 1.0842021724855044e-19
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __LDBL_DENORM_MIN__ = 0.0
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __LDBL_HAS_DENORM__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __LDBL_HAS_INFINITY__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __LDBL_HAS_QUIET_NAN__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DEC32_MANT_DIG__ = 7
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DEC32_MIN_EXP__ = (-94)
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DEC32_MAX_EXP__ = 97
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DEC64_MANT_DIG__ = 16
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DEC64_MIN_EXP__ = (-382)
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DEC64_MAX_EXP__ = 385
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DEC128_MANT_DIG__ = 34
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DEC128_MIN_EXP__ = (-6142)
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DEC128_MAX_EXP__ = 6145
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GNUC_GNU_INLINE__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __NO_INLINE__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GCC_HAVE_SYNC_COMPARE_AND_SWAP_1 = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GCC_HAVE_SYNC_COMPARE_AND_SWAP_2 = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GCC_HAVE_SYNC_COMPARE_AND_SWAP_4 = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GCC_HAVE_SYNC_COMPARE_AND_SWAP_8 = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GCC_ATOMIC_BOOL_LOCK_FREE = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GCC_ATOMIC_CHAR_LOCK_FREE = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GCC_ATOMIC_CHAR16_T_LOCK_FREE = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GCC_ATOMIC_CHAR32_T_LOCK_FREE = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GCC_ATOMIC_WCHAR_T_LOCK_FREE = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GCC_ATOMIC_SHORT_LOCK_FREE = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GCC_ATOMIC_INT_LOCK_FREE = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GCC_ATOMIC_LONG_LOCK_FREE = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GCC_ATOMIC_LLONG_LOCK_FREE = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GCC_ATOMIC_TEST_AND_SET_TRUEVAL = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GCC_ATOMIC_POINTER_LOCK_FREE = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GCC_HAVE_DWARF2_CFI_ASM = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __PRAGMA_REDEFINE_EXTNAME = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SIZEOF_WCHAR_T__ = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SIZEOF_WINT_T__ = 2
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __SIZEOF_PTRDIFF_T__ = 4
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __i386 = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __i386__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    i386 = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __ATOMIC_HLE_ACQUIRE = 65536
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __ATOMIC_HLE_RELEASE = 131072
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __i686 = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __i686__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __pentiumpro = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __pentiumpro__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __code_model_32__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    _X86_ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GXX_MERGED_TYPEINFO_NAMES = 0
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __GXX_TYPEINFO_EQUALITY_INLINE = 0
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __MSVCRT__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __MINGW32__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    _WIN32 = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __WIN32 = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __WIN32__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    WIN32 = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __WINNT = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __WINNT__ = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    WINNT = 1
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    _INTEGRAL_MAX_BITS = 64
-except:
-    pass
-
-# c:\\users\\hrnel\\appdata\\local\\temp\\tmpl4aweu.h: 1
-try:
-    __DECIMAL_BID_FORMAT__ = 1
-except:
-    pass
-
-__const = c_int # <command-line>: 5
-
-# <command-line>: 8
-try:
-    CTYPESGEN = 1
-except:
-    pass
+MDF_AJA_STATUS = struct_anon_38 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 443
+
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 449
+class struct_anon_39(Structure):
+    pass
+
+struct_anon_39.__slots__ = [
+    'header',
+    'factor',
+    'length',
+]
+struct_anon_39._fields_ = [
+    ('header', MSG_HEADER),
+    ('factor', c_double),
+    ('length', c_double),
+]
+
+MDF_NORMALIZATION_FACTOR = struct_anon_39 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 449
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 2
 try:
@@ -2639,43 +1458,43 @@ except:
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 17
 try:
-    MAX_DATAGLOVE_SENSORS = 18
+    MAX_DIG_PER_SAMPLE = 10
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 18
 try:
-    NUM_DOMAINS = 6
+    MAX_DATAGLOVE_SENSORS = 18
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 19
 try:
-    MAX_COMMAND_DIMS = 30
+    NUM_DOMAINS = 6
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 20
 try:
-    MPL_RAW_PERCEPT_DIMS = 54
+    MAX_COMMAND_DIMS = 30
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 22
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 21
 try:
-    NUM_STIM_CHANS = 64
+    MPL_RAW_PERCEPT_DIMS = 54
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 23
 try:
-    MAX_STIM_CHANS_ON = 12
+    NUM_STIM_CHANS = 64
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 24
 try:
-    MAX_GROBOT_JOINTS = 28
+    MAX_STIM_CHANS_ON = 12
 except:
     pass
 
@@ -2759,461 +1578,431 @@ except:
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 46
 try:
-    MID_LFPEXTRACTION = 31
+    MID_CREATEBUFFER = 35
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 47
 try:
-    MID_MPL_CONTROL = 40
+    MID_LFPEXTRACTION = 31
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 48
 try:
-    MID_ACTIVE_ASSIST = 50
+    MID_MPL_CONTROL = 40
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 49
 try:
-    MID_MPL_FEEDBACK = 60
+    MID_ACTIVE_ASSIST = 50
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 50
 try:
-    MID_EXECUTIVE = 70
+    MID_MPL_FEEDBACK = 60
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 51
 try:
-    MID_StimVoltageMonitor = 77
+    MID_AJA_CONTROL = 65
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 52
 try:
-    MID_GENERIC = 80
+    MID_EXECUTIVE = 70
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 53
 try:
-    MID_MESSAGERATES = 81
+    MID_COMMENT_MANAGER = 71
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 54
 try:
-    MID_VISUALIZATION = 82
+    MID_StimVoltageMonitor = 77
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 55
 try:
-    MID_VIDEO_LOGGER = 83
+    MID_GENERIC = 80
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 56
 try:
-    MID_AUDIO_LOGGER = 84
+    MID_MESSAGERATES = 81
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 57
 try:
-    MID_DATAGLOVE_CONTROL = 85
+    MID_VISUALIZATION = 82
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 58
 try:
-    MID_BIASMODULE = 86
+    MID_VIDEO_LOGGER = 83
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 59
 try:
-    MID_CURSOR = 87
+    MID_AUDIO_LOGGER = 84
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 60
 try:
-    MID_SOUNDPLAYER = 90
+    MID_DATAGLOVE_CONTROL = 85
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 61
 try:
-    MID_RFIELD = 91
+    MID_BIASMODULE = 86
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 62
 try:
-    MID_RFACTIVITY = 92
+    MID_CURSOR = 87
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 63
 try:
-    MID_PICS = 93
+    MID_SOUNDPLAYER = 90
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 64
 try:
-    MID_CREATEBUFFER = 35
+    MID_RFDISPLAY = 91
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 65
 try:
-    MID_AJA_CONTROL = 65
+    MID_RFACTIVITY = 92
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 67
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 66
 try:
-    MID_HOCOMA_FEEDBACK = 61
+    MID_PICS = 93
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 68
 try:
-    MID_ARMEO_CONTROLLER = 42
+    MID_STIM_SAFETY_MODULE = 95
 except:
     pass
 
 # C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 69
 try:
-    MID_ARMEO_RTMA = 43
-except:
-    pass
-
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 71
-try:
-    MID_STIM_SAFETY_MODULE = 95
-except:
-    pass
-
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 72
-try:
     MID_SENSOR_STIM_TRANS_MODULE = 96
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 73
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 70
 try:
     MID_CERESTIM_CONTROL = 97
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 76
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 73
 try:
     MT_FINISHED_COMMAND = 1700
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 77
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 74
 try:
     MT_CONTROL_SPACE_COMMAND = 1702
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 78
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 75
 try:
     MT_CONTROL_SPACE_POS_COMMAND = 1710
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 79
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 76
 try:
     MT_CONTROL_SPACE_FEEDBACK = 1701
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 80
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 77
 try:
     MT_MPL_RAW_PERCEPT = 1703
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 81
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 78
 try:
     MT_MPL_SEGMENT_PERCEPTS = 1711
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 82
-try:
-    MT_ARMEO_FEEDBACK = 1704
-except:
-    pass
-
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 83
-try:
-    MT_ARMEO_COMMAND = 1705
-except:
-    pass
-
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 84
-try:
-    MT_ARMEO_CONFIG = 1706
-except:
-    pass
-
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 85
-try:
-    MT_ARMEO_WKSPC = 1707
-except:
-    pass
-
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 86
-try:
-    MT_ARMEO_SERIAL_FEEDBACK = 1708
-except:
-    pass
-
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 87
-try:
-    MT_ARMEO_JOINT_CONFIG = 1709
-except:
-    pass
-
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 89
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 80
 try:
     MT_RAW_SPIKECOUNT = 1800
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 90
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 81
 try:
     MT_SPM_SPIKECOUNT = 1801
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 91
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 82
 try:
     MT_SPIKE_SNIPPET = 1802
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 93
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 84
 try:
     MT_RAW_CTSDATA = 1803
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 94
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 85
 try:
     MT_SPM_CTSDATA = 1804
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 95
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 86
 try:
     MT_REJECTED_SNIPPET = 1805
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 96
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 87
 try:
-    MT_DIGITAL_EVENT = 1806
+    MT_RAW_DIGITAL_EVENT = 1806
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 98
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 88
+try:
+    MT_SPM_DIGITAL_EVENT = 1807
+except:
+    pass
+
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 89
+try:
+    MT_STIM_SYNC_EVENT = 1808
+except:
+    pass
+
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 91
 try:
     MT_INPUT_DOF_DATA = 1850
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 100
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 93
 try:
     MT_DATAGLOVE = 1860
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 102
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 95
 try:
     MT_TASK_STATE_CONFIG = 1900
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 103
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 96
 try:
     MT_PHASE_RESULT = 1901
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 104
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 97
 try:
     MT_EXTRACTION_RESPONSE = 1902
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 106
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 98
+try:
+    MT_NORMALIZATION_FACTOR = 1903
+except:
+    pass
+
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 100
 try:
     MT_EM_ADAPT_NOW = 2000
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 107
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 101
 try:
     MT_EM_CONFIGURATION = 2001
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 108
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 102
 try:
     MT_TDMS_CREATE = 2002
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 109
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 103
 try:
     MT_RF_REPORT = 2003
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 110
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 104
 try:
     MT_PICDISPLAY = 2004
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 112
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 106
 try:
     MT_STIMDATA = 2005
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 114
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 108
 try:
     MT_HSTLOG = 3000
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 115
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 109
 try:
     MT_TFD = 3001
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 117
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 111
 try:
     MT_PLAYSOUND = 3100
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 119
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 113
 try:
     MT_AJA_CONFIG = 3200
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 120
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 114
 try:
     MT_AJA_TIMECODE = 3201
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 121
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 115
 try:
     MT_AJA_STATUS = 3202
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 122
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 116
 try:
     MT_AJA_STATUS_REQUEST = 3203
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 125
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 119
 try:
     MT_CERESTIM_CONFIG_MODULE = 4000
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 126
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 120
 try:
     MT_CERESTIM_CONFIG_CHAN_PRESAFETY = 4001
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 127
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 121
 try:
     MT_CERESTIM_CONFIG_CHAN = 4002
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 128
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 122
 try:
     MT_CERESTIM_ERROR = 4003
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 129
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 123
 try:
     MT_CERESTIM_ALIVE = 4004
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 130
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 124
 try:
     MT_CS_TRAIN_END = 4005
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 133
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 127
 try:
     TAG_LENGTH = 64
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 138
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 132
 try:
     MPL_AT_ARM_EPV_FING_JV = 0
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 139
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 133
 try:
     MPL_AT_ARM_EPV_FING_JP = 1
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 140
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 134
 try:
     MPL_AT_ARM_JV_FING_JP = 2
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 141
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 135
 try:
     MPL_AT_ALL_JV = 3
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 142
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 136
 try:
     MPL_AT_ALL_JP = 4
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 143
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 137
 try:
     MPL_AT_ARM_EPP_FING_JP = 5
 except:
     pass
 
-# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 146
+# C:\\hst2\\src\\Common\\include\\rp3_hst_config.h: 140
 try:
     TFD_FREQ_BINS = 20
 except:
