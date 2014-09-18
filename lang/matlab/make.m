@@ -12,16 +12,16 @@ if( ~ispc && ~isunix)
 end
 
 % base_dir = '../..';
-base_dir = 'c:\hst\rtma'
+base_dir = fullfile(getHstPath,'RTMA'); %'c:\hst\rtma'
 core_dir = [base_dir '/src/core'];
 pipelib_dir = [core_dir '/PipeLib'];
 
 core_sources = [core_dir '/RTMA.cpp ' core_dir '/MyCException.cpp ' core_dir '/MyCString.cpp ' core_dir '/mex_hack.cpp '];
-pipelib_sources = [pipelib_dir '/UPipe.cpp ' pipelib_dir '/SocketPipe.cpp '];
+pipelib_sources = [pipelib_dir '/UPipe.cpp ' pipelib_dir '/SocketPipe.cpp ' pipelib_dir '/Timing.cpp '];
 
 sources = [base_dir '\lang\matlab\' 'MatlabRTMA.cpp ' core_sources pipelib_sources];
 options = ['-v -D_MEX_FILE_ '];
-include_dirs = ['-I' base_dir '/include ' '-I' base_dir '/include/internal ' ];
+include_dirs = ['-I' base_dir '/include ' '-I' base_dir '/include/internal '];
 libs = [''];
 
 if( ispc)

@@ -274,7 +274,6 @@ mexFunction(
             break;
 
         case SEND_MODULE_READY:
-
             if( TheModule.IsConnected( )) {
                 status = TheModule.SendModuleReady( );
             } else {
@@ -287,6 +286,10 @@ mexFunction(
             output_arg[0] = mxCreateDoubleScalar( GetAbsTime());
             break;
 
+        case GET_MODULE_ID:
+            output_arg[0] = mxCreateDoubleScalar( TheModule.GetModuleID());
+            break;
+            
         default:
             Error( "Invalid opcode");
         }

@@ -9,7 +9,8 @@ typedef int MSG_TYPE;
 typedef int MSG_COUNT;
 
 // Maximums for the entire RTMA system
-#define MAX_MODULES       100  //maximal number of modules in the system
+#define MAX_MODULES       200  //maximal number of modules in the system
+#define DYN_MOD_ID_START  100  //module ID where pool of dynamic IDs begin
 #define MAX_HOSTS         5    //maximal number of hosts in the system
 #define MAX_MESSAGE_TYPES 10000 //maximal number of message types in the system
 #define MIN_STREAM_TYPE    9000 //minimal number type for a data stream
@@ -218,9 +219,9 @@ typedef struct { int timer_id; } MDF_CANCEL_TIMER;
 
 // Messages sent by core modules when they have finished initializing and are ready to serve
 #define MT_MM_READY             94
-#define MT_SM_READY				95
+//#define MT_SM_READY				95
 #define MT_LM_READY             96
-#define MT_AM_READY				97
+//#define MT_AM_READY				97
 
 // Messages for QuickLogger Module
 // MT_SAVE_MESSAGE_LOG - Tells QuickLogger to dump its current message buffer

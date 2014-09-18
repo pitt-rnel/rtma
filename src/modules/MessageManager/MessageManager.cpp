@@ -1,3 +1,11 @@
+/*
+ *  MessageManager - Receives and distributes RTMA messages to/from modules
+ *
+ *  Meel Velliste 10/28/2008
+ *  Emrah Diril  10/14/2011
+ *  Jeff Weiss: 09/10/2014 (merged HST RTMA (v2.00) with updates from Dragonfly v2.10)
+ */
+
 #include "MessageManager.h"
 #include "Debug.h"
 
@@ -13,16 +21,9 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 		char *options;
 		char empty_str[] = "";
 		#ifdef _UNIX_C
-		if (argc > 1)
-		{
-		    options = argv[1];
-		}
-		else
-		{
-		    options = empty_str;
-		}
+		options = (argc > 1) ? argv[1] : empty_str;
 		#else
-		//options = argv[1];
+		//options = (argc > 1) ? argv[1] : empty_str;
 		options = (char*) lpCmdLine;
 		#endif
 
@@ -40,7 +41,8 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 
 CMessageManager::CMessageManager( )
 {
-	m_Version = "2.00";
+	m_Version = "2.10hst";
+	m_NextDynamicModIdOffset = 0;
 		_ftime( &timebuffer ); // C4996
 		m_LastMessageCount = timebuffer.time;
 		m_LastMessageCountmsec = timebuffer.millitm;
@@ -60,6 +62,16 @@ CMessageManager::MainLoop( char *cmd_line_options)
 	try
 	{
 		DEBUG_TEXT( "Entering Main Loop");
+
+		// Elevate process priority
+#ifdef _WINDOWS_C
+		BOOL success = SetPriorityClass( GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
+		//if( success) printf("Yay!\n");
+		//else printf("Too bad!\n");
+		success = SetThreadPriority( GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
+		//if( success) printf("Yay!\n");
+		//else printf("Too bad!\n");
+#endif
 		// Start managing messages
 		if (strlen( cmd_line_options) > 0) {
 		    char *server_name = cmd_line_options;
@@ -80,12 +92,12 @@ CMessageManager::MainLoop( char *cmd_line_options)
 void
 CMessageManager::HandleData( UPipe *pSourcePipe)
 {
+	SetMyPriority(THIS_MODULE_BASE_PRIORITY);
 	DEBUG_TEXT_( "Receiving message from pipe " << pSourcePipe << "... ");
 	CMessage M;
 	M.Receive( pSourcePipe);
 	DEBUG_TEXT( "Received message of type " << M.msg_type);
 
-	SetMyPriority(THIS_MODULE_BASE_PRIORITY);
 	ProcessMessage( &M, pSourcePipe);
 	DistributeMessage( &M);
 	SetMyPriority(NORMAL_PRIORITY_CLASS);
@@ -152,9 +164,11 @@ CMessageManager::ProcessMessage( CMessage *M, UPipe *pSourcePipe)
 			M->GetData((void*) & data);
 			prev_priority_class = GetMyPriority();
 			SetMyPriority(NORMAL_PRIORITY_CLASS);
-			ConnectModule( mod_id, pSourcePipe, data.logger_status, data.daemon_status);
-			SendAcknowledge( mod_id);
-			SetMyPriority(prev_priority_class);
+			mod_id = ConnectModule( mod_id, pSourcePipe, data.logger_status, data.daemon_status);
+			if (mod_id > 0) {
+				SendAcknowledge( mod_id);
+				SetMyPriority(prev_priority_class);
+			}
 			break;
 
 		case MT_FORCE_DISCONNECT:
@@ -289,13 +303,19 @@ CMessageManager::DistributeMessage( CMessage *M)
 			if( send_it)
 			{
 				DEBUG_TEXT_( "Forwarding message to module " << mod_id << "... ");
-				int status = ForwardMessage(M, mod_id);
-				if( status == 0) {
-				        LogFailedMessage( M, mod_id);
-				        DEBUG_TEXT( "Failed to Forward Message!");
-				} else {
-				        DEBUG_TEXT( "Forwarded!");
+				try
+				{
+					int status = ForwardMessage(M, mod_id);
+					if( status == 0) {
+							LogFailedMessage( M, mod_id);
+							DEBUG_TEXT( "Failed to Forward Message!");
+					} else {
+						    DEBUG_TEXT( "Forwarded!");
+					}
 				}
+				catch( UPipeClosedException &E) { 
+					DEBUG_TEXT( "Failed to Forward Message, destination module socket is closed/dead"); 
+				} 				
 			}
 			
 			mod_id = SL->GetNextSubscriber();
@@ -446,25 +466,37 @@ CMessageManager::SendSignal( MSG_TYPE sig, MODULE_ID mod_id)
 	return SendMessage(&M, mod_id);
 }
 
-void
+MODULE_ID
 CMessageManager::ConnectModule( MODULE_ID module_id, UPipe *pSourcePipe, short logger_status, short daemon_status)
 {
-	if( ( module_id < MAX_MODULES) && ( module_id > 0) && !ModuleIsConnected(module_id) ){
 
+	if( ( module_id < MAX_MODULES) && ( module_id >= 0) && !ModuleIsConnected(module_id) )
+	{
 		if( pSourcePipe != NULL) {
-			DEBUG_TEXT( "Connecting module " << module_id << " on pipe " << pSourcePipe);
 
-			m_ConnectedModules[module_id].Reset();
-			// Create a module record
-			m_ConnectedModules[module_id].ModuleID     = module_id;
-			m_ConnectedModules[module_id].pModulePipe  = pSourcePipe;
-			m_ConnectedModules[module_id].LoggerStatus = logger_status;
-			m_ConnectedModules[module_id].DaemonStatus = daemon_status;
+			// get the next available module ID from "dynamic" pool
+			if (module_id == 0)
+				module_id = GetDynamicModuleId();
 
-			// Add default subscription to TIMER_EXPIRED
-			if( !logger_status) AddSubscription( module_id, MT_TIMER_EXPIRED);
+			if (module_id > 0) {
+				DEBUG_TEXT( "Connecting module " << module_id << " on pipe " << pSourcePipe);
+
+				m_ConnectedModules[module_id].Reset();
+				// Create a module record
+				m_ConnectedModules[module_id].ModuleID     = module_id;
+				m_ConnectedModules[module_id].pModulePipe  = pSourcePipe;
+				m_ConnectedModules[module_id].LoggerStatus = logger_status;
+				m_ConnectedModules[module_id].DaemonStatus = daemon_status;
+
+				// Add default subscription to TIMER_EXPIRED
+				if( !logger_status) AddSubscription( module_id, MT_TIMER_EXPIRED);
+			}
 		}
 	}
+	else
+		module_id = 0;	// something went wrong, don't allow the new connection
+
+	return module_id;
 }
 
 void

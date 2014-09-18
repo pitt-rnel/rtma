@@ -10,11 +10,6 @@
 //////////////////// GLOBAL VARIABLES/////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-#ifdef _WINDOWS_C
-	//Global counter frequency value- used by GetAbsTime() on Windows
-	double win_counter_freq;
-#endif
-
 #ifdef _UNIX_C
 	//the macro is defined in windows.h for Win systems, but may not exist on Unix
 	#ifndef min
@@ -360,11 +355,8 @@ void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID)
 		m_TimerCount=1;
 		Gm_TimerThreadInfo.thread_exists = 0;
 
-		#ifdef _WINDOWS_C
-			LONGLONG freq;
-			QueryPerformanceFrequency( (LARGE_INTEGER*) &freq);
-			win_counter_freq = (double) freq;
-		#endif
+		InitializeAbsTime();
+
 	} CATCH_and_THROW( "void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID)");
 }
 
@@ -436,10 +428,15 @@ RTMA_Module::ConnectToMMM( char *server_name, int logger_status, int read_dd_fil
 		CMessage M(MT_CONNECT, (void*) &data, sizeof(MDF_CONNECT) );
 		SendMessage( &M);
 		
-		int status = WaitForAcknowledgement( 1); // Wait for up to 3 seconds
+		CMessage ackMsg;
+		int status = WaitForAcknowledgement( 1, &ackMsg); // Wait for up to 3 seconds
 		if( status == 0){
 		    throw MyCException( "Did not receive ACK from MessageManager upon CONNECT");
 		}
+
+		// save own module ID from ACK if asked to be assigned dynamic ID
+		if (m_ModuleID == 0)
+			m_ModuleID = ackMsg.dest_mod_id;
 
 		m_Connected = 1;
 
@@ -586,16 +583,25 @@ RTMA_Module::ResumeSubscription( MSG_TYPE MessageType)
 }
 
 int
-RTMA_Module::WaitForAcknowledgement( double timeout)
+RTMA_Module::WaitForAcknowledgement( double timeout, CMessage* rcvMsg)
 {
-	TRY {
+	TRY 
+	{
+		int ret = 0;
+
 		CMessage M;
 		DEBUG_TEXT_( "Waiting for ACK... ");
-		if( timeout == -1) { // Wait forever
-			do { ReadMessage( &M); } while( M.msg_type != MT_ACKNOWLEDGE);
+		if( timeout == -1) 
+		{	// Wait forever
+			do { 
+				ReadMessage( &M); 
+			} while( M.msg_type != MT_ACKNOWLEDGE);
+			
 			DEBUG_TEXT( "Got ACK!");
-			return 1;
-		} else { // Wait up to timeout seconds
+			ret = 1; //return 1;
+		} 
+		else 
+		{   // Wait up to timeout seconds
 			double time_remaining = timeout;
 			double beginning_time = GetAbsTime();
 			while( time_remaining > 0) {
@@ -604,16 +610,30 @@ RTMA_Module::WaitForAcknowledgement( double timeout)
 				if( status < 0) throw MyCException( "Error while waiting for MT_ACKNOWLEDGE");
 				if( M.msg_type == MT_ACKNOWLEDGE) {
 					DEBUG_TEXT( "Got ACK!");
-					return 1;
+					ret = 1;//return 1;
+					break;
 				}
 				double time_now = GetAbsTime();
 				double time_waited = time_now - beginning_time;
 				time_remaining = timeout - time_waited;
 			}
-			DEBUG_TEXT( "timed out!");
-			return 0;
+
+			if (time_remaining <= 0)
+				DEBUG_TEXT( "timed out!");
 		}
-	} CATCH_and_THROW( "RTMA_Module::WaitForAcknowledgement( double timeout)");
+
+		if ((ret == 1) && rcvMsg) {
+			rcvMsg->msg_count   = M.msg_count;
+			rcvMsg->send_time   = M.send_time;
+			rcvMsg->recv_time   = M.recv_time;
+			rcvMsg->src_host_id = M.src_host_id;
+			rcvMsg->src_mod_id  = M.src_mod_id;
+			rcvMsg->dest_mod_id = M.dest_mod_id;
+		}
+
+		return ret;
+	} 
+	CATCH_and_THROW( "RTMA_Module::WaitForAcknowledgement( double timeout)");
 }
 
 int
@@ -824,6 +844,7 @@ RTMA_Module::GetPid( void)
 int
 SetMyPriority(int priority_class)
 {
+	/*
 	TRY {
 #ifdef _UNIX_C
 		//sched_setscheduler
@@ -841,6 +862,8 @@ SetMyPriority(int priority_class)
 		}
 #endif
 	} CATCH_and_THROW( "SetMyPriority(int priority_class)");
+	*/
+	return 1;
 }
 
 
@@ -1132,27 +1155,6 @@ RTMA_Module::SelfNotifyExpiredTimer(int timer_id)
 //////////////////// GLOBAL FUNCTIONS/////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-double
-GetAbsTime( void)
-//WIN: returns a seconds timestamp from a system counter
-{
-	TRY {
-#ifdef _UNIX_C
-		struct timeval tim;
-		if ( gettimeofday(&tim, NULL)  == 0 )
-		{
-			double t = tim.tv_sec + (tim.tv_usec/1000000.0);
-			return t;
-		}else{
-			return 0.0;
-		}
-#else
-		LONGLONG current_time;
-		QueryPerformanceCounter( (LARGE_INTEGER*) &current_time);
-		return (double) current_time / win_counter_freq;
-#endif
-	} CATCH_and_THROW( "GetAbsTime( void)");
-}
 
 
 //} // namespace RTMA

@@ -20,27 +20,9 @@
 #ifndef _UPIPE_H_
 #define _UPIPE_H_
 
+#include "..\OS_defines.h"
+#include "..\Timing.h"
 
-/* ----------------------------------------------------------------------------
-   |                   OS to compile the code on                              |
-   ----------------------------------------------------------------------------*/
-#ifndef _OS_DEFINED
-    #define _OS_DEFINED TRUE
-    #if defined USE_LINUX
-    	#ifndef _UNIX_C
-    	#define _UNIX_C
-    	#endif
-    #else
-    	#ifndef _WINDOWS_C
-    	#define _WINDOWS_C
-		#define _CRT_SECURE_NO_DEPRECATE 1         //prevent vs2005 deprecated warning
-    	#endif
-    #endif
-#endif
-
-/* ----------------------------------------------------------------------------
-   |                              INCLUDES                                    |
-   ----------------------------------------------------------------------------*/
 #ifdef _WINDOWS_C 
 	//prevent WINSOCK1 from being included (included from within windows.h)
 	#ifndef _WINSOCKAPI_
@@ -181,6 +163,9 @@ public:
 class UPipeServer
 {
 public:
+    // Time when the latest bit of data arrived
+    double _recvTime;
+
 	int GetNumClients() { return _numClients; }
 
 	// Accepts a client from the listening socket and returns a pointer to a pipe object that
@@ -461,6 +446,11 @@ public:
 			delete _server;
 		}
 	}
+
+    double
+    GetLatestRecvTime( void) {
+        return _server->_recvTime;
+    }
 
 	void Run( char *ServerName) {
 		// Open listening pipe

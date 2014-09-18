@@ -2,6 +2,8 @@
 // Copyright (c) 2009 by Meel Velliste, University of Pittsburgh
 //
 // Some code copied from Sagi Perel's NetworkLayer.c
+//
+// Emrah Diril  10/14/2011
 
 #include "SocketPipe.h"
 
@@ -178,13 +180,17 @@ int SendData( SocketHandle socket, char* buffer, int buffer_size)
 			#ifdef _WINDOWS_C
 			res = send(socket.id, buffer, bytes_left, 0);
 			if(res == SOCKET_ERROR)
+			{
+				throw UPipeClosedException( "Error in sending data through the socket", h_errno);
+			}
 			#else
 			res = send(socket.id, buffer, bytes_left, MSG_NOSIGNAL);
 			if(res == -1)
-			#endif
 			{
 				throw UPipeClosedException( "Error in sending data through the socket");
 			}
+			#endif
+
 			total_bytes += res;
 			buffer += res;
 			bytes_left -= res;
@@ -268,6 +274,9 @@ void ConnectSocket(SocketHandle socket)
 		{
 			throw UPipeException( "Could not connect to the socket: error in connect()");
 		}
+
+		DisableNagleAlgorithm( socket);
+
 	} CATCH_and_THROW( "::ConnectSocket");
 }
 
@@ -534,6 +543,9 @@ SocketPipeServer::SocketPipeServer( char *host_addr, short port_no)
 			CloseSocket(_hListeningSocket);
 			throw UPipeException( "Cannot listen on server port");
 		}
+
+		DisableNagleAlgorithm( _hListeningSocket);
+
 	} CATCH_and_THROW( "SocketPipeServer::SocketPipeServer");
 }
 
@@ -595,6 +607,10 @@ SocketPipeServer::WaitForDataAndClients( UPipe *pipes[], double timeout, bool *c
 
 		// Wait for data and check for errors
 		int status = select( high_fd+1, &readfds, NULL, NULL, pWait);
+
+		// Record the receive time as soon as select returns
+        _recvTime = GetAbsTime();
+
 		#ifdef _WINDOWS_C
 		if(status == SOCKET_ERROR)
 		#else
@@ -607,7 +623,7 @@ SocketPipeServer::WaitForDataAndClients( UPipe *pipes[], double timeout, bool *c
 		for( int i = 0; i < _numClients; i++) {
 			if( FD_ISSET(_hClientSockets[i].id, &readfds)) {
 				pipes[C] = _clientList[i];
-				C++; // ;)
+				C++; 
 			}
 		}
 
@@ -616,7 +632,7 @@ SocketPipeServer::WaitForDataAndClients( UPipe *pipes[], double timeout, bool *c
 			*connection_request = FD_ISSET(_hListeningSocket.id, &readfds) ? true : false;
 		}
 
-		return C++; // ;)
+		return C;
 	} CATCH_and_THROW( "SocketPipeServer::WaitForDataAndClients");
 }
 

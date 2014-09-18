@@ -5,6 +5,7 @@
 #include "bit_operations.h"
 #include <sys/timeb.h>
 #include <time.h>
+#include "Debug.h"
 
 #ifdef _UNIX_C
 	#include <pthread.h>
@@ -230,6 +231,7 @@ public:
 	MainLoop( char *cmd_line_options);
 
 private:
+	MODULE_ID		m_NextDynamicModIdOffset;
 	CModuleRecord   m_ConnectedModules[MAX_MODULES];
 	CSubscriberList m_SubscribersToMessageType[MAX_MESSAGE_TYPES];
 	CSubscriberList m_EmptySubscriberList;
@@ -240,6 +242,24 @@ private:
 	unsigned short  m_LastMessageCountmsec;
 	struct _timeb timebuffer;
 	
+	MODULE_ID GetDynamicModuleId()
+	{
+		for(MODULE_ID id=0; id < (MAX_MODULES - DYN_MOD_ID_START); id++)
+		{
+			MODULE_ID curr_id = m_NextDynamicModIdOffset + DYN_MOD_ID_START;
+
+			// update offset to next available dynamic module ID
+			m_NextDynamicModIdOffset++;
+			if (m_NextDynamicModIdOffset == MAX_MODULES-DYN_MOD_ID_START)
+				m_NextDynamicModIdOffset = 0;
+
+			if (m_ConnectedModules[curr_id].ModuleID != curr_id)
+				return curr_id;
+		}
+		DEBUG_TEXT("CMessageBuffer::GetDynamicModuleId(): All dynamic IDs are in use");
+		return 0;
+	}
+
 	void
 	SendMessageTiming();
 	// Sends timing information to subscribed modules and resets the counter
@@ -283,7 +303,7 @@ private:
 	DispatchSignalToAll( MSG_TYPE sig);
 	//Dispatches a signal to each connected module (and each Logger module)
 
-	void
+	MODULE_ID
 	ConnectModule( MODULE_ID module_id, UPipe *pSourcePipe, short logger_status, short daemon_status);
 
 	void

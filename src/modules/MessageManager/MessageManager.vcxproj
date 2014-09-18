@@ -111,7 +111,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>../../../lib/RTMAd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../../../lib/RTMAd32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>MessageManager.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\PipeLib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -201,7 +201,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>../../../lib/RTMA.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../../../lib/RTMA32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>MessageManager.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

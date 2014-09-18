@@ -148,6 +148,7 @@
     <ClCompile Include="..\MyCString.cpp" />
     <ClCompile Include="SmartPipe.cpp" />
     <ClCompile Include="SocketPipe.cpp" />
+    <ClCompile Include="Timing.cpp" />
     <ClCompile Include="UPipe.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

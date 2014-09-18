@@ -15,3 +15,4 @@
 #define READ_MESSAGE_DD     14
 #define SEND_MESSAGE_DD     15
 #define GET_TIME            16
+#define GET_MODULE_ID       17

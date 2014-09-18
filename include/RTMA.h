@@ -6,45 +6,21 @@
 #ifndef _RTMA_H_
 #define _RTMA_H_
 /* ----------------------------------------------------------------------------
-   |                   OS to compile the code on                              |
-   ----------------------------------------------------------------------------*/
-#ifndef _OS_DEFINED
-    #define _OS_DEFINED TRUE
-    #ifdef USE_LINUX
-    	#ifndef _UNIX_C
-    	#define _UNIX_C
-    	#endif
-    #else
-        #ifndef _WINDOWS_C  
-        #define _WINDOWS_C
-        #endif
-    #endif
-#endif
-
-/* ----------------------------------------------------------------------------
-   |                              DEFINES                                     |
-   ----------------------------------------------------------------------------*/
-#ifdef _UNIX_C
-	#define TRUE  1
-	#define FALSE 0
-#else
-	#define _CRT_SECURE_NO_DEPRECATE 1 //prevent vs2005 deprecated warning
-#endif
-
-/* ----------------------------------------------------------------------------
    |                              INCLUDES                                    |
    ----------------------------------------------------------------------------*/
+#include "OS_defines.h"
+#include "Timing.h"
 #include "RTMA_types.h"
 #include "internal/UPipe.h"
 
-#ifdef _UNIX_C
+/*#ifdef _UNIX_C
 	#include <sys/types.h> //for getpid()
 	#include <unistd.h>    //for getpid()
 	#include <sys/time.h>  //for gettimeofday()
 	#include <signal.h>
 #else
 	#include <windows.h>
-#endif
+#endif */
 
 #include <stdio.h>
 #include <string>
@@ -60,13 +36,13 @@
 #define DEFAULT_PIPE_SERVER_NAME_FOR_MODULES "localhost:7111" // Modules connect locally by default
 #define DEFAULT_PIPE_SERVER_NAME_FOR_MM ":7111" // MessageManager accepts connections from any incoming interface by default
 
-#ifdef _UNIX_C
+/*#ifdef _UNIX_C
 	#define THIS_MODULE_BASE_PRIORITY  0
 	#define NORMAL_PRIORITY_CLASS      1
 #else
 	#define THIS_MODULE_BASE_PRIORITY  0x00008000//ABOVE_NORMAL_PRIORITY_CLASS
 	//#define THIS_MODULE_BASE_PRIORITY  ABOVE_NORMAL_PRIORITY_CLASS//ABOVE_NORMAL_PRIORITY_CLASS NORMAL_PRIORITY_CLASS
-#endif
+#endif */
 
 
 /* ----------------------------------------------------------------------------
@@ -151,7 +127,7 @@ protected:
 	UPipe       *_pMMPipe; //pipe handle for communicating with the Message Manager
 
 	int
-	WaitForAcknowledgement( double timeout = -1); // Waits for MT_ACKNOWLEDGE for up to timeout seconds
+	WaitForAcknowledgement(double timeout = -1, CMessage* rcvMsg = NULL); // Waits for MT_ACKNOWLEDGE for up to timeout seconds
 
 	int
 	SendMessage( CMessage *M, UPipe *pOutputPipe, MODULE_ID dest_mod_id = 0, HOST_ID dest_host_id = 0);
@@ -245,9 +221,6 @@ public:
 	int SendSelfSignal( MSG_TYPE MessageType);
 	// Sends signal this this module itself by writing directly to module's input pipe
 
-	//static void
-	//HandleBrokenPipeSig(int sig_num);
-	//handles signals on UNIX, does nothing on Windows
 
 	int
 	ReadMessage( CMessage *M, double timeout = -1);
@@ -303,8 +276,8 @@ SetMyPriority(int priority_class);
 int
 GetMyPriority();
 
-double
-GetAbsTime( void);
+//double
+//GetAbsTime( void);
 
 //} // namespace RTMA
 
