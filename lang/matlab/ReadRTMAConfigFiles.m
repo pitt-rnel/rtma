@@ -79,7 +79,8 @@ function RTMA = ReadRTMAConfigFiles( RTMA_BaseDir, varargin)
     % If RTMA base directory provided, then parse mex op-code definition file
     % to get the op-codes for calling the MatlabRTMA mex file
     if( ~isempty( RTMA_BaseDir))
-        MatlabRTMA_h = ParseHFile( [RTMA_BaseDir '/RTMA/lang/matlab/MatlabRTMA.h']);
+        %MatlabRTMA_h = ParseHFile( [RTMA_BaseDir '/RTMA/lang/matlab/MatlabRTMA.h']);
+        MatlabRTMA_h = ParseHFile( [RTMA_BaseDir '/lang/matlab/MatlabRTMA.h']);
         RTMA.mex_opcode = MatlabRTMA_h.defines;
     end
     

@@ -16,6 +16,7 @@ if(isempty(ConfigFileDir))
 end
 
 % OutputFile = [ConfigFileDir '/' ConfigFileBaseName '.mat'];
-OutputFile = [ConfigFileDir '\..\..\..\include\RTMA_config.mat'];
+%OutputFile = [ConfigFileDir '\..\..\..\include\RTMA_config.mat'];
+OutputFile = fullfile(ConfigFileDir,'RTMA_config.mat');
 RTMA = ReadRTMAConfigFiles( RTMA_BaseDir, MessageConfigFile);
 save( OutputFile, 'RTMA');
