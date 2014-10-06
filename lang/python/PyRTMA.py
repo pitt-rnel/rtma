@@ -85,13 +85,11 @@ def copy_from_msg(data, cmsg):
 def copy_to_msg(data, cmsg):
 	cmsg.SetData(void_ptr(addressof(data)), sizeof(data))
 
-def read_msg_data(data, cmsg):
-    cmsg.GetData(void_ptr(addressof(data)))
+   def read_msg_data(data, cmsg):
+       cmsg.GetData(void_ptr(addressof(data)))
 
-_CRT_SECURE_NO_DEPRECATE = _PyRTMA._CRT_SECURE_NO_DEPRECATE
 DEFAULT_PIPE_SERVER_NAME_FOR_MODULES = _PyRTMA.DEFAULT_PIPE_SERVER_NAME_FOR_MODULES
 DEFAULT_PIPE_SERVER_NAME_FOR_MM = _PyRTMA.DEFAULT_PIPE_SERVER_NAME_FOR_MM
-THIS_MODULE_BASE_PRIORITY = _PyRTMA.THIS_MODULE_BASE_PRIORITY
 class CMessage(_object):
     """Proxy of C++ CMessage class"""
     __swig_setmethods__ = {}
@@ -323,11 +321,8 @@ def SetMyPriority(*args):
 def GetMyPriority():
   """GetMyPriority() -> int"""
   return _PyRTMA.GetMyPriority()
-
-def GetAbsTime():
-  """GetAbsTime() -> double"""
-  return _PyRTMA.GetAbsTime()
 MAX_MODULES = _PyRTMA.MAX_MODULES
+DYN_MOD_ID_START = _PyRTMA.DYN_MOD_ID_START
 MAX_HOSTS = _PyRTMA.MAX_HOSTS
 MAX_MESSAGE_TYPES = _PyRTMA.MAX_MESSAGE_TYPES
 MIN_STREAM_TYPE = _PyRTMA.MIN_STREAM_TYPE
@@ -745,9 +740,7 @@ MDF_CANCEL_TIMER_swigregister(MDF_CANCEL_TIMER)
 
 MT_LM_EXIT = _PyRTMA.MT_LM_EXIT
 MT_MM_READY = _PyRTMA.MT_MM_READY
-MT_SM_READY = _PyRTMA.MT_SM_READY
 MT_LM_READY = _PyRTMA.MT_LM_READY
-MT_AM_READY = _PyRTMA.MT_AM_READY
 MT_SAVE_MESSAGE_LOG = _PyRTMA.MT_SAVE_MESSAGE_LOG
 MAX_LOGGER_FILENAME_LENGTH = _PyRTMA.MAX_LOGGER_FILENAME_LENGTH
 class MDF_SAVE_MESSAGE_LOG(_object):

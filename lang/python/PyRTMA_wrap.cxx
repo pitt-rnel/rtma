@@ -3232,13 +3232,6 @@ SWIG_AsVal_long_SS_long (PyObject *obj, long long *val)
 }
 
 
-SWIGINTERNINLINE PyObject*
-  SWIG_From_int  (int value)
-{
-  return PyInt_FromLong((long) value);
-}
-
-
 SWIGINTERN swig_type_info*
 SWIG_pchar_descriptor(void)
 {
@@ -3396,6 +3389,13 @@ SWIG_AsVal_int (PyObject * obj, int *val)
     }
   }  
   return res;
+}
+
+
+SWIGINTERNINLINE PyObject*
+  SWIG_From_int  (int value)
+{
+  return PyInt_FromLong((long) value);
 }
 
 
@@ -7255,30 +7255,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_GetAbsTime(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  double result;
-  
-  if (!PyArg_ParseTuple(args,(char *)":GetAbsTime")) SWIG_fail;
-  {
-    try {
-      result = (double)GetAbsTime();
-    }
-    catch (MyCException e) {
-      MyCString errMsg;
-      
-      e.AppendTraceToString(errMsg);
-      PyErr_SetString(PyExc_Exception, errMsg.GetContent());
-      return NULL;
-    }
-  }
-  resultobj = SWIG_From_double(static_cast< double >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_RTMA_MSG_HEADER_msg_type_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   RTMA_MSG_HEADER *arg1 = (RTMA_MSG_HEADER *) 0 ;
@@ -10589,15 +10565,15 @@ SWIGINTERN PyObject *_wrap_MDF_TIMING_MESSAGE_ModulePID_set(PyObject *SWIGUNUSED
   arg1 = reinterpret_cast< MDF_TIMING_MESSAGE * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_int, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MDF_TIMING_MESSAGE_ModulePID_set" "', argument " "2"" of type '" "int [100]""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MDF_TIMING_MESSAGE_ModulePID_set" "', argument " "2"" of type '" "int [200]""'"); 
   } 
   arg2 = reinterpret_cast< int * >(argp2);
   {
     if (arg2) {
       size_t ii = 0;
-      for (; ii < (size_t)100; ++ii) arg1->ModulePID[ii] = arg2[ii];
+      for (; ii < (size_t)200; ++ii) arg1->ModulePID[ii] = arg2[ii];
     } else {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""ModulePID""' of type '""int [100]""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""ModulePID""' of type '""int [200]""'");
     }
   }
   resultobj = SWIG_Py_Void();
@@ -10840,7 +10816,6 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"RTMA_Module_swigregister", RTMA_Module_swigregister, METH_VARARGS, NULL},
 	 { (char *)"SetMyPriority", _wrap_SetMyPriority, METH_VARARGS, (char *)"SetMyPriority(int priority_class) -> int"},
 	 { (char *)"GetMyPriority", _wrap_GetMyPriority, METH_VARARGS, (char *)"GetMyPriority() -> int"},
-	 { (char *)"GetAbsTime", _wrap_GetAbsTime, METH_VARARGS, (char *)"GetAbsTime() -> double"},
 	 { (char *)"RTMA_MSG_HEADER_msg_type_set", _wrap_RTMA_MSG_HEADER_msg_type_set, METH_VARARGS, (char *)"RTMA_MSG_HEADER_msg_type_set(RTMA_MSG_HEADER self, MSG_TYPE msg_type)"},
 	 { (char *)"RTMA_MSG_HEADER_msg_type_get", _wrap_RTMA_MSG_HEADER_msg_type_get, METH_VARARGS, (char *)"RTMA_MSG_HEADER_msg_type_get(RTMA_MSG_HEADER self) -> MSG_TYPE"},
 	 { (char *)"RTMA_MSG_HEADER_msg_count_set", _wrap_RTMA_MSG_HEADER_msg_count_set, METH_VARARGS, (char *)"RTMA_MSG_HEADER_msg_count_set(RTMA_MSG_HEADER self, MSG_COUNT msg_count)"},
@@ -10974,8 +10949,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"MDF_SAVE_MESSAGE_LOG_swigregister", MDF_SAVE_MESSAGE_LOG_swigregister, METH_VARARGS, NULL},
 	 { (char *)"MDF_TIMING_MESSAGE_timing_set", _wrap_MDF_TIMING_MESSAGE_timing_set, METH_VARARGS, (char *)"MDF_TIMING_MESSAGE_timing_set(MDF_TIMING_MESSAGE self, unsigned short [10000] timing)"},
 	 { (char *)"MDF_TIMING_MESSAGE_timing_get", _wrap_MDF_TIMING_MESSAGE_timing_get, METH_VARARGS, (char *)"MDF_TIMING_MESSAGE_timing_get(MDF_TIMING_MESSAGE self) -> unsigned short [10000]"},
-	 { (char *)"MDF_TIMING_MESSAGE_ModulePID_set", _wrap_MDF_TIMING_MESSAGE_ModulePID_set, METH_VARARGS, (char *)"MDF_TIMING_MESSAGE_ModulePID_set(MDF_TIMING_MESSAGE self, int [100] ModulePID)"},
-	 { (char *)"MDF_TIMING_MESSAGE_ModulePID_get", _wrap_MDF_TIMING_MESSAGE_ModulePID_get, METH_VARARGS, (char *)"MDF_TIMING_MESSAGE_ModulePID_get(MDF_TIMING_MESSAGE self) -> int [100]"},
+	 { (char *)"MDF_TIMING_MESSAGE_ModulePID_set", _wrap_MDF_TIMING_MESSAGE_ModulePID_set, METH_VARARGS, (char *)"MDF_TIMING_MESSAGE_ModulePID_set(MDF_TIMING_MESSAGE self, int [200] ModulePID)"},
+	 { (char *)"MDF_TIMING_MESSAGE_ModulePID_get", _wrap_MDF_TIMING_MESSAGE_ModulePID_get, METH_VARARGS, (char *)"MDF_TIMING_MESSAGE_ModulePID_get(MDF_TIMING_MESSAGE self) -> int [200]"},
 	 { (char *)"MDF_TIMING_MESSAGE_send_time_set", _wrap_MDF_TIMING_MESSAGE_send_time_set, METH_VARARGS, (char *)"MDF_TIMING_MESSAGE_send_time_set(MDF_TIMING_MESSAGE self, double send_time)"},
 	 { (char *)"MDF_TIMING_MESSAGE_send_time_get", _wrap_MDF_TIMING_MESSAGE_send_time_get, METH_VARARGS, (char *)"MDF_TIMING_MESSAGE_send_time_get(MDF_TIMING_MESSAGE self) -> double"},
 	 { (char *)"new_MDF_TIMING_MESSAGE", _wrap_new_MDF_TIMING_MESSAGE, METH_VARARGS, (char *)"new_MDF_TIMING_MESSAGE() -> MDF_TIMING_MESSAGE"},
@@ -11769,11 +11744,10 @@ SWIG_init(void) {
   
   SWIG_InstallConstants(d,swig_const_table);
   
-  SWIG_Python_SetConstant(d, "_CRT_SECURE_NO_DEPRECATE",SWIG_From_int(static_cast< int >(1)));
   SWIG_Python_SetConstant(d, "DEFAULT_PIPE_SERVER_NAME_FOR_MODULES",SWIG_FromCharPtr("localhost:7111"));
   SWIG_Python_SetConstant(d, "DEFAULT_PIPE_SERVER_NAME_FOR_MM",SWIG_FromCharPtr(":7111"));
-  SWIG_Python_SetConstant(d, "THIS_MODULE_BASE_PRIORITY",SWIG_From_int(static_cast< int >(0x00008000)));
-  SWIG_Python_SetConstant(d, "MAX_MODULES",SWIG_From_int(static_cast< int >(100)));
+  SWIG_Python_SetConstant(d, "MAX_MODULES",SWIG_From_int(static_cast< int >(200)));
+  SWIG_Python_SetConstant(d, "DYN_MOD_ID_START",SWIG_From_int(static_cast< int >(100)));
   SWIG_Python_SetConstant(d, "MAX_HOSTS",SWIG_From_int(static_cast< int >(5)));
   SWIG_Python_SetConstant(d, "MAX_MESSAGE_TYPES",SWIG_From_int(static_cast< int >(10000)));
   SWIG_Python_SetConstant(d, "MIN_STREAM_TYPE",SWIG_From_int(static_cast< int >(9000)));
@@ -11855,9 +11829,7 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, "MT_CANCEL_TIMER",SWIG_From_int(static_cast< int >(54)));
   SWIG_Python_SetConstant(d, "MT_LM_EXIT",SWIG_From_int(static_cast< int >(55)));
   SWIG_Python_SetConstant(d, "MT_MM_READY",SWIG_From_int(static_cast< int >(94)));
-  SWIG_Python_SetConstant(d, "MT_SM_READY",SWIG_From_int(static_cast< int >(95)));
   SWIG_Python_SetConstant(d, "MT_LM_READY",SWIG_From_int(static_cast< int >(96)));
-  SWIG_Python_SetConstant(d, "MT_AM_READY",SWIG_From_int(static_cast< int >(97)));
   SWIG_Python_SetConstant(d, "MT_SAVE_MESSAGE_LOG",SWIG_From_int(static_cast< int >(56)));
   SWIG_Python_SetConstant(d, "MAX_LOGGER_FILENAME_LENGTH",SWIG_From_int(static_cast< int >(256)));
   SWIG_Python_SetConstant(d, "MT_MESSAGE_LOG_SAVED",SWIG_From_int(static_cast< int >(57)));

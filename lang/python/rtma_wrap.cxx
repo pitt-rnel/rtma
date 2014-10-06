@@ -6542,15 +6542,15 @@ SWIGINTERN PyObject *_wrap_MDF_TIMING_MESSAGE_ModulePID_set(PyObject *SWIGUNUSED
   arg1 = reinterpret_cast< MDF_TIMING_MESSAGE * >(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_int, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MDF_TIMING_MESSAGE_ModulePID_set" "', argument " "2"" of type '" "int [100]""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "MDF_TIMING_MESSAGE_ModulePID_set" "', argument " "2"" of type '" "int [200]""'"); 
   } 
   arg2 = reinterpret_cast< int * >(argp2);
   {
     if (arg2) {
       size_t ii = 0;
-      for (; ii < (size_t)100; ++ii) arg1->ModulePID[ii] = arg2[ii];
+      for (; ii < (size_t)200; ++ii) arg1->ModulePID[ii] = arg2[ii];
     } else {
-      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""ModulePID""' of type '""int [100]""'");
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in variable '""ModulePID""' of type '""int [200]""'");
     }
   }
   resultobj = SWIG_Py_Void();
@@ -7953,7 +7953,8 @@ SWIG_init(void) {
   
   SWIG_InstallConstants(d,swig_const_table);
   
-  SWIG_Python_SetConstant(d, "MAX_MODULES",SWIG_From_int(static_cast< int >(100)));
+  SWIG_Python_SetConstant(d, "MAX_MODULES",SWIG_From_int(static_cast< int >(200)));
+  SWIG_Python_SetConstant(d, "DYN_MOD_ID_START",SWIG_From_int(static_cast< int >(100)));
   SWIG_Python_SetConstant(d, "MAX_HOSTS",SWIG_From_int(static_cast< int >(5)));
   SWIG_Python_SetConstant(d, "MAX_MESSAGE_TYPES",SWIG_From_int(static_cast< int >(10000)));
   SWIG_Python_SetConstant(d, "MIN_STREAM_TYPE",SWIG_From_int(static_cast< int >(9000)));
@@ -8035,9 +8036,7 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, "MT_CANCEL_TIMER",SWIG_From_int(static_cast< int >(54)));
   SWIG_Python_SetConstant(d, "MT_LM_EXIT",SWIG_From_int(static_cast< int >(55)));
   SWIG_Python_SetConstant(d, "MT_MM_READY",SWIG_From_int(static_cast< int >(94)));
-  SWIG_Python_SetConstant(d, "MT_SM_READY",SWIG_From_int(static_cast< int >(95)));
   SWIG_Python_SetConstant(d, "MT_LM_READY",SWIG_From_int(static_cast< int >(96)));
-  SWIG_Python_SetConstant(d, "MT_AM_READY",SWIG_From_int(static_cast< int >(97)));
   SWIG_Python_SetConstant(d, "MT_SAVE_MESSAGE_LOG",SWIG_From_int(static_cast< int >(56)));
   SWIG_Python_SetConstant(d, "MAX_LOGGER_FILENAME_LENGTH",SWIG_From_int(static_cast< int >(256)));
   SWIG_Python_SetConstant(d, "MT_MESSAGE_LOG_SAVED",SWIG_From_int(static_cast< int >(57)));
