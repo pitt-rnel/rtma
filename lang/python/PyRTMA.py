@@ -85,8 +85,8 @@ def copy_from_msg(data, cmsg):
 def copy_to_msg(data, cmsg):
 	cmsg.SetData(void_ptr(addressof(data)), sizeof(data))
 
-   def read_msg_data(data, cmsg):
-       cmsg.GetData(void_ptr(addressof(data)))
+def read_msg_data(data, cmsg):
+    cmsg.GetData(void_ptr(addressof(data)))
 
 DEFAULT_PIPE_SERVER_NAME_FOR_MODULES = _PyRTMA.DEFAULT_PIPE_SERVER_NAME_FOR_MODULES
 DEFAULT_PIPE_SERVER_NAME_FOR_MM = _PyRTMA.DEFAULT_PIPE_SERVER_NAME_FOR_MM
