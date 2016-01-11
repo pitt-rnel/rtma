@@ -22,7 +22,8 @@ end
 
 %IGNORE LARGE FIELDS WE DON'T OFTEN NEED: Prep ignore list
 if ~get_full_log
-    ignorelist = {'SPIKE_SNIPPET','REJECTED_SNIPPET','DIGITAL_EVENT','RAW_SPIKECOUNT','RAW_CTSDATA','PLAYSOUND','TIMING_MESSAGE','MPL_RAW_PERCEPT'};
+   % ignorelist = {'SPIKE_SNIPPET','REJECTED_SNIPPET','DIGITAL_EVENT','RAW_SPIKECOUNT','RAW_CTSDATA','PLAYSOUND','TIMING_MESSAGE','MPL_RAW_PERCEPT'};
+    ignorelist = {'SPIKE_SNIPPET','REJECTED_SNIPPET','DIGITAL_EVENT','RAW_SPIKECOUNT','PLAYSOUND','TIMING_MESSAGE'};
     ignorenums = [];
     badentries = cellfun(@isempty,RTMA.MTN_by_MT);
     badentries = find(~badentries);
