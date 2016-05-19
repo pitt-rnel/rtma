@@ -1,4 +1,4 @@
-#ifndef _RTMA_TYPES_H_
+#ifndef _RTMA_TYPES_H_ // this is commented out becuase make_config fails with it
 #define _RTMA_TYPES_H_
 
 // Types used in the RTMA system
