@@ -1,5 +1,5 @@
-//#ifndef _RTMA_TYPES_H_
-//#define _RTMA_TYPES_H_
+#ifndef _RTMA_TYPES_H_
+#define _RTMA_TYPES_H_
 
 // Types used in the RTMA system
 
@@ -248,4 +248,4 @@ typedef struct {
 	double send_time;
 } MDF_TIMING_MESSAGE;
 
-//#endif //_RTMA_TYPES_H_
+#endif //_RTMA_TYPES_H_
