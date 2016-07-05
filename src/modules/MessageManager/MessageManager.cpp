@@ -12,8 +12,8 @@
 #ifdef _UNIX_C
 int main( int argc, char *argv[])
 #else
-//int main( int argc, char *argv[])
-int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
+int main( int argc, char *argv[])
+//int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 #endif
 {
 	try
@@ -23,8 +23,8 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 		#ifdef _UNIX_C
 		options = (argc > 1) ? argv[1] : empty_str;
 		#else
-		//options = (argc > 1) ? argv[1] : empty_str;
-		options = (char*) lpCmdLine;
+		options = (argc > 1) ? argv[1] : empty_str;
+		//options = (char*) lpCmdLine;
 		#endif
 
 		CMessageManager MM;
