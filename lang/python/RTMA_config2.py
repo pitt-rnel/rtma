@@ -905,22 +905,22 @@ struct_anon_14._fields_ = [
 
 MDF_TIMING_MESSAGE = struct_anon_14 # C:\\hst2\\include\\..\\RTMA\\include\\RTMA_types.h: 249
 
-# C:\\hst2\\include\\rp3_hst_config.h: 200
+# C:\\hst2\\include\\rp3_hst_config.h: 265
 class struct_anon_15(Structure):
     pass
 
 struct_anon_15.__slots__ = [
     'serial_no',
-    'reserved',
+    'sub_sample',
 ]
 struct_anon_15._fields_ = [
     ('serial_no', c_int),
-    ('reserved', c_int),
+    ('sub_sample', c_int),
 ]
 
-MSG_HEADER = struct_anon_15 # C:\\hst2\\include\\rp3_hst_config.h: 200
+MSG_HEADER = struct_anon_15 # C:\\hst2\\include\\rp3_hst_config.h: 265
 
-# C:\\hst2\\include\\rp3_hst_config.h: 209
+# C:\\hst2\\include\\rp3_hst_config.h: 274
 class struct_anon_16(Structure):
     pass
 
@@ -941,9 +941,9 @@ struct_anon_16._fields_ = [
     ('subject_id', c_char * 64),
 ]
 
-MDF_TRIAL_METADATA = struct_anon_16 # C:\\hst2\\include\\rp3_hst_config.h: 209
+MDF_TRIAL_METADATA = struct_anon_16 # C:\\hst2\\include\\rp3_hst_config.h: 274
 
-# C:\\hst2\\include\\rp3_hst_config.h: 214
+# C:\\hst2\\include\\rp3_hst_config.h: 279
 class struct_anon_17(Structure):
     pass
 
@@ -956,9 +956,9 @@ struct_anon_17._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_REP_START = struct_anon_17 # C:\\hst2\\include\\rp3_hst_config.h: 214
+MDF_REP_START = struct_anon_17 # C:\\hst2\\include\\rp3_hst_config.h: 279
 
-# C:\\hst2\\include\\rp3_hst_config.h: 218
+# C:\\hst2\\include\\rp3_hst_config.h: 283
 class struct_anon_18(Structure):
     pass
 
@@ -969,9 +969,9 @@ struct_anon_18._fields_ = [
     ('filename', c_char * 256),
 ]
 
-MDF_PLAYSOUND = struct_anon_18 # C:\\hst2\\include\\rp3_hst_config.h: 218
+MDF_PLAYSOUND = struct_anon_18 # C:\\hst2\\include\\rp3_hst_config.h: 283
 
-# C:\\hst2\\include\\rp3_hst_config.h: 223
+# C:\\hst2\\include\\rp3_hst_config.h: 288
 class struct_anon_19(Structure):
     pass
 
@@ -984,9 +984,9 @@ struct_anon_19._fields_ = [
     ('timer', c_double),
 ]
 
-MDF_PICDISPLAY = struct_anon_19 # C:\\hst2\\include\\rp3_hst_config.h: 223
+MDF_PICDISPLAY = struct_anon_19 # C:\\hst2\\include\\rp3_hst_config.h: 288
 
-# C:\\hst2\\include\\rp3_hst_config.h: 230
+# C:\\hst2\\include\\rp3_hst_config.h: 295
 class struct_anon_20(Structure):
     pass
 
@@ -1003,16 +1003,14 @@ struct_anon_20._fields_ = [
     ('interphase', c_double * 12),
 ]
 
-MDF_STIMDATA = struct_anon_20 # C:\\hst2\\include\\rp3_hst_config.h: 230
+MDF_STIMDATA = struct_anon_20 # C:\\hst2\\include\\rp3_hst_config.h: 295
 
-# C:\\hst2\\include\\rp3_hst_config.h: 242
+# C:\\hst2\\include\\rp3_hst_config.h: 308
 class struct_anon_21(Structure):
     pass
 
 struct_anon_21.__slots__ = [
-    'FTsequence',
-    'Funits',
-    'Tunits',
+    'header',
     'Fx',
     'Fy',
     'Fz',
@@ -1021,20 +1019,18 @@ struct_anon_21.__slots__ = [
     'Ty',
 ]
 struct_anon_21._fields_ = [
-    ('FTsequence', c_int * 2),
-    ('Funits', c_char * 128),
-    ('Tunits', c_char * 128),
-    ('Fx', c_double * 2),
-    ('Fy', c_double * 2),
-    ('Fz', c_double * 2),
-    ('Tz', c_double * 2),
-    ('Tx', c_double * 2),
-    ('Ty', c_double * 2),
+    ('header', MSG_HEADER),
+    ('Fx', c_double),
+    ('Fy', c_double),
+    ('Fz', c_double),
+    ('Tz', c_double),
+    ('Tx', c_double),
+    ('Ty', c_double),
 ]
 
-MDF_ATIforcesensor = struct_anon_21 # C:\\hst2\\include\\rp3_hst_config.h: 242
+MDF_ATIforcesensor = struct_anon_21 # C:\\hst2\\include\\rp3_hst_config.h: 308
 
-# C:\\hst2\\include\\rp3_hst_config.h: 249
+# C:\\hst2\\include\\rp3_hst_config.h: 315
 class struct_anon_22(Structure):
     pass
 
@@ -1051,9 +1047,9 @@ struct_anon_22._fields_ = [
     ('C', c_double),
 ]
 
-MDF_KNOB_FEEDBACK = struct_anon_22 # C:\\hst2\\include\\rp3_hst_config.h: 249
+MDF_KNOB_FEEDBACK = struct_anon_22 # C:\\hst2\\include\\rp3_hst_config.h: 315
 
-# C:\\hst2\\include\\rp3_hst_config.h: 254
+# C:\\hst2\\include\\rp3_hst_config.h: 320
 class struct_anon_23(Structure):
     pass
 
@@ -1066,9 +1062,9 @@ struct_anon_23._fields_ = [
     ('value', c_int),
 ]
 
-MDF_SEAIO_OUT = struct_anon_23 # C:\\hst2\\include\\rp3_hst_config.h: 254
+MDF_SEAIO_OUT = struct_anon_23 # C:\\hst2\\include\\rp3_hst_config.h: 320
 
-# C:\\hst2\\include\\rp3_hst_config.h: 260
+# C:\\hst2\\include\\rp3_hst_config.h: 326
 class struct_anon_24(Structure):
     pass
 
@@ -1083,9 +1079,9 @@ struct_anon_24._fields_ = [
     ('freq', c_double * 20),
 ]
 
-MDF_TFD = struct_anon_24 # C:\\hst2\\include\\rp3_hst_config.h: 260
+MDF_TFD = struct_anon_24 # C:\\hst2\\include\\rp3_hst_config.h: 326
 
-# C:\\hst2\\include\\rp3_hst_config.h: 266
+# C:\\hst2\\include\\rp3_hst_config.h: 332
 class struct_anon_25(Structure):
     pass
 
@@ -1100,9 +1096,9 @@ struct_anon_25._fields_ = [
     ('log', c_char * 512),
 ]
 
-MDF_HSTLOG = struct_anon_25 # C:\\hst2\\include\\rp3_hst_config.h: 266
+MDF_HSTLOG = struct_anon_25 # C:\\hst2\\include\\rp3_hst_config.h: 332
 
-# C:\\hst2\\include\\rp3_hst_config.h: 272
+# C:\\hst2\\include\\rp3_hst_config.h: 338
 class struct_anon_26(Structure):
     pass
 
@@ -1117,9 +1113,9 @@ struct_anon_26._fields_ = [
     ('data', c_char * 256),
 ]
 
-MDF_EM_CONFIGURATION = struct_anon_26 # C:\\hst2\\include\\rp3_hst_config.h: 272
+MDF_EM_CONFIGURATION = struct_anon_26 # C:\\hst2\\include\\rp3_hst_config.h: 338
 
-# C:\\hst2\\include\\rp3_hst_config.h: 288
+# C:\\hst2\\include\\rp3_hst_config.h: 360
 class struct_anon_27(Structure):
     pass
 
@@ -1132,11 +1128,17 @@ struct_anon_27.__slots__ = [
     'jstick_control_weight',
     'gain',
     'threshold',
+    'force_targ',
+    'dZ_gain',
+    'force_thresh',
     'active_override',
     'use_for_calib',
     'result_code',
     'stim_enable',
-    'reserved',
+    'force_calib',
+    'targ_set',
+    'targ_idx',
+    'gripperControlMask',
 ]
 struct_anon_27._fields_ = [
     ('state_name', c_char * 128),
@@ -1147,67 +1149,26 @@ struct_anon_27._fields_ = [
     ('jstick_control_weight', c_double * 6),
     ('gain', c_double * 6),
     ('threshold', c_double * 6),
+    ('force_targ', c_double * 7),
+    ('dZ_gain', c_double),
+    ('force_thresh', c_double),
     ('active_override', c_int * 30),
     ('use_for_calib', c_int),
     ('result_code', c_int),
     ('stim_enable', c_int),
-    ('reserved', c_int),
+    ('force_calib', c_int),
+    ('targ_set', c_int),
+    ('targ_idx', c_int),
+    ('gripperControlMask', c_short * 4),
 ]
 
-MDF_TASK_STATE_CONFIG = struct_anon_27 # C:\\hst2\\include\\rp3_hst_config.h: 288
+MDF_TASK_STATE_CONFIG = struct_anon_27 # C:\\hst2\\include\\rp3_hst_config.h: 360
 
-# C:\\hst2\\include\\rp3_hst_config.h: 294
+# C:\\hst2\\include\\rp3_hst_config.h: 382
 class struct_anon_28(Structure):
     pass
 
 struct_anon_28.__slots__ = [
-    'src',
-    'decoder_type',
-    'decoder_loc',
-]
-struct_anon_28._fields_ = [
-    ('src', c_int),
-    ('decoder_type', c_char * 128),
-    ('decoder_loc', c_char * 256),
-]
-
-MDF_EXTRACTION_RESPONSE = struct_anon_28 # C:\\hst2\\include\\rp3_hst_config.h: 294
-
-# C:\\hst2\\include\\rp3_hst_config.h: 299
-class struct_anon_29(Structure):
-    pass
-
-struct_anon_29.__slots__ = [
-    'unit_idx',
-    'enabled',
-]
-struct_anon_29._fields_ = [
-    ('unit_idx', c_int),
-    ('enabled', c_int),
-]
-
-MDF_UPDATE_UNIT_STATE = struct_anon_29 # C:\\hst2\\include\\rp3_hst_config.h: 299
-
-# C:\\hst2\\include\\rp3_hst_config.h: 304
-class struct_anon_30(Structure):
-    pass
-
-struct_anon_30.__slots__ = [
-    'header',
-    'disabled_units',
-]
-struct_anon_30._fields_ = [
-    ('header', MSG_HEADER),
-    ('disabled_units', c_ubyte * (2 * (128 * 5))),
-]
-
-MDF_DISABLED_UNITS = struct_anon_30 # C:\\hst2\\include\\rp3_hst_config.h: 304
-
-# C:\\hst2\\include\\rp3_hst_config.h: 320
-class struct_anon_31(Structure):
-    pass
-
-struct_anon_31.__slots__ = [
     'state_name',
     'target',
     'active_assist_weight',
@@ -1216,13 +1177,19 @@ struct_anon_31.__slots__ = [
     'jstick_control_weight',
     'gain',
     'threshold',
+    'force_targ',
+    'dZ_gain',
+    'force_thresh',
     'active_override',
     'use_for_calib',
     'result_code',
     'stim_enable',
-    'reserved',
+    'force_calib',
+    'targ_set',
+    'targ_idx',
+    'gripperControlMask',
 ]
-struct_anon_31._fields_ = [
+struct_anon_28._fields_ = [
     ('state_name', c_char * 128),
     ('target', c_double * 30),
     ('active_assist_weight', c_double * 6),
@@ -1231,54 +1198,111 @@ struct_anon_31._fields_ = [
     ('jstick_control_weight', c_double * 6),
     ('gain', c_double * 6),
     ('threshold', c_double * 6),
+    ('force_targ', c_double * 7),
+    ('dZ_gain', c_double),
+    ('force_thresh', c_double),
     ('active_override', c_int * 30),
     ('use_for_calib', c_int),
     ('result_code', c_int),
     ('stim_enable', c_int),
-    ('reserved', c_int),
+    ('force_calib', c_int),
+    ('targ_set', c_int),
+    ('targ_idx', c_int),
+    ('gripperControlMask', c_short * 4),
 ]
 
-MDF_PHASE_RESULT = struct_anon_31 # C:\\hst2\\include\\rp3_hst_config.h: 320
+MDF_PHASE_RESULT = struct_anon_28 # C:\\hst2\\include\\rp3_hst_config.h: 382
 
-# C:\\hst2\\include\\rp3_hst_config.h: 327
+# C:\\hst2\\include\\rp3_hst_config.h: 388
+class struct_anon_29(Structure):
+    pass
+
+struct_anon_29.__slots__ = [
+    'src',
+    'decoder_type',
+    'decoder_loc',
+]
+struct_anon_29._fields_ = [
+    ('src', c_int),
+    ('decoder_type', c_char * 128),
+    ('decoder_loc', c_char * 256),
+]
+
+MDF_EXTRACTION_RESPONSE = struct_anon_29 # C:\\hst2\\include\\rp3_hst_config.h: 388
+
+# C:\\hst2\\include\\rp3_hst_config.h: 393
+class struct_anon_30(Structure):
+    pass
+
+struct_anon_30.__slots__ = [
+    'unit_idx',
+    'enabled',
+]
+struct_anon_30._fields_ = [
+    ('unit_idx', c_int),
+    ('enabled', c_int),
+]
+
+MDF_UPDATE_UNIT_STATE = struct_anon_30 # C:\\hst2\\include\\rp3_hst_config.h: 393
+
+# C:\\hst2\\include\\rp3_hst_config.h: 398
+class struct_anon_31(Structure):
+    pass
+
+struct_anon_31.__slots__ = [
+    'header',
+    'disabled_units',
+]
+struct_anon_31._fields_ = [
+    ('header', MSG_HEADER),
+    ('disabled_units', c_ubyte * (2 * (128 * 5))),
+]
+
+MDF_DISABLED_UNITS = struct_anon_31 # C:\\hst2\\include\\rp3_hst_config.h: 398
+
+# C:\\hst2\\include\\rp3_hst_config.h: 406
 class struct_anon_32(Structure):
     pass
 
 struct_anon_32.__slots__ = [
     'header',
     'command',
+    'dZ',
     'src',
     'reserved',
 ]
 struct_anon_32._fields_ = [
     ('header', MSG_HEADER),
     ('command', c_double * 30),
+    ('dZ', c_double * 7),
     ('src', c_int),
     ('reserved', c_int),
 ]
 
-MDF_CONTROL_SPACE_COMMAND = struct_anon_32 # C:\\hst2\\include\\rp3_hst_config.h: 327
+MDF_CONTROL_SPACE_COMMAND = struct_anon_32 # C:\\hst2\\include\\rp3_hst_config.h: 406
 
-# C:\\hst2\\include\\rp3_hst_config.h: 334
+# C:\\hst2\\include\\rp3_hst_config.h: 414
 class struct_anon_33(Structure):
     pass
 
 struct_anon_33.__slots__ = [
     'header',
     'command',
+    'dZ',
     'src',
     'reserved',
 ]
 struct_anon_33._fields_ = [
     ('header', MSG_HEADER),
     ('command', c_double * 30),
+    ('dZ', c_double * 7),
     ('src', c_int),
     ('reserved', c_int),
 ]
 
-MDF_BIAS_COMMAND = struct_anon_33 # C:\\hst2\\include\\rp3_hst_config.h: 334
+MDF_BIAS_COMMAND = struct_anon_33 # C:\\hst2\\include\\rp3_hst_config.h: 414
 
-# C:\\hst2\\include\\rp3_hst_config.h: 341
+# C:\\hst2\\include\\rp3_hst_config.h: 421
 class struct_anon_34(Structure):
     pass
 
@@ -1295,9 +1319,9 @@ struct_anon_34._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_IMPEDANCE_COMMAND = struct_anon_34 # C:\\hst2\\include\\rp3_hst_config.h: 341
+MDF_IMPEDANCE_COMMAND = struct_anon_34 # C:\\hst2\\include\\rp3_hst_config.h: 421
 
-# C:\\hst2\\include\\rp3_hst_config.h: 348
+# C:\\hst2\\include\\rp3_hst_config.h: 428
 class struct_anon_35(Structure):
     pass
 
@@ -1314,9 +1338,9 @@ struct_anon_35._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_CONTROL_SPACE_POS_COMMAND = struct_anon_35 # C:\\hst2\\include\\rp3_hst_config.h: 348
+MDF_CONTROL_SPACE_POS_COMMAND = struct_anon_35 # C:\\hst2\\include\\rp3_hst_config.h: 428
 
-# C:\\hst2\\include\\rp3_hst_config.h: 356
+# C:\\hst2\\include\\rp3_hst_config.h: 436
 class struct_anon_36(Structure):
     pass
 
@@ -1335,9 +1359,9 @@ struct_anon_36._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_FINISHED_COMMAND = struct_anon_36 # C:\\hst2\\include\\rp3_hst_config.h: 356
+MDF_FINISHED_COMMAND = struct_anon_36 # C:\\hst2\\include\\rp3_hst_config.h: 436
 
-# C:\\hst2\\include\\rp3_hst_config.h: 363
+# C:\\hst2\\include\\rp3_hst_config.h: 443
 class struct_anon_37(Structure):
     pass
 
@@ -1352,9 +1376,9 @@ struct_anon_37._fields_ = [
     ('velocity', c_double * 30),
 ]
 
-MDF_CONTROL_SPACE_FEEDBACK = struct_anon_37 # C:\\hst2\\include\\rp3_hst_config.h: 363
+MDF_CONTROL_SPACE_FEEDBACK = struct_anon_37 # C:\\hst2\\include\\rp3_hst_config.h: 443
 
-# C:\\hst2\\include\\rp3_hst_config.h: 371
+# C:\\hst2\\include\\rp3_hst_config.h: 451
 class struct_anon_38(Structure):
     pass
 
@@ -1373,9 +1397,9 @@ struct_anon_38._fields_ = [
     ('temperature', c_double * 54),
 ]
 
-MDF_MPL_RAW_PERCEPT = struct_anon_38 # C:\\hst2\\include\\rp3_hst_config.h: 371
+MDF_MPL_RAW_PERCEPT = struct_anon_38 # C:\\hst2\\include\\rp3_hst_config.h: 451
 
-# C:\\hst2\\include\\rp3_hst_config.h: 389
+# C:\\hst2\\include\\rp3_hst_config.h: 469
 class struct_anon_39(Structure):
     pass
 
@@ -1408,9 +1432,9 @@ struct_anon_39._fields_ = [
     ('contacts', c_short * 16),
 ]
 
-MDF_MPL_SEGMENT_PERCEPTS = struct_anon_39 # C:\\hst2\\include\\rp3_hst_config.h: 389
+MDF_MPL_SEGMENT_PERCEPTS = struct_anon_39 # C:\\hst2\\include\\rp3_hst_config.h: 469
 
-# C:\\hst2\\include\\rp3_hst_config.h: 400
+# C:\\hst2\\include\\rp3_hst_config.h: 480
 class struct_anon_40(Structure):
     pass
 
@@ -1435,9 +1459,9 @@ struct_anon_40._fields_ = [
     ('contacts', c_short * 16),
 ]
 
-MDF_MPL_REBIASED_SENSORDATA = struct_anon_40 # C:\\hst2\\include\\rp3_hst_config.h: 400
+MDF_MPL_REBIASED_SENSORDATA = struct_anon_40 # C:\\hst2\\include\\rp3_hst_config.h: 480
 
-# C:\\hst2\\include\\rp3_hst_config.h: 411
+# C:\\hst2\\include\\rp3_hst_config.h: 491
 class struct_anon_41(Structure):
     pass
 
@@ -1462,9 +1486,9 @@ struct_anon_41._fields_ = [
     ('contacts', c_short * 16),
 ]
 
-MDF_CURSOR_FEEDBACK = struct_anon_41 # C:\\hst2\\include\\rp3_hst_config.h: 411
+MDF_CURSOR_FEEDBACK = struct_anon_41 # C:\\hst2\\include\\rp3_hst_config.h: 491
 
-# C:\\hst2\\include\\rp3_hst_config.h: 416
+# C:\\hst2\\include\\rp3_hst_config.h: 496
 class struct_anon_42(Structure):
     pass
 
@@ -1477,56 +1501,92 @@ struct_anon_42._fields_ = [
     ('velocity', c_double * 7),
 ]
 
-MDF_WAM_FEEDBACK = struct_anon_42 # C:\\hst2\\include\\rp3_hst_config.h: 416
+MDF_WAM_FEEDBACK = struct_anon_42 # C:\\hst2\\include\\rp3_hst_config.h: 496
 
-# C:\\hst2\\include\\rp3_hst_config.h: 423
+# C:\\hst2\\include\\rp3_hst_config.h: 503
 class struct_anon_43(Structure):
     pass
 
 struct_anon_43.__slots__ = [
     'source_index',
-    'reserved',
+    'num_chans_enabled',
     'source_timestamp',
     'data',
 ]
 struct_anon_43._fields_ = [
     ('source_index', c_int),
-    ('reserved', c_int),
+    ('num_chans_enabled', c_int),
     ('source_timestamp', c_double),
-    ('data', c_short * (10 * (128 + 16))),
+    ('data', c_short * (10 * 128)),
 ]
 
-MDF_RAW_CTSDATA = struct_anon_43 # C:\\hst2\\include\\rp3_hst_config.h: 423
+MDF_RAW_CTSDATA = struct_anon_43 # C:\\hst2\\include\\rp3_hst_config.h: 503
 
-# C:\\hst2\\include\\rp3_hst_config.h: 429
+# C:\\hst2\\include\\rp3_hst_config.h: 510
 class struct_anon_44(Structure):
     pass
 
 struct_anon_44.__slots__ = [
-    'header',
+    'source_index',
+    'num_chans_enabled',
     'source_timestamp',
     'data',
 ]
 struct_anon_44._fields_ = [
-    ('header', MSG_HEADER),
-    ('source_timestamp', c_double * 2),
-    ('data', c_short * (((2 * 10) * 2) * (128 + 16))),
+    ('source_index', c_int),
+    ('num_chans_enabled', c_int),
+    ('source_timestamp', c_double),
+    ('data', c_short * (10 * 16)),
 ]
 
-MDF_SPM_CTSDATA = struct_anon_44 # C:\\hst2\\include\\rp3_hst_config.h: 429
+MDF_RAW_ANALOGDATA = struct_anon_44 # C:\\hst2\\include\\rp3_hst_config.h: 510
 
-# C:\\hst2\\include\\rp3_hst_config.h: 437
+# C:\\hst2\\include\\rp3_hst_config.h: 516
 class struct_anon_45(Structure):
     pass
 
 struct_anon_45.__slots__ = [
+    'header',
+    'source_timestamp',
+    'data',
+]
+struct_anon_45._fields_ = [
+    ('header', MSG_HEADER),
+    ('source_timestamp', c_double * 2),
+    ('data', c_short * (((2 * 10) * 2) * 128)),
+]
+
+MDF_SPM_CTSDATA = struct_anon_45 # C:\\hst2\\include\\rp3_hst_config.h: 516
+
+# C:\\hst2\\include\\rp3_hst_config.h: 522
+class struct_anon_46(Structure):
+    pass
+
+struct_anon_46.__slots__ = [
+    'header',
+    'source_timestamp',
+    'data',
+]
+struct_anon_46._fields_ = [
+    ('header', MSG_HEADER),
+    ('source_timestamp', c_double * 2),
+    ('data', c_short * (((2 * 10) * 2) * 16)),
+]
+
+MDF_SPM_ANALOGDATA = struct_anon_46 # C:\\hst2\\include\\rp3_hst_config.h: 522
+
+# C:\\hst2\\include\\rp3_hst_config.h: 530
+class struct_anon_47(Structure):
+    pass
+
+struct_anon_47.__slots__ = [
     'source_index',
     'reserved',
     'source_timestamp',
     'count_interval',
     'counts',
 ]
-struct_anon_45._fields_ = [
+struct_anon_47._fields_ = [
     ('source_index', c_int),
     ('reserved', c_int),
     ('source_timestamp', c_double),
@@ -1534,74 +1594,30 @@ struct_anon_45._fields_ = [
     ('counts', c_ubyte * (128 * 5)),
 ]
 
-MDF_RAW_SPIKECOUNT = struct_anon_45 # C:\\hst2\\include\\rp3_hst_config.h: 437
+MDF_RAW_SPIKECOUNT = struct_anon_47 # C:\\hst2\\include\\rp3_hst_config.h: 530
 
-SPIKE_COUNT_DATA_TYPE = c_ubyte # C:\\hst2\\include\\rp3_hst_config.h: 439
+SPIKE_COUNT_DATA_TYPE = c_ubyte # C:\\hst2\\include\\rp3_hst_config.h: 532
 
-# C:\\hst2\\include\\rp3_hst_config.h: 445
-class struct_anon_46(Structure):
+# C:\\hst2\\include\\rp3_hst_config.h: 538
+class struct_anon_48(Structure):
     pass
 
-struct_anon_46.__slots__ = [
+struct_anon_48.__slots__ = [
     'header',
     'source_timestamp',
     'count_interval',
     'counts',
 ]
-struct_anon_46._fields_ = [
+struct_anon_48._fields_ = [
     ('header', MSG_HEADER),
     ('source_timestamp', c_double * 2),
     ('count_interval', c_double),
     ('counts', SPIKE_COUNT_DATA_TYPE * (2 * (128 * 5))),
 ]
 
-MDF_SPM_SPIKECOUNT = struct_anon_46 # C:\\hst2\\include\\rp3_hst_config.h: 445
+MDF_SPM_SPIKECOUNT = struct_anon_48 # C:\\hst2\\include\\rp3_hst_config.h: 538
 
-# C:\\hst2\\include\\rp3_hst_config.h: 458
-class struct_anon_47(Structure):
-    pass
-
-struct_anon_47.__slots__ = [
-    'source_index',
-    'channel',
-    'unit',
-    'reserved1',
-    'source_timestamp',
-    'fPattern',
-    'nPeak',
-    'nValley',
-    'reserved2',
-    'snippet',
-]
-struct_anon_47._fields_ = [
-    ('source_index', c_int),
-    ('channel', c_short),
-    ('unit', c_ubyte),
-    ('reserved1', c_ubyte),
-    ('source_timestamp', c_double),
-    ('fPattern', c_double * 3),
-    ('nPeak', c_short),
-    ('nValley', c_short),
-    ('reserved2', c_int),
-    ('snippet', c_short * 48),
-]
-
-SPIKE_SNIPPET = struct_anon_47 # C:\\hst2\\include\\rp3_hst_config.h: 458
-
-# C:\\hst2\\include\\rp3_hst_config.h: 462
-class struct_anon_48(Structure):
-    pass
-
-struct_anon_48.__slots__ = [
-    'ss',
-]
-struct_anon_48._fields_ = [
-    ('ss', SPIKE_SNIPPET * 25),
-]
-
-MDF_SPIKE_SNIPPET = struct_anon_48 # C:\\hst2\\include\\rp3_hst_config.h: 462
-
-# C:\\hst2\\include\\rp3_hst_config.h: 476
+# C:\\hst2\\include\\rp3_hst_config.h: 551
 class struct_anon_49(Structure):
     pass
 
@@ -1614,10 +1630,54 @@ struct_anon_49.__slots__ = [
     'fPattern',
     'nPeak',
     'nValley',
-    'rejectType',
+    'reserved2',
     'snippet',
 ]
 struct_anon_49._fields_ = [
+    ('source_index', c_int),
+    ('channel', c_short),
+    ('unit', c_ubyte),
+    ('reserved1', c_ubyte),
+    ('source_timestamp', c_double),
+    ('fPattern', c_double * 3),
+    ('nPeak', c_short),
+    ('nValley', c_short),
+    ('reserved2', c_int),
+    ('snippet', c_short * 48),
+]
+
+SPIKE_SNIPPET = struct_anon_49 # C:\\hst2\\include\\rp3_hst_config.h: 551
+
+# C:\\hst2\\include\\rp3_hst_config.h: 555
+class struct_anon_50(Structure):
+    pass
+
+struct_anon_50.__slots__ = [
+    'ss',
+]
+struct_anon_50._fields_ = [
+    ('ss', SPIKE_SNIPPET * 25),
+]
+
+MDF_SPIKE_SNIPPET = struct_anon_50 # C:\\hst2\\include\\rp3_hst_config.h: 555
+
+# C:\\hst2\\include\\rp3_hst_config.h: 569
+class struct_anon_51(Structure):
+    pass
+
+struct_anon_51.__slots__ = [
+    'source_index',
+    'channel',
+    'unit',
+    'reserved1',
+    'source_timestamp',
+    'fPattern',
+    'nPeak',
+    'nValley',
+    'rejectType',
+    'snippet',
+]
+struct_anon_51._fields_ = [
     ('source_index', c_int),
     ('channel', c_short),
     ('unit', c_ubyte),
@@ -1630,45 +1690,45 @@ struct_anon_49._fields_ = [
     ('snippet', c_short * 48),
 ]
 
-REJECTED_SNIPPET = struct_anon_49 # C:\\hst2\\include\\rp3_hst_config.h: 476
+REJECTED_SNIPPET = struct_anon_51 # C:\\hst2\\include\\rp3_hst_config.h: 569
 
-# C:\\hst2\\include\\rp3_hst_config.h: 480
-class struct_anon_50(Structure):
+# C:\\hst2\\include\\rp3_hst_config.h: 573
+class struct_anon_52(Structure):
     pass
 
-struct_anon_50.__slots__ = [
+struct_anon_52.__slots__ = [
     'rs',
 ]
-struct_anon_50._fields_ = [
+struct_anon_52._fields_ = [
     ('rs', REJECTED_SNIPPET * 25),
 ]
 
-MDF_REJECTED_SNIPPET = struct_anon_50 # C:\\hst2\\include\\rp3_hst_config.h: 480
+MDF_REJECTED_SNIPPET = struct_anon_52 # C:\\hst2\\include\\rp3_hst_config.h: 573
 
-# C:\\hst2\\include\\rp3_hst_config.h: 487
-class struct_anon_51(Structure):
+# C:\\hst2\\include\\rp3_hst_config.h: 580
+class struct_anon_53(Structure):
     pass
 
-struct_anon_51.__slots__ = [
+struct_anon_53.__slots__ = [
     'source_index',
     'channel',
     'source_timestamp',
     'data',
 ]
-struct_anon_51._fields_ = [
+struct_anon_53._fields_ = [
     ('source_index', c_int),
     ('channel', c_int),
     ('source_timestamp', c_double),
     ('data', c_uint * 2),
 ]
 
-MDF_RAW_DIGITAL_EVENT = struct_anon_51 # C:\\hst2\\include\\rp3_hst_config.h: 487
+MDF_RAW_DIGITAL_EVENT = struct_anon_53 # C:\\hst2\\include\\rp3_hst_config.h: 580
 
-# C:\\hst2\\include\\rp3_hst_config.h: 497
-class struct_anon_52(Structure):
+# C:\\hst2\\include\\rp3_hst_config.h: 590
+class struct_anon_54(Structure):
     pass
 
-struct_anon_52.__slots__ = [
+struct_anon_54.__slots__ = [
     'header',
     'source_index',
     'source_timestamp',
@@ -1677,7 +1737,7 @@ struct_anon_52.__slots__ = [
     'num_events',
     'reserved',
 ]
-struct_anon_52._fields_ = [
+struct_anon_54._fields_ = [
     ('header', MSG_HEADER),
     ('source_index', c_int * 10),
     ('source_timestamp', c_double * 2),
@@ -1687,91 +1747,91 @@ struct_anon_52._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_SPM_DIGITAL_EVENT = struct_anon_52 # C:\\hst2\\include\\rp3_hst_config.h: 497
+MDF_SPM_DIGITAL_EVENT = struct_anon_54 # C:\\hst2\\include\\rp3_hst_config.h: 590
 
-# C:\\hst2\\include\\rp3_hst_config.h: 505
-class struct_anon_53(Structure):
-    pass
-
-struct_anon_53.__slots__ = [
-    'source_index',
-    'channel',
-    'source_timestamp',
-    'data',
-    'reserved',
-]
-struct_anon_53._fields_ = [
-    ('source_index', c_int),
-    ('channel', c_int),
-    ('source_timestamp', c_double),
-    ('data', c_uint),
-    ('reserved', c_int),
-]
-
-MDF_STIM_SYNC_EVENT = struct_anon_53 # C:\\hst2\\include\\rp3_hst_config.h: 505
-
-# C:\\hst2\\include\\rp3_hst_config.h: 513
-class struct_anon_54(Structure):
-    pass
-
-struct_anon_54.__slots__ = [
-    'source_index',
-    'channel',
-    'source_timestamp',
-    'data',
-    'reserved',
-]
-struct_anon_54._fields_ = [
-    ('source_index', c_int),
-    ('channel', c_int),
-    ('source_timestamp', c_double),
-    ('data', c_uint),
-    ('reserved', c_int),
-]
-
-MDF_STIM_UPDATE_EVENT = struct_anon_54 # C:\\hst2\\include\\rp3_hst_config.h: 513
-
-# C:\\hst2\\include\\rp3_hst_config.h: 520
+# C:\\hst2\\include\\rp3_hst_config.h: 598
 class struct_anon_55(Structure):
     pass
 
 struct_anon_55.__slots__ = [
+    'source_index',
+    'channel',
+    'source_timestamp',
+    'data',
+    'reserved',
+]
+struct_anon_55._fields_ = [
+    ('source_index', c_int),
+    ('channel', c_int),
+    ('source_timestamp', c_double),
+    ('data', c_uint),
+    ('reserved', c_int),
+]
+
+MDF_STIM_SYNC_EVENT = struct_anon_55 # C:\\hst2\\include\\rp3_hst_config.h: 598
+
+# C:\\hst2\\include\\rp3_hst_config.h: 606
+class struct_anon_56(Structure):
+    pass
+
+struct_anon_56.__slots__ = [
+    'source_index',
+    'channel',
+    'source_timestamp',
+    'data',
+    'reserved',
+]
+struct_anon_56._fields_ = [
+    ('source_index', c_int),
+    ('channel', c_int),
+    ('source_timestamp', c_double),
+    ('data', c_uint),
+    ('reserved', c_int),
+]
+
+MDF_STIM_UPDATE_EVENT = struct_anon_56 # C:\\hst2\\include\\rp3_hst_config.h: 606
+
+# C:\\hst2\\include\\rp3_hst_config.h: 613
+class struct_anon_57(Structure):
+    pass
+
+struct_anon_57.__slots__ = [
     'pathname',
     'subjectID',
     'record',
     'reserved',
 ]
-struct_anon_55._fields_ = [
+struct_anon_57._fields_ = [
     ('pathname', c_char * 256),
     ('subjectID', c_char * (256 / 2)),
     ('record', c_uint),
     ('reserved', c_uint),
 ]
 
-MDF_CENTRALRECORD = struct_anon_55 # C:\\hst2\\include\\rp3_hst_config.h: 520
+MDF_CENTRALRECORD = struct_anon_57 # C:\\hst2\\include\\rp3_hst_config.h: 613
 
-# C:\\hst2\\include\\rp3_hst_config.h: 526
-class struct_anon_56(Structure):
+# C:\\hst2\\include\\rp3_hst_config.h: 619
+class struct_anon_58(Structure):
     pass
 
-struct_anon_56.__slots__ = [
+struct_anon_58.__slots__ = [
     'header',
     'tag',
     'dof_vals',
 ]
-struct_anon_56._fields_ = [
+struct_anon_58._fields_ = [
     ('header', MSG_HEADER),
     ('tag', c_char * 64),
     ('dof_vals', c_double * 30),
 ]
 
-MDF_INPUT_DOF_DATA = struct_anon_56 # C:\\hst2\\include\\rp3_hst_config.h: 526
+MDF_INPUT_DOF_DATA = struct_anon_58 # C:\\hst2\\include\\rp3_hst_config.h: 619
 
-# C:\\hst2\\include\\rp3_hst_config.h: 537
-class struct_anon_57(Structure):
+# C:\\hst2\\include\\rp3_hst_config.h: 630
+class struct_anon_59(Structure):
     pass
 
-struct_anon_57.__slots__ = [
+struct_anon_59.__slots__ = [
     'header',
     'tag',
     'raw_vals',
@@ -1781,7 +1841,7 @@ struct_anon_57.__slots__ = [
     'hand',
     'reserved',
 ]
-struct_anon_57._fields_ = [
+struct_anon_59._fields_ = [
     ('header', MSG_HEADER),
     ('tag', c_char * 64),
     ('raw_vals', c_double * 18),
@@ -1792,13 +1852,34 @@ struct_anon_57._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_DATAGLOVE = struct_anon_57 # C:\\hst2\\include\\rp3_hst_config.h: 537
+MDF_DATAGLOVE = struct_anon_59 # C:\\hst2\\include\\rp3_hst_config.h: 630
 
-# C:\\hst2\\include\\rp3_hst_config.h: 550
-class struct_anon_58(Structure):
+# C:\\hst2\\include\\rp3_hst_config.h: 638
+class struct_anon_60(Structure):
     pass
 
-struct_anon_58.__slots__ = [
+struct_anon_60.__slots__ = [
+    'header',
+    'type',
+    'channel',
+    'value',
+    'time',
+]
+struct_anon_60._fields_ = [
+    ('header', MSG_HEADER),
+    ('type', c_int),
+    ('channel', c_int),
+    ('value', c_int),
+    ('time', c_int),
+]
+
+MDF_SLIDER_DATA = struct_anon_60 # C:\\hst2\\include\\rp3_hst_config.h: 638
+
+# C:\\hst2\\include\\rp3_hst_config.h: 651
+class struct_anon_61(Structure):
+    pass
+
+struct_anon_61.__slots__ = [
     'configID',
     'amp1',
     'amp2',
@@ -1809,7 +1890,7 @@ struct_anon_58.__slots__ = [
     'width2',
     'interphase',
 ]
-struct_anon_58._fields_ = [
+struct_anon_61._fields_ = [
     ('configID', c_int * 16),
     ('amp1', c_int * 16),
     ('amp2', c_int * 16),
@@ -1821,13 +1902,13 @@ struct_anon_58._fields_ = [
     ('interphase', c_int),
 ]
 
-MDF_CERESTIM_CONFIG_MODULE = struct_anon_58 # C:\\hst2\\include\\rp3_hst_config.h: 550
+MDF_CERESTIM_CONFIG_MODULE = struct_anon_61 # C:\\hst2\\include\\rp3_hst_config.h: 651
 
-# C:\\hst2\\include\\rp3_hst_config.h: 560
-class struct_anon_59(Structure):
+# C:\\hst2\\include\\rp3_hst_config.h: 661
+class struct_anon_62(Structure):
     pass
 
-struct_anon_59.__slots__ = [
+struct_anon_62.__slots__ = [
     'header',
     'stop',
     'numChans',
@@ -1836,7 +1917,7 @@ struct_anon_59.__slots__ = [
     'reps',
     'reserved',
 ]
-struct_anon_59._fields_ = [
+struct_anon_62._fields_ = [
     ('header', MSG_HEADER),
     ('stop', c_int),
     ('numChans', c_int),
@@ -1846,13 +1927,13 @@ struct_anon_59._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_CERESTIM_CONFIG_CHAN = struct_anon_59 # C:\\hst2\\include\\rp3_hst_config.h: 560
+MDF_CERESTIM_CONFIG_CHAN = struct_anon_62 # C:\\hst2\\include\\rp3_hst_config.h: 661
 
-# C:\\hst2\\include\\rp3_hst_config.h: 570
-class struct_anon_60(Structure):
+# C:\\hst2\\include\\rp3_hst_config.h: 671
+class struct_anon_63(Structure):
     pass
 
-struct_anon_60.__slots__ = [
+struct_anon_63.__slots__ = [
     'header',
     'stop',
     'numChans',
@@ -1861,7 +1942,7 @@ struct_anon_60.__slots__ = [
     'reps',
     'reserved',
 ]
-struct_anon_60._fields_ = [
+struct_anon_63._fields_ = [
     ('header', MSG_HEADER),
     ('stop', c_int),
     ('numChans', c_int),
@@ -1871,45 +1952,45 @@ struct_anon_60._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_CERESTIM_CONFIG_CHAN_PRESAFETY = struct_anon_60 # C:\\hst2\\include\\rp3_hst_config.h: 570
+MDF_CERESTIM_CONFIG_CHAN_PRESAFETY = struct_anon_63 # C:\\hst2\\include\\rp3_hst_config.h: 671
 
-# C:\\hst2\\include\\rp3_hst_config.h: 576
-class struct_anon_61(Structure):
+# C:\\hst2\\include\\rp3_hst_config.h: 677
+class struct_anon_64(Structure):
     pass
 
-struct_anon_61.__slots__ = [
+struct_anon_64.__slots__ = [
     'error',
     'config',
 ]
-struct_anon_61._fields_ = [
+struct_anon_64._fields_ = [
     ('error', c_int),
     ('config', c_int),
 ]
 
-MDF_CERESTIM_ERROR = struct_anon_61 # C:\\hst2\\include\\rp3_hst_config.h: 576
+MDF_CERESTIM_ERROR = struct_anon_64 # C:\\hst2\\include\\rp3_hst_config.h: 677
 
-# C:\\hst2\\include\\rp3_hst_config.h: 583
-class struct_anon_62(Structure):
+# C:\\hst2\\include\\rp3_hst_config.h: 684
+class struct_anon_65(Structure):
     pass
 
-struct_anon_62.__slots__ = [
+struct_anon_65.__slots__ = [
     'pathname',
     'pathname_length',
     'reserved',
 ]
-struct_anon_62._fields_ = [
+struct_anon_65._fields_ = [
     ('pathname', c_char * 256),
     ('pathname_length', c_int),
     ('reserved', c_int),
 ]
 
-MDF_TDMS_CREATE = struct_anon_62 # C:\\hst2\\include\\rp3_hst_config.h: 583
+MDF_TDMS_CREATE = struct_anon_65 # C:\\hst2\\include\\rp3_hst_config.h: 684
 
-# C:\\hst2\\include\\rp3_hst_config.h: 592
-class struct_anon_63(Structure):
+# C:\\hst2\\include\\rp3_hst_config.h: 693
+class struct_anon_66(Structure):
     pass
 
-struct_anon_63.__slots__ = [
+struct_anon_66.__slots__ = [
     'handp',
     'handd',
     'head',
@@ -1917,7 +1998,7 @@ struct_anon_63.__slots__ = [
     'tag',
     'flipframe',
 ]
-struct_anon_63._fields_ = [
+struct_anon_66._fields_ = [
     ('handp', c_char * 48),
     ('handd', c_char * 18),
     ('head', c_char * 13),
@@ -1926,182 +2007,141 @@ struct_anon_63._fields_ = [
     ('flipframe', c_int),
 ]
 
-MDF_RF_REPORT = struct_anon_63 # C:\\hst2\\include\\rp3_hst_config.h: 592
+MDF_RF_REPORT = struct_anon_66 # C:\\hst2\\include\\rp3_hst_config.h: 693
 
-# C:\\hst2\\include\\rp3_hst_config.h: 598
-class struct_anon_64(Structure):
+# C:\\hst2\\include\\rp3_hst_config.h: 699
+class struct_anon_67(Structure):
     pass
 
-struct_anon_64.__slots__ = [
+struct_anon_67.__slots__ = [
     'record',
     'stop',
     'filename',
 ]
-struct_anon_64._fields_ = [
+struct_anon_67._fields_ = [
     ('record', c_int),
     ('stop', c_int),
     ('filename', c_char * 256),
 ]
 
-MDF_AJA_CONFIG = struct_anon_64 # C:\\hst2\\include\\rp3_hst_config.h: 598
+MDF_AJA_CONFIG = struct_anon_67 # C:\\hst2\\include\\rp3_hst_config.h: 699
 
-# C:\\hst2\\include\\rp3_hst_config.h: 603
-class struct_anon_65(Structure):
-    pass
-
-struct_anon_65.__slots__ = [
-    'header',
-    'timecode',
-]
-struct_anon_65._fields_ = [
-    ('header', MSG_HEADER),
-    ('timecode', c_char * 128),
-]
-
-MDF_AJA_TIMECODE = struct_anon_65 # C:\\hst2\\include\\rp3_hst_config.h: 603
-
-# C:\\hst2\\include\\rp3_hst_config.h: 609
-class struct_anon_66(Structure):
-    pass
-
-struct_anon_66.__slots__ = [
-    'status',
-    'reserved',
-    'clipname',
-]
-struct_anon_66._fields_ = [
-    ('status', c_int),
-    ('reserved', c_int),
-    ('clipname', c_char * 256),
-]
-
-MDF_AJA_STATUS = struct_anon_66 # C:\\hst2\\include\\rp3_hst_config.h: 609
-
-# C:\\hst2\\include\\rp3_hst_config.h: 615
-class struct_anon_67(Structure):
-    pass
-
-struct_anon_67.__slots__ = [
-    'header',
-    'factor',
-    'length',
-]
-struct_anon_67._fields_ = [
-    ('header', MSG_HEADER),
-    ('factor', c_double),
-    ('length', c_double),
-]
-
-MDF_NORMALIZATION_FACTOR = struct_anon_67 # C:\\hst2\\include\\rp3_hst_config.h: 615
-
-# C:\\hst2\\include\\rp3_hst_config.h: 621
+# C:\\hst2\\include\\rp3_hst_config.h: 704
 class struct_anon_68(Structure):
     pass
 
 struct_anon_68.__slots__ = [
     'header',
-    '_lambda',
-    'k',
+    'timecode',
 ]
 struct_anon_68._fields_ = [
     ('header', MSG_HEADER),
-    ('_lambda', c_double),
-    ('k', c_double),
+    ('timecode', c_char * 128),
 ]
 
-MDF_CST_LAMBDA = struct_anon_68 # C:\\hst2\\include\\rp3_hst_config.h: 621
+MDF_AJA_TIMECODE = struct_anon_68 # C:\\hst2\\include\\rp3_hst_config.h: 704
 
-# C:\\hst2\\include\\rp3_hst_config.h: 629
+# C:\\hst2\\include\\rp3_hst_config.h: 710
 class struct_anon_69(Structure):
     pass
 
 struct_anon_69.__slots__ = [
-    'a',
+    'status',
     'reserved',
+    'clipname',
 ]
 struct_anon_69._fields_ = [
-    ('a', c_float),
+    ('status', c_int),
     ('reserved', c_int),
+    ('clipname', c_char * 256),
 ]
 
-MDF_NATURAL_RESPONSE = struct_anon_69 # C:\\hst2\\include\\rp3_hst_config.h: 629
+MDF_AJA_STATUS = struct_anon_69 # C:\\hst2\\include\\rp3_hst_config.h: 710
 
-# C:\\hst2\\include\\rp3_hst_config.h: 636
+# C:\\hst2\\include\\rp3_hst_config.h: 716
 class struct_anon_70(Structure):
     pass
 
 struct_anon_70.__slots__ = [
-    'idx',
-    'reserved',
+    'header',
+    'factor',
+    'length',
 ]
 struct_anon_70._fields_ = [
-    ('idx', c_int),
-    ('reserved', c_int),
+    ('header', MSG_HEADER),
+    ('factor', c_double),
+    ('length', c_double),
 ]
 
-MDF_DEPTH_RESPONSE = struct_anon_70 # C:\\hst2\\include\\rp3_hst_config.h: 636
+MDF_NORMALIZATION_FACTOR = struct_anon_70 # C:\\hst2\\include\\rp3_hst_config.h: 716
 
-# C:\\hst2\\include\\rp3_hst_config.h: 642
+# C:\\hst2\\include\\rp3_hst_config.h: 723
 class struct_anon_71(Structure):
     pass
 
 struct_anon_71.__slots__ = [
-    'a',
-    'reserved',
+    'header',
+    '_lambda',
+    'k',
+    'cursor_pos',
 ]
 struct_anon_71._fields_ = [
-    ('a', c_float),
-    ('reserved', c_int),
+    ('header', MSG_HEADER),
+    ('_lambda', c_float),
+    ('k', c_int),
+    ('cursor_pos', c_double),
 ]
 
-MDF_PAIN_RESPONSE = struct_anon_71 # C:\\hst2\\include\\rp3_hst_config.h: 642
+MDF_CST_LAMBDA = struct_anon_71 # C:\\hst2\\include\\rp3_hst_config.h: 723
 
-# C:\\hst2\\include\\rp3_hst_config.h: 648
+# C:\\hst2\\include\\rp3_hst_config.h: 729
 class struct_anon_72(Structure):
     pass
 
 struct_anon_72.__slots__ = [
-    'a',
-    'reserved',
+    'sweep_rate',
+    'vis_bins',
+    'stim_bins',
 ]
 struct_anon_72._fields_ = [
-    ('a', c_int),
-    ('reserved', c_int),
+    ('sweep_rate', c_double),
+    ('vis_bins', c_int),
+    ('stim_bins', c_int),
 ]
 
-MDF_MODALITY_TOGGLE = struct_anon_72 # C:\\hst2\\include\\rp3_hst_config.h: 648
+MDF_CST_SETTINGS = struct_anon_72 # C:\\hst2\\include\\rp3_hst_config.h: 729
 
-# C:\\hst2\\include\\rp3_hst_config.h: 654
+# C:\\hst2\\include\\rp3_hst_config.h: 737
 class struct_anon_73(Structure):
     pass
 
 struct_anon_73.__slots__ = [
-    'idx',
-    'reserved',
-]
-struct_anon_73._fields_ = [
-    ('idx', c_int),
-    ('reserved', c_int),
-]
-
-MDF_MECH_RESPONSE = struct_anon_73 # C:\\hst2\\include\\rp3_hst_config.h: 654
-
-# C:\\hst2\\include\\rp3_hst_config.h: 660
-class struct_anon_74(Structure):
-    pass
-
-struct_anon_74.__slots__ = [
     'a',
     'reserved',
 ]
-struct_anon_74._fields_ = [
+struct_anon_73._fields_ = [
     ('a', c_float),
     ('reserved', c_int),
 ]
 
-MDF_MECH_INTENSITY_RESPONSE = struct_anon_74 # C:\\hst2\\include\\rp3_hst_config.h: 660
+MDF_NATURAL_RESPONSE = struct_anon_73 # C:\\hst2\\include\\rp3_hst_config.h: 737
 
-# C:\\hst2\\include\\rp3_hst_config.h: 666
+# C:\\hst2\\include\\rp3_hst_config.h: 744
+class struct_anon_74(Structure):
+    pass
+
+struct_anon_74.__slots__ = [
+    'idx',
+    'reserved',
+]
+struct_anon_74._fields_ = [
+    ('idx', c_int),
+    ('reserved', c_int),
+]
+
+MDF_DEPTH_RESPONSE = struct_anon_74 # C:\\hst2\\include\\rp3_hst_config.h: 744
+
+# C:\\hst2\\include\\rp3_hst_config.h: 750
 class struct_anon_75(Structure):
     pass
 
@@ -2114,9 +2154,9 @@ struct_anon_75._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_MOVE_INTENSITY_RESPONSE = struct_anon_75 # C:\\hst2\\include\\rp3_hst_config.h: 666
+MDF_PAIN_RESPONSE = struct_anon_75 # C:\\hst2\\include\\rp3_hst_config.h: 750
 
-# C:\\hst2\\include\\rp3_hst_config.h: 672
+# C:\\hst2\\include\\rp3_hst_config.h: 756
 class struct_anon_76(Structure):
     pass
 
@@ -2125,13 +2165,13 @@ struct_anon_76.__slots__ = [
     'reserved',
 ]
 struct_anon_76._fields_ = [
-    ('a', c_float),
+    ('a', c_int),
     ('reserved', c_int),
 ]
 
-MDF_TINGLE_INTENSITY_RESPONSE = struct_anon_76 # C:\\hst2\\include\\rp3_hst_config.h: 672
+MDF_MODALITY_TOGGLE = struct_anon_76 # C:\\hst2\\include\\rp3_hst_config.h: 756
 
-# C:\\hst2\\include\\rp3_hst_config.h: 678
+# C:\\hst2\\include\\rp3_hst_config.h: 762
 class struct_anon_77(Structure):
     pass
 
@@ -2144,43 +2184,39 @@ struct_anon_77._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_MOVE_RESPONSE = struct_anon_77 # C:\\hst2\\include\\rp3_hst_config.h: 678
+MDF_MECH_RESPONSE = struct_anon_77 # C:\\hst2\\include\\rp3_hst_config.h: 762
 
-# C:\\hst2\\include\\rp3_hst_config.h: 686
+# C:\\hst2\\include\\rp3_hst_config.h: 768
 class struct_anon_78(Structure):
     pass
 
 struct_anon_78.__slots__ = [
-    'img',
-    'moreMsgs',
+    'a',
     'reserved',
-    'pixels',
 ]
 struct_anon_78._fields_ = [
-    ('img', c_char * 32),
-    ('moreMsgs', c_int),
+    ('a', c_float),
     ('reserved', c_int),
-    ('pixels', c_float * 64),
 ]
 
-MDF_DIR_PIXEL_COORDS = struct_anon_78 # C:\\hst2\\include\\rp3_hst_config.h: 686
+MDF_MECH_INTENSITY_RESPONSE = struct_anon_78 # C:\\hst2\\include\\rp3_hst_config.h: 768
 
-# C:\\hst2\\include\\rp3_hst_config.h: 692
+# C:\\hst2\\include\\rp3_hst_config.h: 774
 class struct_anon_79(Structure):
     pass
 
 struct_anon_79.__slots__ = [
-    'idx',
+    'a',
     'reserved',
 ]
 struct_anon_79._fields_ = [
-    ('idx', c_int),
+    ('a', c_float),
     ('reserved', c_int),
 ]
 
-MDF_TINGLE_RESPONSE = struct_anon_79 # C:\\hst2\\include\\rp3_hst_config.h: 692
+MDF_MOVE_INTENSITY_RESPONSE = struct_anon_79 # C:\\hst2\\include\\rp3_hst_config.h: 774
 
-# C:\\hst2\\include\\rp3_hst_config.h: 698
+# C:\\hst2\\include\\rp3_hst_config.h: 780
 class struct_anon_80(Structure):
     pass
 
@@ -2193,34 +2229,539 @@ struct_anon_80._fields_ = [
     ('reserved', c_int),
 ]
 
-MDF_TEMP_RESPONSE = struct_anon_80 # C:\\hst2\\include\\rp3_hst_config.h: 698
+MDF_TINGLE_INTENSITY_RESPONSE = struct_anon_80 # C:\\hst2\\include\\rp3_hst_config.h: 780
 
-# C:\\hst2\\include\\rp3_hst_config.h: 706
+# C:\\hst2\\include\\rp3_hst_config.h: 786
 class struct_anon_81(Structure):
     pass
 
 struct_anon_81.__slots__ = [
+    'idx',
+    'reserved',
+]
+struct_anon_81._fields_ = [
+    ('idx', c_int),
+    ('reserved', c_int),
+]
+
+MDF_MOVE_RESPONSE = struct_anon_81 # C:\\hst2\\include\\rp3_hst_config.h: 786
+
+# C:\\hst2\\include\\rp3_hst_config.h: 794
+class struct_anon_82(Structure):
+    pass
+
+struct_anon_82.__slots__ = [
     'img',
     'moreMsgs',
     'reserved',
     'pixels',
 ]
-struct_anon_81._fields_ = [
+struct_anon_82._fields_ = [
     ('img', c_char * 32),
     ('moreMsgs', c_int),
     ('reserved', c_int),
     ('pixels', c_float * 64),
 ]
 
-MDF_PIXEL_COORDS = struct_anon_81 # C:\\hst2\\include\\rp3_hst_config.h: 706
+MDF_DIR_PIXEL_COORDS = struct_anon_82 # C:\\hst2\\include\\rp3_hst_config.h: 794
 
-__const = c_int # <command-line>: 5
-
-# <command-line>: 8
-try:
-    CTYPESGEN = 1
-except:
+# C:\\hst2\\include\\rp3_hst_config.h: 800
+class struct_anon_83(Structure):
     pass
+
+struct_anon_83.__slots__ = [
+    'idx',
+    'reserved',
+]
+struct_anon_83._fields_ = [
+    ('idx', c_int),
+    ('reserved', c_int),
+]
+
+MDF_TINGLE_RESPONSE = struct_anon_83 # C:\\hst2\\include\\rp3_hst_config.h: 800
+
+# C:\\hst2\\include\\rp3_hst_config.h: 806
+class struct_anon_84(Structure):
+    pass
+
+struct_anon_84.__slots__ = [
+    'a',
+    'reserved',
+]
+struct_anon_84._fields_ = [
+    ('a', c_float),
+    ('reserved', c_int),
+]
+
+MDF_TEMP_RESPONSE = struct_anon_84 # C:\\hst2\\include\\rp3_hst_config.h: 806
+
+# C:\\hst2\\include\\rp3_hst_config.h: 814
+class struct_anon_85(Structure):
+    pass
+
+struct_anon_85.__slots__ = [
+    'img',
+    'moreMsgs',
+    'reserved',
+    'pixels',
+]
+struct_anon_85._fields_ = [
+    ('img', c_char * 32),
+    ('moreMsgs', c_int),
+    ('reserved', c_int),
+    ('pixels', c_float * 64),
+]
+
+MDF_PIXEL_COORDS = struct_anon_85 # C:\\hst2\\include\\rp3_hst_config.h: 814
+
+# C:\\hst2\\include\\rp3_hst_config.h: 823
+class struct_anon_86(Structure):
+    pass
+
+struct_anon_86.__slots__ = [
+    'runindex',
+    'serial_no',
+    'hour',
+    'minute',
+    'second',
+]
+struct_anon_86._fields_ = [
+    ('runindex', c_int),
+    ('serial_no', c_int),
+    ('hour', c_int),
+    ('minute', c_int),
+    ('second', c_int),
+]
+
+MDF_APLC = struct_anon_86 # C:\\hst2\\include\\rp3_hst_config.h: 823
+
+# C:\\hst2\\include\\rp3_hst_config.h: 830
+class struct_anon_87(Structure):
+    pass
+
+struct_anon_87.__slots__ = [
+    'filename',
+    'randomization',
+]
+struct_anon_87._fields_ = [
+    ('filename', c_char * 256),
+    ('randomization', c_int),
+]
+
+MDF_STIM_PRES_CONFIG = struct_anon_87 # C:\\hst2\\include\\rp3_hst_config.h: 830
+
+# C:\\hst2\\include\\rp3_hst_config.h: 837
+class struct_anon_88(Structure):
+    pass
+
+struct_anon_88.__slots__ = [
+    'stim_filename',
+    'stim_state_name',
+    'stim_display_time',
+    'stim_start_delay',
+]
+struct_anon_88._fields_ = [
+    ('stim_filename', c_char * 256),
+    ('stim_state_name', c_char * 256),
+    ('stim_display_time', c_double),
+    ('stim_start_delay', c_double),
+]
+
+MDF_STIM_PRESENT = struct_anon_88 # C:\\hst2\\include\\rp3_hst_config.h: 837
+
+# C:\\hst2\\include\\rp3_hst_config.h: 841
+class struct_anon_89(Structure):
+    pass
+
+struct_anon_89.__slots__ = [
+    'phase_rep_end',
+]
+struct_anon_89._fields_ = [
+    ('phase_rep_end', c_int),
+]
+
+MDF_STIM_PRES_PHASE_END = struct_anon_89 # C:\\hst2\\include\\rp3_hst_config.h: 841
+
+# C:\\hst2\\include\\rp3_hst_config.h: 846
+class struct_anon_90(Structure):
+    pass
+
+struct_anon_90.__slots__ = [
+    'pause_resume',
+    'stop',
+]
+struct_anon_90._fields_ = [
+    ('pause_resume', c_int),
+    ('stop', c_int),
+]
+
+MDF_STIM_PRES_STATUS = struct_anon_90 # C:\\hst2\\include\\rp3_hst_config.h: 846
+
+# C:\\hst2\\include\\rp3_hst_config.h: 858
+class struct_anon_91(Structure):
+    pass
+
+struct_anon_91.__slots__ = [
+    'header',
+    'grip_pos',
+    'velocity',
+    'force',
+    'impedance',
+    'controlMask',
+    'src',
+    'reserved',
+]
+struct_anon_91._fields_ = [
+    ('header', MSG_HEADER),
+    ('grip_pos', c_double * 1),
+    ('velocity', c_double * 1),
+    ('force', c_double * 1),
+    ('impedance', c_double * 1),
+    ('controlMask', c_short * 4),
+    ('src', c_int),
+    ('reserved', c_int),
+]
+
+MDF_GRIP_COMMAND = struct_anon_91 # C:\\hst2\\include\\rp3_hst_config.h: 858
+
+# C:\\hst2\\include\\rp3_hst_config.h: 868
+class struct_anon_92(Structure):
+    pass
+
+struct_anon_92.__slots__ = [
+    'header',
+    'grip_pos',
+    'velocity',
+    'force',
+    'impedance',
+    'controlMask',
+    'effector',
+]
+struct_anon_92._fields_ = [
+    ('header', MSG_HEADER),
+    ('grip_pos', c_double * 1),
+    ('velocity', c_double * 1),
+    ('force', c_double * 1),
+    ('impedance', c_double * 1),
+    ('controlMask', c_short * 4),
+    ('effector', c_char * 64),
+]
+
+MDF_GRIP_FINISHED_COMMAND = struct_anon_92 # C:\\hst2\\include\\rp3_hst_config.h: 868
+
+# C:\\hst2\\include\\rp3_hst_config.h: 876
+class struct_anon_93(Structure):
+    pass
+
+struct_anon_93.__slots__ = [
+    'header',
+    'grip_pos',
+    'velocity',
+    'force',
+    'effector',
+]
+struct_anon_93._fields_ = [
+    ('header', MSG_HEADER),
+    ('grip_pos', c_double * 1),
+    ('velocity', c_double * 1),
+    ('force', c_double * 2),
+    ('effector', c_char * 64),
+]
+
+MDF_GRIPPER_FEEDBACK = struct_anon_93 # C:\\hst2\\include\\rp3_hst_config.h: 876
+
+# C:\\hst2\\include\\rp3_hst_config.h: 886
+class struct_anon_94(Structure):
+    pass
+
+struct_anon_94.__slots__ = [
+    'header',
+    'motor_pos',
+    'motor_vel',
+    'motor_torque',
+    'joint_pos',
+    'joint_vel',
+    'contact',
+]
+struct_anon_94._fields_ = [
+    ('header', MSG_HEADER),
+    ('motor_pos', c_double * 1),
+    ('motor_vel', c_double * 1),
+    ('motor_torque', c_double * 1),
+    ('joint_pos', c_double * 11),
+    ('joint_vel', c_double * 11),
+    ('contact', c_double * 2),
+]
+
+MDF_MUJOCO_SENSOR = struct_anon_94 # C:\\hst2\\include\\rp3_hst_config.h: 886
+
+# C:\\hst2\\include\\rp3_hst_config.h: 898
+class struct_anon_95(Structure):
+    pass
+
+struct_anon_95.__slots__ = [
+    'header',
+    'ref_pos',
+    'ref_vel',
+    'gain_pos',
+    'gain_vel',
+    'ref_pos_enabled',
+    'ref_vel_enabled',
+    'gain_pos_enabled',
+    'gain_vel_enabled',
+]
+struct_anon_95._fields_ = [
+    ('header', MSG_HEADER),
+    ('ref_pos', c_double * 1),
+    ('ref_vel', c_double * 1),
+    ('gain_pos', c_double * 1),
+    ('gain_vel', c_double * 1),
+    ('ref_pos_enabled', c_short),
+    ('ref_vel_enabled', c_short),
+    ('gain_pos_enabled', c_short),
+    ('gain_vel_enabled', c_short),
+]
+
+MDF_MUJOCO_CMD = struct_anon_95 # C:\\hst2\\include\\rp3_hst_config.h: 898
+
+# C:\\hst2\\include\\rp3_hst_config.h: 905
+class struct_anon_96(Structure):
+    pass
+
+struct_anon_96.__slots__ = [
+    'mocap_id',
+    'link_objects',
+    'pos',
+]
+struct_anon_96._fields_ = [
+    ('mocap_id', c_uint),
+    ('link_objects', c_uint),
+    ('pos', c_double * 3),
+]
+
+MDF_MUJOCO_MOVE = struct_anon_96 # C:\\hst2\\include\\rp3_hst_config.h: 905
+
+# C:\\hst2\\include\\rp3_hst_config.h: 909
+class struct_anon_97(Structure):
+    pass
+
+struct_anon_97.__slots__ = [
+    'message',
+]
+struct_anon_97._fields_ = [
+    ('message', c_char * 256),
+]
+
+MDF_MUJOCO_MSG = struct_anon_97 # C:\\hst2\\include\\rp3_hst_config.h: 909
+
+# C:\\hst2\\include\\rp3_hst_config.h: 917
+class struct_anon_98(Structure):
+    pass
+
+struct_anon_98.__slots__ = [
+    'header',
+    'motor_sp',
+    'reserved1',
+    'mode',
+    'reserved2',
+]
+struct_anon_98._fields_ = [
+    ('header', MSG_HEADER),
+    ('motor_sp', c_ushort * 2),
+    ('reserved1', c_ushort * 2),
+    ('mode', c_ubyte),
+    ('reserved2', c_ubyte * 3),
+]
+
+MDF_OPENHAND_CMD = struct_anon_98 # C:\\hst2\\include\\rp3_hst_config.h: 917
+
+# C:\\hst2\\include\\rp3_hst_config.h: 923
+class struct_anon_99(Structure):
+    pass
+
+struct_anon_99.__slots__ = [
+    'header',
+    'motor_pos',
+    'force',
+]
+struct_anon_99._fields_ = [
+    ('header', MSG_HEADER),
+    ('motor_pos', c_ushort),
+    ('force', c_ushort),
+]
+
+MDF_OPENHAND_SENS = struct_anon_99 # C:\\hst2\\include\\rp3_hst_config.h: 923
+
+# C:\\hst2\\include\\rp3_hst_config.h: 933
+class struct_anon_100(Structure):
+    pass
+
+struct_anon_100.__slots__ = [
+    'header',
+    'ID',
+    'reserved',
+    'pos',
+    'orient',
+    'timestamp',
+    'name',
+]
+struct_anon_100._fields_ = [
+    ('header', MSG_HEADER),
+    ('ID', c_int),
+    ('reserved', c_int),
+    ('pos', c_double * 3),
+    ('orient', c_double * 3),
+    ('timestamp', c_double),
+    ('name', c_char * 128),
+]
+
+MDF_OPTITRACK_RIGID_BODY = struct_anon_100 # C:\\hst2\\include\\rp3_hst_config.h: 933
+
+# C:\\hst2\\include\\rp3_hst_config.h: 942
+class struct_anon_101(Structure):
+    pass
+
+struct_anon_101.__slots__ = [
+    'can_id',
+    'data',
+    'padding',
+]
+struct_anon_101._fields_ = [
+    ('can_id', c_uint),
+    ('data', c_ubyte * 8),
+    ('padding', c_int),
+]
+
+DEKA_CAN_MSG = struct_anon_101 # C:\\hst2\\include\\rp3_hst_config.h: 942
+
+# C:\\hst2\\include\\rp3_hst_config.h: 950
+class struct_anon_102(Structure):
+    pass
+
+struct_anon_102.__slots__ = [
+    'header',
+    'ACI_1',
+    'ACI_2',
+]
+struct_anon_102._fields_ = [
+    ('header', MSG_HEADER),
+    ('ACI_1', DEKA_CAN_MSG),
+    ('ACI_2', DEKA_CAN_MSG),
+]
+
+MDF_DEKA_ACI_RESPONSE = struct_anon_102 # C:\\hst2\\include\\rp3_hst_config.h: 950
+
+# C:\\hst2\\include\\rp3_hst_config.h: 963
+class struct_anon_103(Structure):
+    pass
+
+struct_anon_103.__slots__ = [
+    'header',
+    'position_msg_1',
+    'position_msg_2',
+    'motor_pos',
+    'motor_current',
+    'mode',
+    'sync',
+    'grip',
+    'padding',
+]
+struct_anon_103._fields_ = [
+    ('header', MSG_HEADER),
+    ('position_msg_1', DEKA_CAN_MSG),
+    ('position_msg_2', DEKA_CAN_MSG),
+    ('motor_pos', c_double * 7),
+    ('motor_current', c_double * 7),
+    ('mode', c_int),
+    ('sync', c_int),
+    ('grip', c_int),
+    ('padding', c_int),
+]
+
+MDF_DEKA_SENSOR = struct_anon_103 # C:\\hst2\\include\\rp3_hst_config.h: 963
+
+# C:\\hst2\\include\\rp3_hst_config.h: 969
+class struct_anon_104(Structure):
+    pass
+
+struct_anon_104.__slots__ = [
+    'toggle',
+    'padding',
+]
+struct_anon_104._fields_ = [
+    ('toggle', c_int),
+    ('padding', c_int),
+]
+
+MDF_DEKA_CAN_TOGGLE = struct_anon_104 # C:\\hst2\\include\\rp3_hst_config.h: 969
+
+# C:\\hst2\\include\\rp3_hst_config.h: 975
+class struct_anon_105(Structure):
+    pass
+
+struct_anon_105.__slots__ = [
+    'toggle',
+    'padding',
+]
+struct_anon_105._fields_ = [
+    ('toggle', c_int),
+    ('padding', c_int),
+]
+
+MDF_DEKA_CAN_GRIP_TOGGLE = struct_anon_105 # C:\\hst2\\include\\rp3_hst_config.h: 975
+
+# C:\\hst2\\include\\rp3_hst_config.h: 981
+class struct_anon_106(Structure):
+    pass
+
+struct_anon_106.__slots__ = [
+    'exit',
+    'padding',
+]
+struct_anon_106._fields_ = [
+    ('exit', c_int),
+    ('padding', c_int),
+]
+
+MDF_DEKA_CAN_EXIT = struct_anon_106 # C:\\hst2\\include\\rp3_hst_config.h: 981
+
+# C:\\hst2\\include\\rp3_hst_config.h: 990
+class struct_anon_107(Structure):
+    pass
+
+struct_anon_107.__slots__ = [
+    'header',
+    'num_chans_per_headstage',
+    'source_timestamp',
+    'data',
+]
+struct_anon_107._fields_ = [
+    ('header', MSG_HEADER),
+    ('num_chans_per_headstage', c_int * 2),
+    ('source_timestamp', c_uint * 20),
+    ('data', c_float * ((20 * 32) * 2)),
+]
+
+MDF_XIPP_EMG_DATA_RAW = struct_anon_107 # C:\\hst2\\include\\rp3_hst_config.h: 990
+
+# C:\\hst2\\include\\rp3_hst_config.h: 997
+class struct_anon_108(Structure):
+    pass
+
+struct_anon_108.__slots__ = [
+    'header',
+    'source_timestamp',
+    'xipp_timestamp',
+    'reserved',
+]
+struct_anon_108._fields_ = [
+    ('header', MSG_HEADER),
+    ('source_timestamp', c_double),
+    ('xipp_timestamp', c_uint),
+    ('reserved', c_int),
+]
+
+MDF_SAMPLE_GENERATED = struct_anon_108 # C:\\hst2\\include\\rp3_hst_config.h: 997
 
 # C:\\hst2\\include\\..\\RTMA\\include\\RTMA_types.h: 12
 try:
@@ -2824,817 +3365,1111 @@ except:
 
 # C:\\hst2\\include\\rp3_hst_config.h: 18
 try:
-    RAW_COUNTS_PER_SAMPLE = 2
+    ANALOGSAMPLES_PER_HEARTBEAT = 10
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 19
 try:
-    SNIPPETS_PER_MESSAGE = 25
+    RAW_COUNTS_PER_SAMPLE = 2
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 20
 try:
-    SAMPLES_PER_SNIPPET = 48
+    SAMPLE_LENGTH = (0.01 * RAW_COUNTS_PER_SAMPLE)
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 21
 try:
-    MAX_DIG_PER_SAMPLE = 10
+    SNIPPETS_PER_MESSAGE = 25
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 22
 try:
-    MAX_DATAGLOVE_SENSORS = 18
+    SAMPLES_PER_SNIPPET = 48
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 23
 try:
-    NUM_DOMAINS = 6
+    MAX_DIG_PER_SAMPLE = 10
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 24
 try:
-    MAX_COMMAND_DIMS = 30
+    MAX_DATAGLOVE_SENSORS = 18
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 25
 try:
-    MPL_RAW_PERCEPT_DIMS = 54
+    NUM_DOMAINS = 6
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 26
+try:
+    MAX_COMMAND_DIMS = 30
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 27
 try:
-    NUM_STIM_CHANS = 64
-except:
-    pass
-
-# C:\\hst2\\include\\rp3_hst_config.h: 28
-try:
-    MAX_STIM_CHANS_ON = 12
+    MPL_RAW_PERCEPT_DIMS = 54
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 29
 try:
-    MAX_CS_CONFIGS = 16
+    NUM_STIM_CHANS = 64
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 30
+try:
+    SHAM_STIM_CHANS = 32
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 31
 try:
-    GRIP_DIMS_R = 1
+    MAX_STIM_CHANS_ON = 12
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 32
 try:
-    GRIP_DIMS_L = 1
+    MAX_CS_CONFIGS = 16
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 34
+try:
+    MAX_XIPP_EEG_HEADSTAGES = 2
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 35
 try:
-    NoResult = (-1)
+    MAX_XIPP_CHANS = (32 * MAX_XIPP_EEG_HEADSTAGES)
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 36
 try:
-    SuccessfulTrial = 1
+    MAX_XIPP_ANALOG_CHANS = 32
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 37
 try:
-    BadTrial = 2
+    XIPP_SAMPLES_PER_MSG = 20
 except:
     pass
 
-# C:\\hst2\\include\\rp3_hst_config.h: 38
+# C:\\hst2\\include\\rp3_hst_config.h: 41
 try:
-    ManualProceed = 4
+    GRIP_DIMS_R = 4
 except:
     pass
 
-# C:\\hst2\\include\\rp3_hst_config.h: 39
+# C:\\hst2\\include\\rp3_hst_config.h: 42
 try:
-    ManualFail = 8
+    GRIP_DIMS_L = 1
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 43
+try:
+    MAX_GRIP_DIMS = 7
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 44
+try:
+    MAX_GRIPPER_DIMS = 1
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 45
 try:
-    MID_JSTICK_COMMAND = 10
+    MAX_GRIPPER_JOINT_ANGLES = 11
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 46
 try:
-    MID_COMBINER = 11
+    MAX_GRIPPER_FORCES = 2
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 47
 try:
-    MID_CEREBUS = 12
+    MJ_MAX_MOTOR = MAX_GRIPPER_DIMS
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 48
 try:
-    MID_INPUT_TRANSFORM = 20
+    MJ_MAX_JOINT = MAX_GRIPPER_JOINT_ANGLES
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 49
 try:
-    MID_CENTRAL = 22
-except:
-    pass
-
-# C:\\hst2\\include\\rp3_hst_config.h: 50
-try:
-    MID_EXTRACTION = 30
-except:
-    pass
-
-# C:\\hst2\\include\\rp3_hst_config.h: 51
-try:
-    MID_LFPEXTRACTION = 31
+    MJ_MAX_CONTACT = MAX_GRIPPER_FORCES
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 52
 try:
-    MID_CREATEBUFFER = 35
+    NoResult = (-1)
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 53
 try:
-    MID_MPL_CONTROL = 40
+    SuccessfulTrial = 1
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 54
+try:
+    BadTrial = 2
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 55
 try:
-    MID_NREC_WAM_RECV = 44
+    ManualProceed = 4
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 56
 try:
-    MID_NREC_WAM_SEND = 45
-except:
-    pass
-
-# C:\\hst2\\include\\rp3_hst_config.h: 58
-try:
-    MID_ACTIVE_ASSIST = 50
-except:
-    pass
-
-# C:\\hst2\\include\\rp3_hst_config.h: 59
-try:
-    MID_MPL_FEEDBACK = 60
-except:
-    pass
-
-# C:\\hst2\\include\\rp3_hst_config.h: 60
-try:
-    MID_AJA_CONTROL = 65
-except:
-    pass
-
-# C:\\hst2\\include\\rp3_hst_config.h: 61
-try:
-    MID_SEAIOCONTROL = 66
+    ManualFail = 8
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 62
 try:
-    MID_EXECUTIVE = 70
+    MID_JSTICK_COMMAND = 10
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 63
 try:
-    MID_COMMENT_MANAGER = 71
+    MID_COMBINER = 11
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 64
 try:
-    MID_StimVoltageMonitor = 77
+    MID_CEREBUS = 12
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 65
 try:
-    MID_ATIsensor = 78
+    MID_INPUT_TRANSFORM = 20
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 66
 try:
-    MID_GENERIC = 80
+    MID_RPPL_RECORD = 21
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 67
 try:
-    MID_MESSAGERATES = 81
+    MID_CENTRAL = 22
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 68
 try:
-    MID_VISUALIZATION = 82
+    MID_EXTRACTION = 30
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 69
 try:
-    MID_VIDEO_LOGGER = 83
+    MID_LFPEXTRACTION = 31
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 70
 try:
-    MID_AUDIO_LOGGER = 84
+    MID_CREATEBUFFER = 35
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 71
 try:
-    MID_DATAGLOVE_CONTROL = 85
+    MID_MPL_CONTROL = 40
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 72
 try:
-    MID_BIASMODULE = 86
-except:
-    pass
-
-# C:\\hst2\\include\\rp3_hst_config.h: 73
-try:
-    MID_CURSOR = 87
+    MID_GRIP_CONTROL = 41
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 74
 try:
-    MID_SOUNDPLAYER = 90
+    MID_NREC_WAM_RECV = 44
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 75
 try:
-    MID_RFDISPLAY = 91
-except:
-    pass
-
-# C:\\hst2\\include\\rp3_hst_config.h: 76
-try:
-    MID_RFACTIVITY = 92
-except:
-    pass
-
-# C:\\hst2\\include\\rp3_hst_config.h: 77
-try:
-    MID_ImageDisplayer = 93
+    MID_NREC_WAM_SEND = 45
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 78
 try:
-    MID_KNOB_FEEDBACK = 94
+    MID_PSYCHTLBX = 46
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 80
 try:
-    MID_STIM_SAFETY_MODULE = 95
+    MID_ACTIVE_ASSIST = 50
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 81
 try:
-    MID_SENSOR_STIM_TRANS_MODULE = 96
+    MID_MPL_FEEDBACK = 60
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 82
 try:
-    MID_CERESTIM_CONTROL = 97
+    MID_AJA_CONTROL = 65
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 83
 try:
-    MID_SENSE_TOUCH_INTERFACE = 98
+    MID_SEAIOCONTROL = 66
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 84
+try:
+    MID_EXECUTIVE = 70
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 85
+try:
+    MID_COMMENT_MANAGER = 71
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 86
+try:
+    MID_StimVoltageMonitor = 77
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 87
 try:
-    MT_FINISHED_COMMAND = 1700
+    MID_ATIsensor = 78
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 88
 try:
-    MT_CONTROL_SPACE_FEEDBACK = 1701
+    MID_GENERIC = 80
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 89
 try:
-    MT_CONTROL_SPACE_COMMAND = 1702
+    MID_MESSAGERATES = 81
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 90
 try:
-    MT_MPL_RAW_PERCEPT = 1703
+    MID_VISUALIZATION = 82
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 91
 try:
-    MT_BIAS_COMMAND = 1704
+    MID_VIDEO_LOGGER = 83
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 92
 try:
-    MT_MPL_REBIASED_SENSORDATA = 1705
+    MID_AUDIO_LOGGER = 84
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 93
 try:
-    MT_CONTROL_SPACE_POS_COMMAND = 1710
+    MID_DATAGLOVE_CONTROL = 85
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 94
 try:
-    MT_MPL_SEGMENT_PERCEPTS = 1711
+    MID_BIASMODULE = 86
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 95
 try:
-    MT_WAM_FEEDBACK = 1712
+    MID_CURSOR = 87
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 96
 try:
-    MT_IMPEDANCE_COMMAND = 1713
+    MID_SOUNDPLAYER = 90
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 97
 try:
-    MT_CURSOR_FEEDBACK = 1720
+    MID_RFDISPLAY = 91
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 98
+try:
+    MID_RFACTIVITY = 92
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 99
 try:
-    MT_RAW_SPIKECOUNT = 1800
+    MID_ImageDisplayer = 93
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 100
 try:
-    MT_SPM_SPIKECOUNT = 1801
-except:
-    pass
-
-# C:\\hst2\\include\\rp3_hst_config.h: 101
-try:
-    MT_SPIKE_SNIPPET = 1802
+    MID_KNOB_FEEDBACK = 94
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 102
 try:
-    MT_RAW_CTSDATA = 1803
+    MID_STIM_SAFETY_MODULE = 95
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 103
 try:
-    MT_SPM_CTSDATA = 1804
+    MID_SENSOR_STIM_TRANS_MODULE = 96
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 104
 try:
-    MT_REJECTED_SNIPPET = 1805
+    MID_CERESTIM_CONTROL = 97
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 105
 try:
-    MT_RAW_DIGITAL_EVENT = 1806
-except:
-    pass
-
-# C:\\hst2\\include\\rp3_hst_config.h: 106
-try:
-    MT_SPM_DIGITAL_EVENT = 1807
+    MID_SENSE_TOUCH_INTERFACE = 98
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 107
 try:
-    MT_STIM_SYNC_EVENT = 1808
+    MID_APLSENDER = 98
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 108
 try:
-    MT_STIM_UPDATE_EVENT = 1809
-except:
-    pass
-
-# C:\\hst2\\include\\rp3_hst_config.h: 109
-try:
-    MT_CENTRALRECORD = 1810
+    MID_APLRECEIVER = 99
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 111
 try:
-    MT_INPUT_DOF_DATA = 1850
+    MID_DEKA_ACI_RESPONSE = 100
 except:
     pass
 
-# C:\\hst2\\include\\rp3_hst_config.h: 113
+# C:\\hst2\\include\\rp3_hst_config.h: 112
 try:
-    MT_DATAGLOVE = 1860
+    MID_DEKA_CAN_MODULE = 101
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 115
 try:
-    MT_TASK_STATE_CONFIG = 1900
+    MT_FINISHED_COMMAND = 1700
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 116
 try:
-    MT_PHASE_RESULT = 1901
+    MT_CONTROL_SPACE_FEEDBACK = 1701
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 117
 try:
-    MT_EXTRACTION_RESPONSE = 1902
+    MT_CONTROL_SPACE_COMMAND = 1702
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 118
 try:
-    MT_NORMALIZATION_FACTOR = 1903
+    MT_MPL_RAW_PERCEPT = 1703
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 119
 try:
-    MT_TRIAL_METADATA = 1904
+    MT_BIAS_COMMAND = 1704
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 120
 try:
-    MT_EXTRACTION_REQUEST = 1905
+    MT_MPL_REBIASED_SENSORDATA = 1705
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 121
 try:
-    MT_UPDATE_UNIT_STATE = 1906
+    MT_CONTROL_SPACE_POS_COMMAND = 1710
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 122
 try:
-    MT_DISABLED_UNITS = 1907
+    MT_MPL_SEGMENT_PERCEPTS = 1711
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 123
 try:
-    MT_TRIAL_END = 1910
+    MT_WAM_FEEDBACK = 1712
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 124
 try:
-    MT_REP_START = 1911
+    MT_IMPEDANCE_COMMAND = 1713
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 125
 try:
-    MT_REP_END = 1912
+    MT_CURSOR_FEEDBACK = 1720
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 126
+try:
+    MT_GRIP_COMMAND = 1730
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 127
+try:
+    MT_GRIP_FINISHED_COMMAND = 1731
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 128
 try:
-    MT_EM_ADAPT_NOW = 2000
+    MT_GRIPPER_FEEDBACK = 1732
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 129
 try:
-    MT_EM_CONFIGURATION = 2001
+    MT_MUJOCO_SENSOR = 1733
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 130
 try:
-    MT_TDMS_CREATE = 2002
+    MT_MUJOCO_CMD = 1734
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 131
 try:
-    MT_RF_REPORT = 2003
+    MT_MUJOCO_MOVE = 1735
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 132
 try:
-    MT_PICDISPLAY = 2004
+    MT_MUJOCO_MSG = 1736
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 133
 try:
-    MT_STIMDATA = 2005
+    MT_OPENHAND_CMD = 1737
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 134
 try:
-    MT_KNOB_FEEDBACK = 2006
-except:
-    pass
-
-# C:\\hst2\\include\\rp3_hst_config.h: 135
-try:
-    MT_SEAIO_OUT = 2007
+    MT_OPENHAND_SENS = 1738
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 136
 try:
-    MT_ATIforcesensor = 2008
+    MT_RAW_SPIKECOUNT = 1800
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 137
 try:
-    MT_TACTOR_CMD = 2009
+    MT_SPM_SPIKECOUNT = 1801
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 138
 try:
-    MT_HSTLOG = 3000
+    MT_SPIKE_SNIPPET = 1802
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 139
 try:
-    MT_TFD = 3001
+    MT_RAW_CTSDATA = 1803
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 140
+try:
+    MT_SPM_CTSDATA = 1804
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 141
 try:
-    MT_PLAYSOUND = 3100
+    MT_REJECTED_SNIPPET = 1805
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 142
+try:
+    MT_RAW_DIGITAL_EVENT = 1806
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 143
 try:
-    MT_AJA_CONFIG = 3200
+    MT_SPM_DIGITAL_EVENT = 1807
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 144
 try:
-    MT_AJA_TIMECODE = 3201
+    MT_STIM_SYNC_EVENT = 1808
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 145
 try:
-    MT_AJA_STATUS = 3202
+    MT_STIM_UPDATE_EVENT = 1809
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 146
 try:
-    MT_AJA_STATUS_REQUEST = 3203
+    MT_CENTRALRECORD = 1810
 except:
     pass
 
-# C:\\hst2\\include\\rp3_hst_config.h: 149
+# C:\\hst2\\include\\rp3_hst_config.h: 147
 try:
-    MT_CERESTIM_CONFIG_MODULE = 4000
+    MT_RAW_ANALOGDATA = 1811
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 148
+try:
+    MT_SPM_ANALOGDATA = 1812
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 150
 try:
-    MT_CERESTIM_CONFIG_CHAN_PRESAFETY = 4001
+    MT_SAMPLE_GENERATED = 1820
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 151
 try:
-    MT_CERESTIM_CONFIG_CHAN = 4002
-except:
-    pass
-
-# C:\\hst2\\include\\rp3_hst_config.h: 152
-try:
-    MT_CERESTIM_ERROR = 4003
+    MT_XIPP_EMG_DATA_RAW = 1830
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 153
 try:
-    MT_CERESTIM_ALIVE = 4004
+    MT_INPUT_DOF_DATA = 1850
 except:
     pass
 
-# C:\\hst2\\include\\rp3_hst_config.h: 154
+# C:\\hst2\\include\\rp3_hst_config.h: 155
 try:
-    MT_CS_TRAIN_END = 4005
+    MT_DATAGLOVE = 1860
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 156
+try:
+    MT_OPTITRACK_RIGID_BODY = 1861
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 158
+try:
+    MT_TASK_STATE_CONFIG = 1900
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 159
 try:
-    MT_NATURAL_RESPONSE = 4050
+    MT_PHASE_RESULT = 1901
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 160
 try:
-    MT_DEPTH_RESPONSE = 4051
+    MT_EXTRACTION_RESPONSE = 1902
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 161
 try:
-    MT_PAIN_RESPONSE = 4052
+    MT_NORMALIZATION_FACTOR = 1903
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 162
+try:
+    MT_TRIAL_METADATA = 1904
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 163
 try:
-    MT_MODALITY_TOGGLE = 4053
+    MT_EXTRACTION_REQUEST = 1905
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 164
 try:
-    MT_MECH_RESPONSE = 4054
+    MT_UPDATE_UNIT_STATE = 1906
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 165
 try:
-    MT_MECH_INTENSITY_RESPONSE = 4055
+    MT_DISABLED_UNITS = 1907
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 166
 try:
-    MT_MOVE_RESPONSE = 4056
+    MT_TRIAL_END = 1910
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 167
 try:
-    MT_MOVE_INTENSITY_RESPONSE = 4057
+    MT_REP_START = 1911
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 168
 try:
-    MT_TINGLE_RESPONSE = 4058
+    MT_REP_END = 1912
 except:
     pass
 
-# C:\\hst2\\include\\rp3_hst_config.h: 169
+# C:\\hst2\\include\\rp3_hst_config.h: 171
 try:
-    MT_TINGLE_INTENSITY_RESPONSE = 4059
-except:
-    pass
-
-# C:\\hst2\\include\\rp3_hst_config.h: 170
-try:
-    MT_TEMP_RESPONSE = 4060
+    MT_EM_ADAPT_NOW = 2000
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 172
 try:
-    MT_DIR_PIXEL_COORDS = 4061
+    MT_EM_CONFIGURATION = 2001
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 173
 try:
-    MT_PIXEL_COORDS = 4063
+    MT_TDMS_CREATE = 2002
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 174
+try:
+    MT_RF_REPORT = 2003
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 175
 try:
-    MT_CLEAR_LINE = 4064
+    MT_PICDISPLAY = 2004
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 176
 try:
-    MT_ADD_SENSATION = 4065
+    MT_STIMDATA = 2005
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 177
+try:
+    MT_KNOB_FEEDBACK = 2006
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 178
+try:
+    MT_SEAIO_OUT = 2007
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 179
 try:
-    MT_CST_LAMBDA = 4100
+    MT_ATIforcesensor = 2008
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 180
+try:
+    MT_TACTOR_CMD = 2009
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 181
 try:
-    TAG_LENGTH = 64
+    MT_HSTLOG = 3000
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 182
+try:
+    MT_TFD = 3001
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 184
+try:
+    MT_PLAYSOUND = 3100
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 186
 try:
-    MPL_AT_ARM_EPV_FING_JV = 0
+    MT_AJA_CONFIG = 3200
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 187
 try:
-    MPL_AT_ARM_EPV_FING_JP = 1
+    MT_AJA_TIMECODE = 3201
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 188
 try:
-    MPL_AT_ARM_JV_FING_JP = 2
+    MT_AJA_STATUS = 3202
 except:
     pass
 
 # C:\\hst2\\include\\rp3_hst_config.h: 189
 try:
+    MT_AJA_STATUS_REQUEST = 3203
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 192
+try:
+    MT_APLC = 3500
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 195
+try:
+    MT_CERESTIM_CONFIG_MODULE = 4000
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 196
+try:
+    MT_CERESTIM_CONFIG_CHAN_PRESAFETY = 4001
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 197
+try:
+    MT_CERESTIM_CONFIG_CHAN = 4002
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 198
+try:
+    MT_CERESTIM_ERROR = 4003
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 199
+try:
+    MT_CERESTIM_ALIVE = 4004
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 200
+try:
+    MT_CS_TRAIN_END = 4005
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 205
+try:
+    MT_NATURAL_RESPONSE = 4050
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 206
+try:
+    MT_DEPTH_RESPONSE = 4051
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 207
+try:
+    MT_PAIN_RESPONSE = 4052
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 209
+try:
+    MT_MODALITY_TOGGLE = 4053
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 210
+try:
+    MT_MECH_RESPONSE = 4054
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 211
+try:
+    MT_MECH_INTENSITY_RESPONSE = 4055
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 212
+try:
+    MT_MOVE_RESPONSE = 4056
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 213
+try:
+    MT_MOVE_INTENSITY_RESPONSE = 4057
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 214
+try:
+    MT_TINGLE_RESPONSE = 4058
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 215
+try:
+    MT_TINGLE_INTENSITY_RESPONSE = 4059
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 216
+try:
+    MT_TEMP_RESPONSE = 4060
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 218
+try:
+    MT_DIR_PIXEL_COORDS = 4061
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 219
+try:
+    MT_PIXEL_COORDS = 4063
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 221
+try:
+    MT_CLEAR_LINE = 4064
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 222
+try:
+    MT_ADD_SENSATION = 4065
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 224
+try:
+    MT_SLIDER_DATA = 4066
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 227
+try:
+    MT_CST_LAMBDA = 4100
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 228
+try:
+    MT_CST_SETTINGS = 4101
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 231
+try:
+    MT_STIM_PRES_CONFIG = 4150
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 232
+try:
+    MT_STIM_PRES_PHASE_END = 4151
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 233
+try:
+    MT_STIM_PRESENT = 4152
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 234
+try:
+    MT_STIM_PRES_STATUS = 4153
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 237
+try:
+    MT_DEKA_ACI_RESPONSE = 4200
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 238
+try:
+    MT_DEKA_SENSOR = 4201
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 239
+try:
+    MT_DEKA_CAN_TOGGLE = 4202
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 240
+try:
+    MT_DEKA_CAN_GRIP_TOGGLE = 4203
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 241
+try:
+    MT_DEKA_CAN_EXIT = 4204
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 243
+try:
+    DEKA_DOF_COUNT = 7
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 246
+try:
+    TAG_LENGTH = 64
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 251
+try:
+    MPL_AT_ARM_EPV_FING_JV = 0
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 252
+try:
+    MPL_AT_ARM_EPV_FING_JP = 1
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 253
+try:
+    MPL_AT_ARM_JV_FING_JP = 2
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 254
+try:
     MPL_AT_ALL_JV = 3
 except:
     pass
 
-# C:\\hst2\\include\\rp3_hst_config.h: 190
+# C:\\hst2\\include\\rp3_hst_config.h: 255
 try:
     MPL_AT_ALL_JP = 4
 except:
     pass
 
-# C:\\hst2\\include\\rp3_hst_config.h: 191
+# C:\\hst2\\include\\rp3_hst_config.h: 256
 try:
     MPL_AT_ARM_EPP_FING_JP = 5
 except:
     pass
 
-# C:\\hst2\\include\\rp3_hst_config.h: 194
+# C:\\hst2\\include\\rp3_hst_config.h: 259
 try:
     TFD_FREQ_BINS = 20
+except:
+    pass
+
+# C:\\hst2\\include\\rp3_hst_config.h: 900
+try:
+    MUJOCO_LINK_ID = 1000
 except:
     pass
 
