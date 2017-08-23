@@ -16,14 +16,14 @@ CFLAGS   = -pipe -g -w -O2 -D_REENTRANT  -DUSE_LINUX
 CXXFLAGS = -pipe -g -w -O2 -D_REENTRANT  -DUSE_LINUX
 LEXFLAGS = 
 YACCFLAGS= -d
-INCPATH  = -I/usr/share/qt3/mkspecs/default -I. -I../../../include -I../../../include/internal -I.ui/
+INCPATH  = -I/usr/share/qt4/mkspecs/default -I. -I../../../include -I../../../include/internal -I.ui/
 LINK     = g++
 LFLAGS   = 
 LIBS     = $(SUBLIBS)  -L../../../lib -lRTMA -lpthread
 AR       = ar cqs
 RANLIB   = 
-MOC      = /usr/share/qt3/bin/moc
-UIC      = /usr/share/qt3/bin/uic
+MOC      = /usr/share/qt4/bin/moc
+UIC      = /usr/share/qt4/bin/uic
 QMAKE    = qmake
 TAR      = tar -cf
 GZIP     = gzip -9f
@@ -92,7 +92,7 @@ uicables: $(UICDECLS) $(UICIMPLS)
 $(MOC): 
 	( cd $(QTDIR)/src/moc && $(MAKE) )
 
-Makefile: MessageManager.pro  /usr/share/qt3/mkspecs/default/qmake.conf 
+Makefile: MessageManager.pro  /usr/share/qt4/mkspecs/default/qmake.conf 
 	$(QMAKE) -o Makefile MessageManager.pro
 qmake: 
 	@$(QMAKE) -o Makefile MessageManager.pro

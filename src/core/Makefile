@@ -16,14 +16,14 @@ CFLAGS   = -pipe -g -Wall -W -O2 -D_REENTRANT -fPIC  -DUSE_LINUX
 CXXFLAGS = -pipe -g -Wall -W -O2 -D_REENTRANT -fPIC  -DUSE_LINUX
 LEXFLAGS = 
 YACCFLAGS= -d
-INCPATH  = -I/usr/share/qt3/mkspecs/default -I. -I../../include -I../../include/internal -I.ui/
+INCPATH  = -I/usr/share/qt4/mkspecs/default -I. -I../../include -I../../include/internal -I.ui/
 LINK     = g++
 LFLAGS   = -shared -Wl,-soname,libRTMA.so.1
 LIBS     = $(SUBLIBS)  -lpthread
 AR       = ar cqs
 RANLIB   = 
-MOC      = /usr/share/qt3/bin/moc
-UIC      = /usr/share/qt3/bin/uic
+MOC      = /usr/share/qt4/bin/moc
+UIC      = /usr/share/qt4/bin/uic
 QMAKE    = qmake
 TAR      = tar -cf
 GZIP     = gzip -9f
@@ -50,12 +50,14 @@ SOURCES = RTMA.cpp \
 		MyCException.cpp \
 		MyCString.cpp \
 		PipeLib/SocketPipe.cpp \
-		PipeLib/UPipe.cpp
+		PipeLib/UPipe.cpp \
+		PipeLib/Timing.cpp
 OBJECTS = .obj/RTMA.o \
 		.obj/MyCException.o \
 		.obj/MyCString.o \
 		.obj/SocketPipe.o \
-		.obj/UPipe.o
+		.obj/UPipe.o \
+		.obj/Timing.o
 FORMS = 
 UICDECLS = 
 UICIMPLS = 
@@ -122,7 +124,7 @@ uicables: $(UICDECLS) $(UICIMPLS)
 $(MOC): 
 	( cd $(QTDIR)/src/moc && $(MAKE) )
 
-Makefile: RTMA.pro  /usr/share/qt3/mkspecs/default/qmake.conf 
+Makefile: RTMA.pro  /usr/share/qt4/mkspecs/default/qmake.conf 
 	$(QMAKE) -o Makefile RTMA.pro
 qmake: 
 	@$(QMAKE) -o Makefile RTMA.pro
@@ -165,6 +167,9 @@ FORCE:
 
 .obj/UPipe.o: PipeLib/UPipe.cpp PipeLib/SocketPipe.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o .obj/UPipe.o PipeLib/UPipe.cpp
+
+.obj/Timing.o: PipeLib/Timing.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o .obj/Timing.o PipeLib/Timing.cpp
 
 ####### Install
 

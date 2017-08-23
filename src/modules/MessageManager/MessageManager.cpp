@@ -41,15 +41,22 @@ int main( int argc, char *argv[])
 
 CMessageManager::CMessageManager( )
 {
-	m_Version = "2.10hst";
-	m_NextDynamicModIdOffset = 0;
-		_ftime( &timebuffer ); // C4996
-		m_LastMessageCount = timebuffer.time;
-		m_LastMessageCountmsec = timebuffer.millitm;
-	for(int i=0;i<MAX_MESSAGE_TYPES;i++)
-		m_MessageCounts[i] = (unsigned short)0;
-	for(int i=0;i<MAX_MODULES;i++)
-		m_ModulePIDs[i] = 0;
+  m_Version = "2.10hst";
+  m_NextDynamicModIdOffset = 0;
+
+  // from RP3 RTMA (for timing message)
+  #ifdef __unix__ 
+    ftime(&timebuffer);
+  #else
+    _ftime(&timebuffer); // C4996
+  #endif
+
+  m_LastMessageCount = timebuffer.time;
+  m_LastMessageCountmsec = timebuffer.millitm;
+  for(int i=0;i<MAX_MESSAGE_TYPES;i++)
+    m_MessageCounts[i] = (unsigned short)0;
+  for(int i=0;i<MAX_MODULES;i++)
+    m_ModulePIDs[i] = 0;
 }
 
 CMessageManager::~CMessageManager( )
@@ -122,75 +129,85 @@ CMessageManager::HandleDisconnect( UPipe *pModulePipe)
 void
 CMessageManager::ProcessMessage( CMessage *M, UPipe *pSourcePipe)
 {
-	DEBUG_TEXT_( "Processing message... ");
-	MODULE_ID mod_id = M->src_mod_id;
-	int prev_priority_class;
+  DEBUG_TEXT_( "Processing message... ");
+  MODULE_ID mod_id = M->src_mod_id;
+  int prev_priority_class;
+ 
+  //perform sanity checks before processing the message
+  bool is_connect_message = (M->msg_type == MT_CONNECT)? 1 : 0;
+  bool self_message       = (mod_id == MID_MESSAGE_MANAGER)  ? 1 : 0;
+  bool is_valid_mod_id    = ((mod_id > 0) && (mod_id < MAX_MODULES)) ? 1 : 0;
+  bool message_from_this_host = (M->src_host_id == HID_LOCAL_HOST) ? 1 : 0;
 
-	//perform sanity checks before processing the message
-	bool is_connect_message = (M->msg_type == MT_CONNECT)? 1 : 0;
-	bool self_message       = (mod_id == MID_MESSAGE_MANAGER)  ? 1 : 0;
-	bool is_valid_mod_id    = ((mod_id > 0) && (mod_id < MAX_MODULES)) ? 1 : 0;
-	bool message_from_this_host = (M->src_host_id == HID_LOCAL_HOST) ? 1 : 0;
+  //For keeping track of message timing:
+  if (M->msg_type>0 && M->msg_type<MAX_MESSAGE_TYPES)
+    m_MessageCounts[M->msg_type]++;
 
-	//For keeping track of message timing:
-	if (M->msg_type>0 && M->msg_type<MAX_MESSAGE_TYPES)
-		m_MessageCounts[M->msg_type]++;
+  #ifdef __unix__
+    ftime(&timebuffer); // C4996
+  #else
+    _ftime(&timebuffer); // C4996
+  #endif
 	
-	_ftime( &timebuffer ); // C4996
-	time_t t = timebuffer.time;
-	unsigned short tmsec = timebuffer.millitm;
+  time_t t = timebuffer.time;
+  unsigned short tmsec = timebuffer.millitm;
 
-	if ((t-m_LastMessageCount)>1 || (tmsec-m_LastMessageCountmsec)>900) //time to send out message with timing info
-	{
-		SendMessageTiming();
-		_ftime( &timebuffer ); // C4996
-		m_LastMessageCount = timebuffer.time;
-		m_LastMessageCountmsec = timebuffer.millitm;
-	}
+  if ((t-m_LastMessageCount)>1 || (tmsec-m_LastMessageCountmsec)>900) //time to send out message with timing info
+  {
+    SendMessageTiming();
+    #ifdef __unix__
+      ftime(&timebuffer); // C4996
+    #else
+      _ftime(&timebuffer); // C4996
+    #endif
 
-	switch( M->msg_type) {
-	  ////////DEBUG++++++++++++
-	  //case 1750:{
-	  //double t = GetAbsTime();
-	  //printf("%.3f\n",t);
-	  //fflush(stdout);
-	  //break;
-	  //}
-	  ////////DEBUG------------
+    m_LastMessageCount = timebuffer.time;
+    m_LastMessageCountmsec = timebuffer.millitm;
+  }
 
-		case MT_CONNECT:
-			MDF_CONNECT data;
-			memset( &data, 0, sizeof(data));
-			M->GetData((void*) & data);
-			prev_priority_class = GetMyPriority();
-			SetMyPriority(NORMAL_PRIORITY_CLASS);
-			mod_id = ConnectModule( mod_id, pSourcePipe, data.logger_status, data.daemon_status);
-			if (mod_id > 0) {
-				SendAcknowledge( mod_id);
-				SetMyPriority(prev_priority_class);
-			}
-			break;
+  switch( M->msg_type) {
+  ////////DEBUG++++++++++++
+  //case 1750:{
+  //double t = GetAbsTime();
+  //printf("%.3f\n",t);
+  //fflush(stdout);
+  //break;
+  //}
+  ////////DEBUG------------
+    case MT_CONNECT:
+      MDF_CONNECT data;
+      memset( &data, 0, sizeof(data));
+      M->GetData((void*) & data);
+      prev_priority_class = GetMyPriority();
+      SetMyPriority(NORMAL_PRIORITY_CLASS);
+      mod_id = ConnectModule( mod_id, pSourcePipe, data.logger_status, data.daemon_status);
+      if (mod_id > 0) {
+        SendAcknowledge( mod_id);
+        SetMyPriority(prev_priority_class);
+      }
+      break;
 
-		case MT_FORCE_DISCONNECT:
-			MDF_FORCE_DISCONNECT data_MDF_FORCE_DISCONNECT;
-			M->GetData( &data_MDF_FORCE_DISCONNECT);
-			mod_id = data_MDF_FORCE_DISCONNECT.mod_id;
-			if( (mod_id < 0) || (mod_id > MAX_MODULES) || !ModuleIsConnected(mod_id) )
-			{
-				MyCString err("MM got MT_FORCE_DISCONNECT with invalid module id [");
-				err += (int)mod_id;
-				err +=  "]";
-				CMessage R(MT_MM_ERROR, (void*)err.GetContent(), err.GetLen());
-				DispatchMessage(&R);
-			}else{
-				MyCString info("MM forcing disconnect on module [");
-				info += (int)mod_id;
-				info +=  "]";
-				CMessage R(MT_MM_INFO, (void*)info.GetContent(), info.GetLen());
-				DispatchMessage(&R);
-				ShutdownModule(mod_id);
-			}
-			break;
+    case MT_FORCE_DISCONNECT:
+      MDF_FORCE_DISCONNECT data_MDF_FORCE_DISCONNECT;
+      M->GetData( &data_MDF_FORCE_DISCONNECT);
+      mod_id = data_MDF_FORCE_DISCONNECT.mod_id;
+      if( (mod_id < 0) || (mod_id > MAX_MODULES) || !ModuleIsConnected(mod_id) )
+      {
+        MyCString err("MM got MT_FORCE_DISCONNECT with invalid module id [");
+        err += (int)mod_id;
+        err +=  "]";
+        CMessage R(MT_MM_ERROR, (void*)err.GetContent(), err.GetLen());
+        DispatchMessage(&R);
+      }
+      else{
+        MyCString info("MM forcing disconnect on module [");
+        info += (int)mod_id;
+        info +=  "]";
+        CMessage R(MT_MM_INFO, (void*)info.GetContent(), info.GetLen());
+        DispatchMessage(&R);
+        ShutdownModule(mod_id);
+      }
+      break;
 		case MT_DISCONNECT:
 			prev_priority_class = GetMyPriority();
 			SetMyPriority(NORMAL_PRIORITY_CLASS);
@@ -744,8 +761,12 @@ CMessageManager::SendMessageTiming()
 		m_MessageCounts[i] = 0;
 	}
 
-	//add IsConnected stuff here:
-	data.ModulePID[0] = _getpid(); //MM
+	//add IsConnected stuff here
+        #ifdef __unix__
+          data.ModulePID[0] = getpid(); //MM
+        #else
+          data.ModulePID[0] = _getpid(); //MM
+        #endif
 	for (int i=1; i<MAX_MODULES; i++)
 	{
 		if (ModuleIsConnected(i))

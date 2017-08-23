@@ -20,8 +20,8 @@
 #ifndef _UPIPE_H_
 #define _UPIPE_H_
 
-#include "..\OS_defines.h"
-#include "..\Timing.h"
+#include "../OS_defines.h"
+#include "../Timing.h"
 
 #ifdef _WINDOWS_C 
 	//prevent WINSOCK1 from being included (included from within windows.h)
@@ -52,7 +52,7 @@
 // it will have unpredictable behavior and unexplained crashes.
 #include "mex_hack.h"
 
-#include "..\MyCException.h"
+#include "../MyCException.h"
 
 //windows only functions
 #ifdef _WINDOWS_C 

@@ -33,7 +33,7 @@ QuickLogger/$(MAKEFILE):
 sub-QuickLogger: QuickLogger/$(MAKEFILE) FORCE
 	cd QuickLogger && $(MAKE) -f $(MAKEFILE)
 
-Makefile: Modules.pro  /usr/share/qt3/mkspecs/default/qmake.conf 
+Makefile: Modules.pro  /usr/share/qt4/mkspecs/default/qmake.conf 
 	$(QMAKE) -o Makefile Modules.pro
 qmake: qmake_all
 	@$(QMAKE) -o Makefile Modules.pro

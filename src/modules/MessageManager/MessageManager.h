@@ -240,8 +240,12 @@ private:
 	int				m_ModulePIDs[MAX_MODULES];
 	time_t  m_LastMessageCount;
 	unsigned short  m_LastMessageCountmsec;
-	struct _timeb timebuffer;
-	
+        #ifdef __unix__
+            struct timeb timebuffer;
+        #else
+            struct _timeb   timebuffer;
+        #endif
+
 	MODULE_ID GetDynamicModuleId()
 	{
 		for(MODULE_ID id=0; id < (MAX_MODULES - DYN_MOD_ID_START); id++)
