@@ -264,6 +264,12 @@ DerivedData/
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Added by JW
+*.tlog
+*.unsuccessfulbuild
+*.lastbuildstate
+*.old
+
 # User-specific files
 *.rsuser
 *.suo
