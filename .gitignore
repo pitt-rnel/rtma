@@ -668,3 +668,27 @@ Temporary Items
 
 # Created by https://www.gitignore.io/api/java,eclipse
 # Edit at https://www.gitignore.io/?templates=java,eclipse
+
+# Created by https://www.gitignore.io/api/labview
+# Edit at https://www.gitignore.io/?templates=labview
+
+### LabVIEW ###
+# Libraries
+#*.lvlibp
+#*.llb
+
+# Shared objects (inc. Windows DLLs)
+#*.dll
+#*.so
+#*.so.*
+#*.dylib
+
+# Executables
+#*.exe
+
+# Metadata
+*.aliases
+*.lvlps
+.cache/
+
+# End of https://www.gitignore.io/api/labview
