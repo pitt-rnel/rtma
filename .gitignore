@@ -24,7 +24,7 @@
 *.pch
 
 # Libraries
-#*.lib
+*.lib
 *.a
 *.la
 *.lo
@@ -36,7 +36,7 @@
 *.dylib
 
 # Executables
-#*.exe #maybe add this back later...
+*.exe
 *.out
 *.app
 *.i*86
@@ -47,7 +47,7 @@
 *.dSYM/
 *.su
 *.idb
-#*.pdb # maybe add back later
+*.pdb # maybe add back later
 
 # Kernel Module Compile Results
 *.mod*
@@ -281,16 +281,16 @@ DerivedData/
 *.userprefs
 
 # Build results
-#[Dd]ebug/
-#[Dd]ebugPublic/
-#[Rr]elease/
-#[Rr]eleases/
-#x64/
-#x86/
-#[Aa][Rr][Mm]/
-#[Aa][Rr][Mm]64/
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
 bld/
-[Bb]in/
+#[Bb]in/
 [Oo]bj/
 [Ll]og/
 
@@ -684,7 +684,7 @@ Temporary Items
 #*.dylib
 
 # Executables
-#*.exe
+
 
 # Metadata
 *.aliases
@@ -692,3 +692,10 @@ Temporary Items
 .cache/
 
 # End of https://www.gitignore.io/api/labview
+
+### exceptions
+!lib/*.lib
+!lang/labview/RTMA_LV_LIB64/*.lib
+!lang/labview/RTMA_LV_LIB64/*.dll
+!lang/python/*.lib
+!/bin/*.exe

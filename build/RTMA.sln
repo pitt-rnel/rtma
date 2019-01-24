@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2050
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MessageManager", "..\src\modules\MessageManager\MessageManager.vcxproj", "{8DFF7AB1-940B-46FD-B80A-C8EE121B4F69}"
 	ProjectSection(ProjectDependencies) = postProject
 		{FD9D0C5C-5C41-426E-8758-4EC311F103B9} = {FD9D0C5C-5C41-426E-8758-4EC311F103B9}
@@ -56,7 +58,6 @@ Global
 		{3C778E02-6850-444D-86CC-D35430FA290F}.Release|Win32.ActiveCfg = Release|Win32
 		{3C778E02-6850-444D-86CC-D35430FA290F}.Release|Win32.Build.0 = Release|Win32
 		{3C778E02-6850-444D-86CC-D35430FA290F}.Release|x64.ActiveCfg = Release|x64
-		{3C778E02-6850-444D-86CC-D35430FA290F}.Release|x64.Build.0 = Release|x64
 		{85FABFA0-1A28-48CC-B418-75CB425D1FF8}.Debug|Win32.ActiveCfg = Debug|Win32
 		{85FABFA0-1A28-48CC-B418-75CB425D1FF8}.Debug|Win32.Build.0 = Debug|Win32
 		{85FABFA0-1A28-48CC-B418-75CB425D1FF8}.Debug|x64.ActiveCfg = Debug|x64
@@ -76,5 +77,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9A971BAD-BC8C-4C67-A289-0656FF2BA9BB}
 	EndGlobalSection
 EndGlobal
