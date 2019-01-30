@@ -47,7 +47,7 @@
 *.dSYM/
 *.su
 *.idb
-*.pdb # maybe add back later
+*.pdb
 
 # Kernel Module Compile Results
 *.mod*
