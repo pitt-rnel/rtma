@@ -1,1 +1,1 @@
-python C:\hst2\RTMA\lang\python\ctypesgen/ctypesgen.py --includedir="C:\hst2\include" -a -o RTMA_config2.py C:\hst2\include\rp3_hst_config.h
+python D:\git\rtma\lang\python\ctypesgen/ctypesgen.py --includedir="D:\git\climber\include" -a -o RTMA_config2.py D:\git\climber\include\climber_config.h
