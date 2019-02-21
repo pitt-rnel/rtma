@@ -504,6 +504,15 @@ SocketPipeServer::SocketPipeServer( char *host_addr, short port_no)
 					CloseSocket( _hListeningSocket);
 					throw UPipeException( "Could not set socket option SO_LINGER");
 				}
+
+				#ifdef RTMA_USE_SO_NOSIGPIPE // for Mac OS X, solution from: https://nwat.xyz/blog/2014/01/16/porting-msg_more-and-msg_nosigpipe-to-osx/
+						int val = 1;
+						status = setsockopt(_hListeningSocket.id, SOL_SOCKET, SO_NOSIGPIPE, (void*)&val, sizeof(val));
+						if ( status < 0) {
+								throw UPipeException( "Could not set socket option SO_NOSIGPIPE");
+						}
+				#endif
+
 			#endif
 		#endif // USE_LINUX	
 		#ifdef _WINDOWS_C
@@ -515,7 +524,7 @@ SocketPipeServer::SocketPipeServer( char *host_addr, short port_no)
 			}
 		#else
 			len = sizeof (struct sockaddr_in);
-			status = bind (_hListeningSocket.id, (struct sockaddr *) (&(_hListeningSocket.saServer)), len);	
+			status = ::bind (_hListeningSocket.id, (struct sockaddr *) (&(_hListeningSocket.saServer)), len);	
 			if( status < 0){	
 			  MyCString ErrMsg( "Cannot bind to server port, the error is: ");
 			  switch (errno){

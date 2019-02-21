@@ -10,6 +10,9 @@
     	#ifndef _UNIX_C
     	#define _UNIX_C
     	#endif
+		#ifndef __unix__ // OS X does not define __UNIX__
+    	#define __unix__
+    	#endif
     #else
         #ifndef _WINDOWS_C  
         #define _WINDOWS_C

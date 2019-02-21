@@ -6,7 +6,7 @@
 //
 // Copyright (c) 2006 - Meel Velliste, University of Pittsburgh
 
-#include "..\..\include\RTMA.h"
+#include "RTMA.h"
 
 extern "C" {
 #include "mex.h"

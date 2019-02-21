@@ -32,6 +32,17 @@
 		#define ERRNO_VAR
 		extern int errno;
 	#endif
+
+	// for Mac OS X, solution from https://nwat.xyz/blog/2014/01/16/porting-msg_more-and-msg_nosigpipe-to-osx/
+	#ifndef MSG_NOSIGNAL 
+        # define MSG_NOSIGNAL 0
+    # ifdef SO_NOSIGPIPE
+        #  define RTMA_USE_SO_NOSIGPIPE
+    # else
+        #  error "Cannot block SIGPIPE!"
+    # endif
+    #endif
+
 #endif
 
 typedef struct {
