@@ -1,7 +1,7 @@
 '''Wrapper for message_defs.h
 
 Generated with:
-C:\Users\emd\Documents\_apps_\ctypesgen\ctypesgen.py --includedir="../include" -a -o C:\Users\emd\Desktop\RTMA\examples\python\producer_consumer\message_defs.py C:\Users\emd\Desktop\RTMA\examples\python\producer_consumer\message_defs.h
+C:\git\rtma\lang\python\ctypesgen/ctypesgen.py --includedir=C:\git\RTMA\examples\python\producer_consumer -a -o message_defs.py C:\git\RTMA\examples\python\producer_consumer\message_defs.h
 
 Do not modify this file.
 '''
@@ -591,7 +591,7 @@ add_library_search_dirs([])
 
 # No modules
 
-# C:\\Users\\emd\\Desktop\\RTMA\\examples\\python\\producer_consumer\\message_defs.h: 9
+# C:\\git\\RTMA\\examples\\python\\producer_consumer\\message_defs.h: 9
 class struct_anon_1(Structure):
     pass
 
@@ -606,7 +606,7 @@ struct_anon_1._fields_ = [
     ('x', c_double),
 ]
 
-MDF_TEST_DATA = struct_anon_1 # C:\\Users\\emd\\Desktop\\RTMA\\examples\\python\\producer_consumer\\message_defs.h: 9
+MDF_TEST_DATA = struct_anon_1 # C:\\git\\RTMA\\examples\\python\\producer_consumer\\message_defs.h: 9
 
 __const = c_int # <command-line>: 5
 
@@ -616,13 +616,13 @@ try:
 except:
     pass
 
-# C:\\Users\\emd\\Desktop\\RTMA\\examples\\python\\producer_consumer\\message_defs.h: 1
+# C:\\git\\RTMA\\examples\\python\\producer_consumer\\message_defs.h: 1
 try:
     MT_REQUEST_TEST_DATA = 101
 except:
     pass
 
-# C:\\Users\\emd\\Desktop\\RTMA\\examples\\python\\producer_consumer\\message_defs.h: 2
+# C:\\git\\RTMA\\examples\\python\\producer_consumer\\message_defs.h: 2
 try:
     MT_TEST_DATA = 102
 except:
