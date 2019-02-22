@@ -15,6 +15,9 @@ unix {
   OBJECTS_DIR = .obj
   DEFINES += USE_LINUX
 }
+macx { # mac (also includes unix)
+  CONFIG -= app_bundle
+}
 win32 {
 	TEMPLATE = vcapp
     CONFIG += console
