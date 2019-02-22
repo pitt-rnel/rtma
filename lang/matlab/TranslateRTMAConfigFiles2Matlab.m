@@ -1,4 +1,4 @@
-function TranslateRTMAConfigFiles2Matlab( RTMA_BaseDir, MessageConfigFile)
+function TranslateRTMAConfigFiles2Matlab( RTMA_BaseDir, MessageConfigFile, OutputFileName)
 % TranslateRTMAConfigFiles2Matlab( RTMA_BaseDir, MessageConfigFile)
 %
 % Translates RTMA_config.h and associated
@@ -17,6 +17,10 @@ end
 
 % OutputFile = [ConfigFileDir '/' ConfigFileBaseName '.mat'];
 %OutputFile = [ConfigFileDir '\..\..\..\include\RTMA_config.mat'];
-OutputFile = fullfile(ConfigFileDir,'RTMA_config.mat');
+if exist('OutputFileName','var') && ~isempty(OutputFileName)
+    OutputFile = fullfile(ConfigFileDir,[OutputFileName '.mat']);
+else
+    OutputFile = fullfile(ConfigFileDir,'RTMA_config.mat');
+end
 RTMA = ReadRTMAConfigFiles( RTMA_BaseDir, MessageConfigFile);
 save( OutputFile, 'RTMA');
