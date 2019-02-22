@@ -23,10 +23,27 @@
 #include <new>
 
 void *MyAlloc( size_t s);
+
+#ifdef Cpp11
+void* operator new( size_t s);
+#else
 void* operator new( size_t s) throw(std::bad_alloc);
+#endif
+
 void operator delete( void *p) throw();
+
+#ifdef Cpp11
+void* operator new[]( size_t s);
+#else
 void* operator new[]( size_t s) throw(std::bad_alloc);
+#endif
+
+#ifdef Cpp11
+void* operator new[]( size_t s, size_t n);
+#else
 void* operator new[]( size_t s, size_t n) throw(std::bad_alloc);
+#endif
+
 void operator delete[]( void *p) throw();
 
 #endif //_MEX_HACK_H_INCLUDED_

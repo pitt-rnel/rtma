@@ -11,8 +11,8 @@ if( ~ispc && ~isunix)
     error( 'Unsupported platform');
 end
 
-% base_dir = '../..';
-base_dir = fullfile(getHstPath,'..','rtma'); %'git\rtma
+base_dir = '../..';
+% base_dir = fullfile(getHstPath,'..','rtma'); %'git\rtma
 core_dir = [base_dir '/src/core'];
 pipelib_dir = [core_dir '/PipeLib'];
 
@@ -27,7 +27,7 @@ libs = [''];
 if( ispc)
     libs = [libs 'ws2_32.lib '];
 elseif( isunix)
-    options = [options '-DUSE_LINUX '];
+    options = [options '-DUSE_LINUX  -DCpp11 '];
 end
 
 cmd = ['mex ' options include_dirs sources libs]

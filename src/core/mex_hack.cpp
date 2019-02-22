@@ -18,7 +18,11 @@ void *MyAlloc( size_t s)
 	return p;
 }
 
+#ifdef Cpp11
+void* operator new( size_t s)
+#else
 void* operator new( size_t s) throw(std::bad_alloc)
+#endif
 {
 	void *p = MyAlloc( s);
 	if( p == NULL) throw std::bad_alloc();
@@ -28,13 +32,21 @@ void operator delete( void *p) throw()
 {
 	mxFree( p);
 }
+#ifdef Cpp11
+void* operator new[]( size_t s)
+#else
 void* operator new[]( size_t s) throw(std::bad_alloc)
+#endif
 {
 	void *p = MyAlloc( s);
 	if( p == NULL) throw std::bad_alloc();
 	return p;
 }
+#ifdef Cpp11
+void* operator new[]( size_t s, size_t n)
+#else
 void* operator new[]( size_t s, size_t n) throw(std::bad_alloc)
+#endif
 {
 	void *p = MyAlloc( s*n);
 	if( p == NULL) throw std::bad_alloc();
