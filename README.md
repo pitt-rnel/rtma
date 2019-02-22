@@ -44,7 +44,7 @@ see below further requirements:
 - Install swig >= 2.0.3 (on windows, make sure `swig.exe` is in PATH)
 - Install ctypeslib 
   * Linux: `sudo apt-get install python-ctypeslib`
-  * Windows: Download from http://code.google.com/p/ctypesgen 
+  * Windows: Download from http://code.google.com/p/ctypesgen NOTE: This also requires MinGW GCC to be installed and on system PATH
 
 #### C&#35;
 - Windows only, Visual Studio 2005 or later
