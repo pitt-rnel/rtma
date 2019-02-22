@@ -3,6 +3,9 @@ Makefile
 *.qmake.cache
 *.qmake.stash
 
+#swig
+*_wrap.cxx
+
 # rtma-specific files/folders
 *.bin
 
