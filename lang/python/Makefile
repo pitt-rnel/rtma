@@ -3,8 +3,8 @@ SWIG       = swig # swig executable (add to path or include full path here)
 SYMBOLS    = -DUSE_LINUX
 GCC        = g++
 CPPFLAGS   = -shared -Wall -Wno-deprecated -pthread -fPIC
-PY_INC     = /usr/local/Cellar/python@2/2.7.15_3/Frameworks/Python.framework/Versions/2.7/include/python2.7 # path to python header files
-PYTHON     = /usr/local/bin/python # path to python executable (might be unecessary? Some systems may need to reference this var to run H2XML and XML2PY)
+PY_INC     := $(shell python-config --includes) # path to python header files
+PYTHON     = python # path to python executable (unecessary if on path)
 PY_LD_FLAGS := $(shell python-config --ldflags) # generate commands to link to python library files
 LIBS       = -L${BASE_DIR}/lib -lRTMA # link rtma library
 LDFLAGS   += ${LIBS} ${PY_LD_FLAGS}
@@ -21,10 +21,10 @@ _PyRTMA.so:  PyRTMA.py
 	${GCC} ${CPPFLAGS} ${INCLUDES} ${SYMBOLS} -I${PY_INC} ${LDFLAGS} PyRTMA_wrap.cxx -o _PyRTMA.so
 
 RTMA_types.xml: ${BASE_DIR}/include/RTMA_types.h
-	${H2XML} -c -o RTMA_types.xml `pwd`/../../include/RTMA_types.h
+	${PYTHON} ${H2XML} -c -o RTMA_types.xml `pwd`/../../include/RTMA_types.h
 
 RTMA_types.py: RTMA_types.xml
-	${XML2PY} -o RTMA_types.py RTMA_types.xml
+	${PYTHON} ${XML2PY} -o RTMA_types.py RTMA_types.xml
 
 clean:
 	rm -f *.so
