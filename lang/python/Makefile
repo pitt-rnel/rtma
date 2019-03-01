@@ -21,7 +21,7 @@ _PyRTMA.so:  PyRTMA.py
 	${GCC} ${CPPFLAGS} ${INCLUDES} ${SYMBOLS} -I${PY_INC} ${LDFLAGS} PyRTMA_wrap.cxx -o _PyRTMA.so
 
 RTMA_types.py: ${BASE_DIR}/include/RTMA_types.h
-	${PYTHON} ${CLANG2PY} -c -o RTMA_types.py `pwd`/../../include/RTMA_types.h
+	${PYTHON} ${CLANG2PY} -c -k cdefmstu -o RTMA_types.py `pwd`/../../include/RTMA_types.h
 
 clean:
 	rm -f *.so
