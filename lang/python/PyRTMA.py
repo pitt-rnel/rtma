@@ -123,6 +123,54 @@ class CMessage(_object):
     __swig_getmethods__ = {}
     __getattr__ = lambda self, name: _swig_getattr(self, CMessage, name)
     __repr__ = _swig_repr
+    __swig_setmethods__["msg_type"] = _PyRTMA.CMessage_msg_type_set
+    __swig_getmethods__["msg_type"] = _PyRTMA.CMessage_msg_type_get
+    if _newclass:
+        msg_type = _swig_property(_PyRTMA.CMessage_msg_type_get, _PyRTMA.CMessage_msg_type_set)
+    __swig_setmethods__["msg_count"] = _PyRTMA.CMessage_msg_count_set
+    __swig_getmethods__["msg_count"] = _PyRTMA.CMessage_msg_count_get
+    if _newclass:
+        msg_count = _swig_property(_PyRTMA.CMessage_msg_count_get, _PyRTMA.CMessage_msg_count_set)
+    __swig_setmethods__["send_time"] = _PyRTMA.CMessage_send_time_set
+    __swig_getmethods__["send_time"] = _PyRTMA.CMessage_send_time_get
+    if _newclass:
+        send_time = _swig_property(_PyRTMA.CMessage_send_time_get, _PyRTMA.CMessage_send_time_set)
+    __swig_setmethods__["recv_time"] = _PyRTMA.CMessage_recv_time_set
+    __swig_getmethods__["recv_time"] = _PyRTMA.CMessage_recv_time_get
+    if _newclass:
+        recv_time = _swig_property(_PyRTMA.CMessage_recv_time_get, _PyRTMA.CMessage_recv_time_set)
+    __swig_setmethods__["src_host_id"] = _PyRTMA.CMessage_src_host_id_set
+    __swig_getmethods__["src_host_id"] = _PyRTMA.CMessage_src_host_id_get
+    if _newclass:
+        src_host_id = _swig_property(_PyRTMA.CMessage_src_host_id_get, _PyRTMA.CMessage_src_host_id_set)
+    __swig_setmethods__["src_mod_id"] = _PyRTMA.CMessage_src_mod_id_set
+    __swig_getmethods__["src_mod_id"] = _PyRTMA.CMessage_src_mod_id_get
+    if _newclass:
+        src_mod_id = _swig_property(_PyRTMA.CMessage_src_mod_id_get, _PyRTMA.CMessage_src_mod_id_set)
+    __swig_setmethods__["dest_host_id"] = _PyRTMA.CMessage_dest_host_id_set
+    __swig_getmethods__["dest_host_id"] = _PyRTMA.CMessage_dest_host_id_get
+    if _newclass:
+        dest_host_id = _swig_property(_PyRTMA.CMessage_dest_host_id_get, _PyRTMA.CMessage_dest_host_id_set)
+    __swig_setmethods__["dest_mod_id"] = _PyRTMA.CMessage_dest_mod_id_set
+    __swig_getmethods__["dest_mod_id"] = _PyRTMA.CMessage_dest_mod_id_get
+    if _newclass:
+        dest_mod_id = _swig_property(_PyRTMA.CMessage_dest_mod_id_get, _PyRTMA.CMessage_dest_mod_id_set)
+    __swig_setmethods__["num_data_bytes"] = _PyRTMA.CMessage_num_data_bytes_set
+    __swig_getmethods__["num_data_bytes"] = _PyRTMA.CMessage_num_data_bytes_get
+    if _newclass:
+        num_data_bytes = _swig_property(_PyRTMA.CMessage_num_data_bytes_get, _PyRTMA.CMessage_num_data_bytes_set)
+    __swig_setmethods__["remaining_bytes"] = _PyRTMA.CMessage_remaining_bytes_set
+    __swig_getmethods__["remaining_bytes"] = _PyRTMA.CMessage_remaining_bytes_get
+    if _newclass:
+        remaining_bytes = _swig_property(_PyRTMA.CMessage_remaining_bytes_get, _PyRTMA.CMessage_remaining_bytes_set)
+    __swig_setmethods__["is_dynamic"] = _PyRTMA.CMessage_is_dynamic_set
+    __swig_getmethods__["is_dynamic"] = _PyRTMA.CMessage_is_dynamic_get
+    if _newclass:
+        is_dynamic = _swig_property(_PyRTMA.CMessage_is_dynamic_get, _PyRTMA.CMessage_is_dynamic_set)
+    __swig_setmethods__["reserved"] = _PyRTMA.CMessage_reserved_set
+    __swig_getmethods__["reserved"] = _PyRTMA.CMessage_reserved_get
+    if _newclass:
+        reserved = _swig_property(_PyRTMA.CMessage_reserved_get, _PyRTMA.CMessage_reserved_set)
     __swig_setmethods__["data"] = _PyRTMA.CMessage_data_set
     __swig_getmethods__["data"] = _PyRTMA.CMessage_data_get
     if _newclass:
