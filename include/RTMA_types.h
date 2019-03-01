@@ -22,19 +22,20 @@ typedef int MSG_COUNT;
 #define MAX_RTMA_MODULE_ID  9 // Module ID-s below 10 are reserved for RTMA core
 
 // Header fields for all messages passed through RTMA
-#define RTMA_MSG_HEADER_FIELDS \
-	MSG_TYPE	msg_type; \
-	MSG_COUNT	msg_count; \
-	double	send_time; \
-	double	recv_time; \
-	HOST_ID		src_host_id; \
-	MODULE_ID	src_mod_id; \
-	HOST_ID		dest_host_id; \
-	MODULE_ID	dest_mod_id; \
-	int			num_data_bytes; \
-	int			remaining_bytes; \
-	int			is_dynamic; \
-	int			reserved
+// Following macro was commented out for compatibility with ctypesgen2 v2.2.2 python package (used for Python3 compatiblity) All references to this macro in this file and in RTMA.h were replaced with actual values
+//#define RTMA_MSG_HEADER_FIELDS \
+//	MSG_TYPE	msg_type; \
+//	MSG_COUNT	msg_count; \
+//	double	send_time; \
+//	double	recv_time; \
+//	HOST_ID		src_host_id; \
+//	MODULE_ID	src_mod_id; \
+//	HOST_ID		dest_host_id; \
+//	MODULE_ID	dest_mod_id; \
+//	int			num_data_bytes; \
+//	int			remaining_bytes; \
+//	int			is_dynamic; \
+//	int			reserved
 // msg_type - Message type ID
 // msg_count - Source message count (per source, starting from 1)
 // send_time - Time at source when message sent (Seconds since 0:00:00 on Jan 1, 1970)
@@ -52,13 +53,35 @@ typedef int MSG_COUNT;
 
 // Header for messages passed through RTMA
 typedef struct {
-	RTMA_MSG_HEADER_FIELDS;
+	MSG_TYPE	msg_type; // previously RTMA_MSG_HEADER_FIELDS; (changed for python compatibility)
+	MSG_COUNT	msg_count;
+	double	send_time;
+	double	recv_time;
+	HOST_ID		src_host_id;
+	MODULE_ID	src_mod_id;
+	HOST_ID		dest_host_id;
+	MODULE_ID	dest_mod_id;
+	int			num_data_bytes;
+	int			remaining_bytes;
+	int			is_dynamic;
+	int			reserved;
 } RTMA_MSG_HEADER;
 
 #define MAX_CONTIGUOUS_MESSAGE_DATA 9000
 
 typedef struct {
-	RTMA_MSG_HEADER_FIELDS;
+	MSG_TYPE	msg_type; // previously RTMA_MSG_HEADER_FIELDS; (changed for python compatibility)
+	MSG_COUNT	msg_count;
+	double	send_time;
+	double	recv_time;
+	HOST_ID		src_host_id;
+	MODULE_ID	src_mod_id;
+	HOST_ID		dest_host_id;
+	MODULE_ID	dest_mod_id;
+	int			num_data_bytes;
+	int			remaining_bytes;
+	int			is_dynamic;
+	int			reserved;
 	char data[MAX_CONTIGUOUS_MESSAGE_DATA];
 } RTMA_MESSAGE;
 
