@@ -1,1 +1,2 @@
-python %RTMA%/tools/build_python_message_defs.py message_defs.h
+REM python %RTMA%/tools/build_python_message_defs.py message_defs.h
+python C:\git\rtma\lang\python\ctypesgen/ctypesgen.py --includedir="C:\git\RTMA\examples\python\request_reply" -a -o message_defs.py C:\git\RTMA\examples\python\request_reply\message_defs.h

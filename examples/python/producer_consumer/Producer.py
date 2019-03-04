@@ -1,4 +1,5 @@
 #!/usr/bin/python
+from __future__ import print_function
 import time
 import PyRTMA
 from PyRTMA import copy_to_msg
@@ -11,7 +12,7 @@ if __name__ == "__main__":
     mod = PyRTMA.RTMA_Module(MID_PRODUCER, 0)
     mod.ConnectToMMM("localhost:7111")
     
-    print "Producer running...\n"
+    print("Producer running...\n")
 
     a = 0
     run = True
@@ -25,7 +26,7 @@ if __name__ == "__main__":
         copy_to_msg(data, out_msg)
         mod.SendMessage(out_msg)
 
-        print "Sent message ", out_msg.GetHeader().msg_type
+        print("Sent message ", out_msg.GetHeader().msg_type)
         
         a += 1
         
