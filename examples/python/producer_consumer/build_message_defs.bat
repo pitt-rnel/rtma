@@ -1,2 +1,3 @@
 REM python %RTMA%/tools/build_python_message_defs.py message_defs.h
-python C:\git\rtma\lang\python\ctypesgen/ctypesgen.py --includedir="C:\git\RTMA\examples\python\producer_consumer" -a -o message_defs.py C:\git\RTMA\examples\python\producer_consumer\message_defs.h
+set CLANG2PY="C:\Program Files\Python37\Lib\site-packages\ctypeslib\clang2py.py"
+python3 %CLANG2PY% -c -k cdefmstu -o %cd%\message_defs.py %cd%\message_defs.h

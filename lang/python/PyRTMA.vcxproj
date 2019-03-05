@@ -111,12 +111,12 @@
       <Message>why?</Message>
     </CustomBuildStep>
     <ClCompile>
-      <AdditionalIncludeDirectories>../../include;../../src/core;$(PYTHON_INCLUDE);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../include;$(PYTHON_INCLUDE);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>../../src/core/RTMA.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../../lib/RTMA.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)_$(ProjectName).pyd</OutputFile>
       <AdditionalLibraryDirectories>$(PYTHON_LIB);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>

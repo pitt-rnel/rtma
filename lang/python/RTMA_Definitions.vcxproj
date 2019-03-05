@@ -111,7 +111,7 @@
       <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>$(PYTHON_LIB)/python27.lib;../../lib/RTMA.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(PYTHON_LIB)/python37.lib;../../lib/RTMA.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)_$(ProjectName).pyd</OutputFile>
       <AdditionalLibraryDirectories>$(LIB);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
