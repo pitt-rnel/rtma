@@ -1,0 +1,78 @@
+ImageRuntimeVersion: v4.0.30319
+Assembly RTMAd.NET32, Version=1.0.*, Culture=Invariant Language (Invariant Country): 
+	hash=SHA1, flags=PublicKey
+Assembly mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Class RTMA.Serializer: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Methods:
+    CountDataBytes(Object): PrivateScope, Public, HideBySig
+    SerializeData(Object, Void*, Int32): PrivateScope, Public, HideBySig
+    DeserializeData(Object&, Void*, Int32): PrivateScope, Public, HideBySig
+Class RTMA.Message: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Interfaces:
+    System.IDisposable
+  Fields:
+    Int32 msg_type : Public
+    Int32 msg_count : Public
+    Double send_time : Public
+    Double recv_time : Public
+    Int16 src_host_id : Public
+    Int16 src_mod_id : Public
+    Int16 dest_host_id : Public
+    Int16 dest_mod_id : Public
+    Int32 num_data_bytes : Public
+    Int32 remaining_bytes : Public
+    Int32 is_dynamic : Public
+    Int32 reserved : Public
+  Properties:
+    Int32 InstanceCount 'get ' : 
+  Methods:
+    get_InstanceCount(): PrivateScope, Public, HideBySig, SpecialName
+    GetNativePtr(): PrivateScope, Public, HideBySig
+    GetData(Object&): PrivateScope, Public, HideBySig
+    ToHexString(): PrivateScope, Public, HideBySig
+    Dispose(): PrivateScope, Public, Final, Virtual, HideBySig
+Class RTMA.Module: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Interfaces:
+    System.IDisposable
+  Properties:
+    Boolean IsConnected 'get ' : 
+  Methods:
+    ConnectToMMM(Int16, String): PrivateScope, Public, HideBySig
+    ConnectToMMM(Int16): PrivateScope, Public, HideBySig
+    DisconnectFromMMM(): PrivateScope, Public, HideBySig
+    SendModuleReady(): PrivateScope, Public, HideBySig
+    Subscribe(Int32): PrivateScope, Public, HideBySig
+    Unsubscribe(Int32): PrivateScope, Public, HideBySig
+    PauseSubscription(Int32): PrivateScope, Public, HideBySig
+    ResumeSubscription(Int32): PrivateScope, Public, HideBySig
+    SendMessage(Int32, Object): PrivateScope, Public, HideBySig
+    SendMessage(Int32, Object, Int16, Int16): PrivateScope, Public, HideBySig
+    SendMessage(Int32, Object, Int16, Int16, Double&(Out), Int32&(Out)): PrivateScope, Public, HideBySig
+    SendSignal(Int32): PrivateScope, Public, HideBySig
+    SendSignal(Int32, Int16, Int16): PrivateScope, Public, HideBySig
+    SendSignal(Int32, Int16, Int16, Double&(Out), Int32&(Out)): PrivateScope, Public, HideBySig
+    SendSelfSignal(Int32): PrivateScope, Public, HideBySig
+    ReadMessage(): PrivateScope, Public, HideBySig
+    ReadMessage(Double): PrivateScope, Public, HideBySig
+    ReadMessage(ReadType): PrivateScope, Public, HideBySig
+    SetTimer(UInt32): PrivateScope, Public, HideBySig
+    CancelTimer(Int32): PrivateScope, Public, HideBySig
+    GetAbsTime(): PrivateScope, Public, HideBySig
+    get_IsConnected(): PrivateScope, Public, HideBySig, SpecialName
+    Dispose(): PrivateScope, Public, Final, Virtual, HideBySig
+Struct RTMA.Module+ReadType: AutoLayout, AnsiClass, Class, NestedPublic, Sealed, BeforeFieldInit
+  :System.Enum
+  Fields:
+    Int32 value__ : Public, SpecialName, RTSpecialName
+    ReadType Blocking = 0 : Public, Static, Literal, HasDefault
+    ReadType NonBlocking = 1 : Public, Static, Literal, HasDefault
