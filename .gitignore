@@ -1,3 +1,7 @@
+# custom
+Py3Release/
+Py2Release/
+
 # qmake
 Makefile
 *.qmake.cache
