@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.452
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PyRTMA", "PyRTMA.vcxproj", "{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PyRTMA2", "PyRTMA2.vcxproj", "{C54E569D-4649-48A5-8D9C-3B245F0573D7}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RTMA_Definitions", "RTMA_Definitions.vcxproj", "{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RTMA_Definitions2", "RTMA_Definitions2.vcxproj", "{2BF85FCC-E3BD-47FB-B3EA-A4C5AA37B37B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PyRTMA3", "PyRTMA3.vcxproj", "{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RTMA_Definitions3", "RTMA_Definitions3.vcxproj", "{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,24 +17,54 @@ Global
 		Py2Release|x64 = Py2Release|x64
 		Py3Release|Win32 = Py3Release|Win32
 		Py3Release|x64 = Py3Release|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}.Py2Release|Win32.ActiveCfg = Py2Release|Win32
-		{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}.Py2Release|Win32.Build.0 = Py2Release|Win32
-		{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}.Py2Release|x64.ActiveCfg = Py2Release|x64
-		{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}.Py2Release|x64.Build.0 = Py2Release|x64
+		{C54E569D-4649-48A5-8D9C-3B245F0573D7}.Py2Release|Win32.ActiveCfg = Py2Release|Win32
+		{C54E569D-4649-48A5-8D9C-3B245F0573D7}.Py2Release|Win32.Build.0 = Py2Release|Win32
+		{C54E569D-4649-48A5-8D9C-3B245F0573D7}.Py2Release|x64.ActiveCfg = Py2Release|x64
+		{C54E569D-4649-48A5-8D9C-3B245F0573D7}.Py2Release|x64.Build.0 = Py2Release|x64
+		{C54E569D-4649-48A5-8D9C-3B245F0573D7}.Py3Release|Win32.ActiveCfg = Py2Release|Win32
+		{C54E569D-4649-48A5-8D9C-3B245F0573D7}.Py3Release|Win32.Build.0 = Py2Release|Win32
+		{C54E569D-4649-48A5-8D9C-3B245F0573D7}.Py3Release|x64.ActiveCfg = Py2Release|x64
+		{C54E569D-4649-48A5-8D9C-3B245F0573D7}.Release|Win32.ActiveCfg = Py2Release|Win32
+		{C54E569D-4649-48A5-8D9C-3B245F0573D7}.Release|Win32.Build.0 = Py2Release|Win32
+		{C54E569D-4649-48A5-8D9C-3B245F0573D7}.Release|x64.ActiveCfg = Py2Release|x64
+		{C54E569D-4649-48A5-8D9C-3B245F0573D7}.Release|x64.Build.0 = Py2Release|x64
+		{2BF85FCC-E3BD-47FB-B3EA-A4C5AA37B37B}.Py2Release|Win32.ActiveCfg = Py2Release|Win32
+		{2BF85FCC-E3BD-47FB-B3EA-A4C5AA37B37B}.Py2Release|Win32.Build.0 = Py2Release|Win32
+		{2BF85FCC-E3BD-47FB-B3EA-A4C5AA37B37B}.Py2Release|x64.ActiveCfg = Py2Release|x64
+		{2BF85FCC-E3BD-47FB-B3EA-A4C5AA37B37B}.Py2Release|x64.Build.0 = Py2Release|x64
+		{2BF85FCC-E3BD-47FB-B3EA-A4C5AA37B37B}.Py3Release|Win32.ActiveCfg = Py2Release|Win32
+		{2BF85FCC-E3BD-47FB-B3EA-A4C5AA37B37B}.Py3Release|Win32.Build.0 = Py2Release|Win32
+		{2BF85FCC-E3BD-47FB-B3EA-A4C5AA37B37B}.Py3Release|x64.ActiveCfg = Py2Release|x64
+		{2BF85FCC-E3BD-47FB-B3EA-A4C5AA37B37B}.Release|Win32.ActiveCfg = Py2Release|Win32
+		{2BF85FCC-E3BD-47FB-B3EA-A4C5AA37B37B}.Release|Win32.Build.0 = Py2Release|Win32
+		{2BF85FCC-E3BD-47FB-B3EA-A4C5AA37B37B}.Release|x64.ActiveCfg = Py2Release|x64
+		{2BF85FCC-E3BD-47FB-B3EA-A4C5AA37B37B}.Release|x64.Build.0 = Py2Release|x64
+		{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}.Py2Release|Win32.ActiveCfg = Py3Release|Win32
+		{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}.Py2Release|Win32.Build.0 = Py3Release|Win32
+		{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}.Py2Release|x64.ActiveCfg = Py3Release|x64
 		{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}.Py3Release|Win32.ActiveCfg = Py3Release|Win32
 		{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}.Py3Release|Win32.Build.0 = Py3Release|Win32
 		{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}.Py3Release|x64.ActiveCfg = Py3Release|x64
 		{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}.Py3Release|x64.Build.0 = Py3Release|x64
-		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Py2Release|Win32.ActiveCfg = Py2Release|Win32
-		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Py2Release|Win32.Build.0 = Py2Release|Win32
-		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Py2Release|x64.ActiveCfg = Py2Release|x64
-		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Py2Release|x64.Build.0 = Py2Release|x64
+		{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}.Release|Win32.ActiveCfg = Py3Release|Win32
+		{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}.Release|Win32.Build.0 = Py3Release|Win32
+		{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}.Release|x64.ActiveCfg = Py3Release|x64
+		{588AAB6A-C3D8-481C-8467-DDB52D0FF8DA}.Release|x64.Build.0 = Py3Release|x64
+		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Py2Release|Win32.ActiveCfg = Py3Release|Win32
+		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Py2Release|Win32.Build.0 = Py3Release|Win32
+		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Py2Release|x64.ActiveCfg = Py3Release|x64
 		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Py3Release|Win32.ActiveCfg = Py3Release|Win32
 		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Py3Release|Win32.Build.0 = Py3Release|Win32
 		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Py3Release|x64.ActiveCfg = Py3Release|x64
 		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Py3Release|x64.Build.0 = Py3Release|x64
+		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Release|Win32.ActiveCfg = Py3Release|Win32
+		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Release|Win32.Build.0 = Py3Release|Win32
+		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Release|x64.ActiveCfg = Py3Release|x64
+		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Release|x64.Build.0 = Py3Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

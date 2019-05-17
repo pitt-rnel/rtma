@@ -7,7 +7,7 @@
 "Python interface to the University of Pittsburgh Motor Control Lab's Real Time Messaging Architecture (RTMA)."
 %enddef
 
-%module(docstring=DOCSTRING) PyRTMA
+%module(docstring=DOCSTRING) PyRTMA3
 %feature("autodoc", "1");
 %{
 
