@@ -1,8 +1,8 @@
 #!/usr/bin/python
 from __future__ import print_function
 import time
-import PyRTMA
-from PyRTMA import copy_from_msg
+import PyRTMA3 as PyRTMA
+from PyRTMA3 import copy_from_msg
 import message_defs as mdefs
 import sys
 
