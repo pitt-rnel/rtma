@@ -96,14 +96,14 @@ If you'd like to compile from source, clone the repository and follow these inst
     * Set `PYTHON2_BASE` and `PYTHON3_BASE` environment variables to respective python 2 and 3 install locations (e.g. C:\Python\Anaconda3 and C:\Python\Anaconda3\envs\py27)
     * Set `PYTHON2_LIB` and `PYTHON3_LIB` environment variables (ex: %PYTHON3_BASE%\libs)
     * Set `PYTHON2_INCLUDE` and `PYTHON3_INCLUDE` environment variables (ex: %PYTHON3_BASE%\include)
-    * Build `RTMA/lang/python/PyRTMA.sln` with Visual Studio (tested with VS 2019)
+    * Build `RTMA\lang\python\PyRTMA.sln` with Visual Studio (tested with VS 2019)
     * Add `%RTMA%\lang\python` to `PYTHONPATH` environment variable
 	
 4. If you plan to use the Matlab interface, start matlab and execute the following:
     	
-        cd RTMA/lang/matlab
+        cd RTMA\lang\matlab
         make
-        cd RTMA/src/utils/LogReader
+        cd RTMA\src\utils\LogReader
         make
 
 
