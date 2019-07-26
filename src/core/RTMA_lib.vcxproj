@@ -176,6 +176,7 @@
   <ItemGroup>
     <ClCompile Include="MyCException.cpp" />
     <ClCompile Include="MyCString.cpp" />
+    <ClCompile Include="PipeLib\Timing.cpp" />
     <ClCompile Include="RTMA.cpp" />
   </ItemGroup>
   <ItemGroup>
