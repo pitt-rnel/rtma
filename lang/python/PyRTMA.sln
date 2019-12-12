@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PyRTMA3", "PyRTMA3.vcxproj"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RTMA_Definitions3", "RTMA_Definitions3.vcxproj", "{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PyRTMA36", "PyRTMA36.vcxproj", "{19376957-6974-4683-A384-8AD1F77F9E0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Py2Release|Win32 = Py2Release|Win32
@@ -65,6 +67,18 @@ Global
 		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Release|Win32.Build.0 = Py3Release|Win32
 		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Release|x64.ActiveCfg = Py3Release|x64
 		{7D3E8C1A-0C85-482F-9BA7-0BA09FE315AB}.Release|x64.Build.0 = Py3Release|x64
+		{19376957-6974-4683-A384-8AD1F77F9E0D}.Py2Release|Win32.ActiveCfg = Py3Release|Win32
+		{19376957-6974-4683-A384-8AD1F77F9E0D}.Py2Release|Win32.Build.0 = Py3Release|Win32
+		{19376957-6974-4683-A384-8AD1F77F9E0D}.Py2Release|x64.ActiveCfg = Py3Release|x64
+		{19376957-6974-4683-A384-8AD1F77F9E0D}.Py2Release|x64.Build.0 = Py3Release|x64
+		{19376957-6974-4683-A384-8AD1F77F9E0D}.Py3Release|Win32.ActiveCfg = Py3Release|Win32
+		{19376957-6974-4683-A384-8AD1F77F9E0D}.Py3Release|Win32.Build.0 = Py3Release|Win32
+		{19376957-6974-4683-A384-8AD1F77F9E0D}.Py3Release|x64.ActiveCfg = Py3Release|x64
+		{19376957-6974-4683-A384-8AD1F77F9E0D}.Py3Release|x64.Build.0 = Py3Release|x64
+		{19376957-6974-4683-A384-8AD1F77F9E0D}.Release|Win32.ActiveCfg = Py3Release|Win32
+		{19376957-6974-4683-A384-8AD1F77F9E0D}.Release|Win32.Build.0 = Py3Release|Win32
+		{19376957-6974-4683-A384-8AD1F77F9E0D}.Release|x64.ActiveCfg = Py3Release|x64
+		{19376957-6974-4683-A384-8AD1F77F9E0D}.Release|x64.Build.0 = Py3Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
