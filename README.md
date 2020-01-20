@@ -41,7 +41,7 @@ see below further requirements:
 
 #### Python
 - Version >= 2.6 (python3 is now supported!)
-- Install swig >= 2.0.3 (make sure swig executable is on Path. Latest SWIG 4.0 works.)
+- Install swig >= 2.0.3 (make sure swig executable is on Path. Latest SWIG 4.0 works.) (http://www.swig.org/download.html)
 - Install LLVM-Clang compiler
   - Windows/Linux: http://releases.llvm.org/download.html
   - MacOS: Install XCode command line tools (Clang is default compiler on modern Macs)
