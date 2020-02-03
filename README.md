@@ -47,6 +47,7 @@ see below further requirements:
   - MacOS: Install XCode command line tools (Clang is default compiler on modern Macs)
 - Install Clang and ctypeslib2 python packages
 	`pip install clang` and `pip install ctypeslib2`
+- Previously a package called "ctypesgen" was used instead of clang/ctypeslib2. This has recently been updated to support Python3 and can be used as an alternative to clang/ctypeslib2 if there are any issues with clang/ctypeslib2. This package can be found on GitHub.
 
 #### C&#35;
 - Windows only, Visual Studio 2005 or later. Latest VS2019 works.
