@@ -29,7 +29,7 @@ function RTMA = ReadRTMAConfigFiles( RTMA_BaseDir, varargin)
     end
 
     % Add user defined files to the list
-    FilePaths = [FilePaths InputFilenames];
+    FilePaths = [InputFilenames FilePaths];
     
     % Parse the file list
     h = ParseHFile( FilePaths{:});
