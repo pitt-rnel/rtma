@@ -25,7 +25,18 @@ namespace RTMA {
 	public ref class Message
 	{
 	public:
-		RTMA_MSG_HEADER_FIELDS;
+		MSG_TYPE	msg_type; // previously RTMA_MSG_HEADER_FIELDS; (changed for python compatibility)
+		MSG_COUNT	msg_count;
+		double	send_time;
+		double	recv_time;
+		HOST_ID		src_host_id;
+		MODULE_ID	src_mod_id;
+		HOST_ID		dest_host_id;
+		MODULE_ID	dest_mod_id;
+		int			num_data_bytes;
+		int			remaining_bytes;
+		int			is_dynamic;
+		int			reserved;
 	private:
 		CMessage *msg; // Pointer to the native message object
 		static int _InstanceCount = 0;
