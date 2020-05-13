@@ -13,7 +13,7 @@ debug = 0;
 
 global RTMA;
 
-if( ~exist( 'arg', 'var'))
+if( nargin < 1)
     timeout = -1; % Blocking call
     blocking = true;
 else
@@ -34,7 +34,7 @@ else
     end
 end
 
-if debug,   fprintf('Reading header...'), end
+if debug;   fprintf('Reading header...'); end  %#ok<*UNRCH>
 
 % Read the message header
 if( blocking) % If infinitely blocking, then keep doing reads with timeout to allow Ctrl-C
@@ -46,7 +46,7 @@ else % If non-blocking or specified timeout, then use timeout value directly
     Message = MatlabRTMA( RTMA.mex_opcode.READ_MESSAGE_HDR, RTMA.MESSAGE_HEADER, timeout);
 end
 
-if debug,   fprintf('done\n'), end
+if debug;   fprintf('done\n'); end
 
 if( isempty( Message))
     Message = []; % Just in case MatlabRTMA returns a different kind of empty
@@ -59,7 +59,7 @@ else
        Message.data = MatlabRTMA( RTMA.mex_opcode.READ_MESSAGE_DD);
     elseif( Message.num_data_bytes > 0)
         DataTemplate = GetMDF_by_MT( Message.msg_type);
-        if( ischar( DataTemplate) & strmatch( 'VARIABLE_LENGTH_ARRAY', DataTemplate))
+        if( ischar( DataTemplate) && strncmp( 'VARIABLE_LENGTH_ARRAY', DataTemplate, 21))
             Message.data = DataTemplate;
         else
 %             try

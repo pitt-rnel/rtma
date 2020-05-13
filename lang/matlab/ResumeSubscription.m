@@ -15,7 +15,7 @@ function ResumeSubscription( varargin)
         if( status == 0), error( 'ResumeSubscription mex-function failed'); end
 
         % Remove the record from the paused subscriptions list
-        idx = strmatch( MessageType, RTMA_runtime.Paused, 'exact');
+        idx = strcmp( MessageType, RTMA_runtime.Paused);
         RTMA_runtime.Paused(idx,:) = [];
         
     end

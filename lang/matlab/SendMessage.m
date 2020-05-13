@@ -32,7 +32,7 @@ end
 
 % Send the message
 [status, send_time, msg_count] = MatlabRTMA( RTMA.mex_opcode.SEND_MESSAGE, MessageType, Data, DestModuleID, DestHostID);
-if( status == 0) error( 'Could not send message'); end
+if( status == 0); error( 'Could not send message'); end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -41,7 +41,7 @@ function correct = CheckFormat( data, format)
 correct = 0;
 
 % If it is a variable length data format, then there is nothing to check
-if( ischar( format) & strmatch( 'VARIABLE_LENGTH_ARRAY', format))
+if( ischar( format) && strncmp( 'VARIABLE_LENGTH_ARRAY', format, 21))
     correct = 1;
     return;
 end
@@ -52,8 +52,8 @@ format_class = class( format);
 % First check that data and format have the same matlab class
 if( ~strcmp( data_class, format_class))
     disp( 'Matlab class of Data is different from that of Format');
-    data_class
-    format_class
+    data_class      %#ok<NOPRT>
+    format_class    %#ok<NOPRT>
     disp(data)
     return;
 end
@@ -92,8 +92,8 @@ switch( data_class)
                 return;
             end
             % Check if the field types are the same
-            data_value = getfield( data, data_field_name);
-            format_value = getfield( format, format_field_name);
+            data_value = data.(data_field_name);
+            format_value = format.(format_field_name);
             if( ~CheckFormat( data_value, format_value))
                 disp( ['Field types do not match: "' data_field_name '"']);
                 return;

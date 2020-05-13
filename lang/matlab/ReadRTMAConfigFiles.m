@@ -59,7 +59,7 @@ function RTMA = ReadRTMAConfigFiles( RTMA_BaseDir, varargin)
     message_names = fieldnames( RTMA.MT);
     for i = 1 : length( message_names)
         message_name = message_names{i};
-        message_type_id = getfield( RTMA.MT, message_name);
+        message_type_id = RTMA.MT.(message_name);
         RTMA.MTN_by_MT{message_type_id+1,1} = message_name;
     end
 
@@ -72,8 +72,8 @@ function RTMA = ReadRTMAConfigFiles( RTMA_BaseDir, varargin)
         if( ~isfield( RTMA.MT, message_name))
             error( ['MDF_' message_name ' does not have a matching MT_' message_name ' defined']);
         end
-        message_type_id = getfield( RTMA.MT, message_name);
-        RTMA.MDF_by_MT{message_type_id+1,1} = getfield( RTMA.MDF, message_name);
+        message_type_id = RTMA.MT.(message_name);
+        RTMA.MDF_by_MT{message_type_id+1,1} = RTMA.MDF.(message_name);
     end
 
     % If RTMA base directory provided, then parse mex op-code definition file
@@ -98,7 +98,7 @@ function RTMA = ExtractFields( fields, RTMA)
         name = names{n};
         [prefix, remainder] = strtok( name, '_');
         realname = remainder( 2:end);
-        value = getfield( fields, name);
+        value = fields.(name);
 
         % Check that HID, MID and MT fields are integer values
         switch( prefix)
@@ -110,11 +110,8 @@ function RTMA = ExtractFields( fields, RTMA)
 
         % Put the fields and their values in the appropriate fields of the RTMA
         % structure
-        switch( prefix)
-            case 'HID', RTMA.HID = setfield( RTMA.HID, realname, value);
-            case 'MID', RTMA.MID = setfield( RTMA.MID, realname, value);
-            case 'MT', RTMA.MT = setfield( RTMA.MT, realname, value);
-            case 'MDF', RTMA.MDF = setfield( RTMA.MDF, realname, value);
+        if (any(strcmp(prefix,{'HID','MID','MT','MDF'})))
+            RTMA.(prefix).(realname) = value; 
         end
     end
 
@@ -140,7 +137,7 @@ function CheckNumericIDs( Struct)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function CheckDupes( Struct)
 
-    Names = fieldnames( Struct);
+    %Names = fieldnames( Struct);
     ValuesCell = struct2cell( Struct);
     Values = [ValuesCell{:}];
     UniqueValues = unique( Values);
@@ -148,7 +145,7 @@ function CheckDupes( Struct)
     NumUnique = length( UniqueValues);
     if( NumValues ~= NumUnique)
         sortedValues = sort(Values);
-        idx = find(diff(sortedValues) == 0);
+        idx = diff(sortedValues) == 0; %find(diff(sortedValues) == 0);
         error([ 'Duplicate message type ID-s found: ' num2str(sortedValues(idx)) ]);
     end
     

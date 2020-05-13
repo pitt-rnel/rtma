@@ -34,7 +34,7 @@ load( MessageConfigFile, '-mat'); % MessageConfigFile is expected to contain an 
 
 if( ischar( ModuleID))
     if( isfield( RTMA.MID, ModuleID))
-        ModuleID = getfield( RTMA.MID, ModuleID);
+        ModuleID = RTMA.MID.(ModuleID);
     else
         error( ['Unrecognized ModuleID: ' ModuleID]);
     end
@@ -46,7 +46,7 @@ ServerName = '';
 for i = 1 : length( varargin)
     option = varargin{i};
     if( ~ischar( option)), error( 'Option arguments must be strings'); end
-    [starts,ends,extents,matches] = regexp( option, '\S+');
+    [~,~,~,matches] = regexp( option, '\S+');
     option_name = matches{1};
     option_values = matches(2:end);
     switch( option_name)
@@ -59,7 +59,7 @@ for i = 1 : length( varargin)
 end
 
 status = MatlabRTMA( RTMA.mex_opcode.CONNECT_TO_MMM, ModuleID, ServerName, logger_status);
-if( status == 0) error( 'Could not connect to MessageManager'); end
+if( status == 0); error( 'Could not connect to MessageManager'); end
 
 % Initialize RTMA runtime variables
 RTMA_runtime.ModuleID = ModuleID;
