@@ -23,4 +23,4 @@ if( isfield( RTMA.MDF, MessageType))
 end
 
 [status, send_time, msg_count] = MatlabRTMA( RTMA.mex_opcode.SEND_SIGNAL, MessageType, DestModuleID, DestHostID);
-if( status == 0) error( 'Could not send signal'); end
+if( status == 0); error( 'Could not send signal'); end
