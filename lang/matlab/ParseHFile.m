@@ -492,12 +492,29 @@ function h = ParseDeclaration( h, typedef)
             query = ['^\s*(?<type>' ID ')'];
             [decl2, endidx] = regexp( h.text, query, 'names', 'end', 'once');
             if( isempty( decl2)), error( 'Secondary type identifier or identifier name not found in declaration'); end
-            if( strmatch( decl2.type, {'char','short','int','long'}))
+            if( strmatch( decl2.type, {'char','short','int'}))
                 h = consume_text( h, endidx);
                 type = [type ' ' decl2.type];
+            elseif( strmatch( decl2.type, {'long'}))
+                h = consume_text( h, endidx);
+                type = [type ' ' decl2.type];
+                % check for long long
+                [decl3, endidx] = regexp( h.text, query, 'names', 'end', 'once');
+                if( isempty( decl3)), error( 'Third type identifier or identifier name not found in declaration'); end
+                if( strmatch( decl3.type, {'long'}))
+                    h = consume_text( h, endidx);
+                    type = [type ' ' decl3.type];
+                end
             else
                 type = [type ' int'];
             end
+        case 'long' % check for long long
+            [decl2, endidx] = regexp( h.text, query, 'names', 'end', 'once');
+            if( isempty( decl2)), error( 'Secondary type identifier or identifier name not found in declaration'); end
+            if( strmatch( decl2.type, {'long'}))
+                h = consume_text( h, endidx);
+                type = [type ' ' decl2.type];
+            end            
     end
     switch( type)
         case 'struct'
@@ -622,12 +639,13 @@ function value = typecast( value, type, h)
         case {'unsigned char'}, value = uint8( value);
         case {'short', 'signed short'}, value = int16( value);
         case {'unsigned short'}, value = uint16( value);
-        case {'int', 'signed int'}, value = int32( value);
-        case {'unsigned int'}, value = uint32( value);
-        case {'unsigned long'}, value = uint64(value);
+        case {'int', 'signed int', 'long'}, value = int32( value);
+        case {'unsigned int', 'unsigned long'}, value = uint32( value);
+        case {'unsigned long long'}, value = uint64(value);
+        case {'long long', 'signed long long'}, value = int64(value);
         case {'double'}, value = double( value);
         case {'float'}, value = single( value);
-        otherwise,
+        otherwise
             % Look for a defined type
             if( isfield( h.typedefs, type))
                 type_value = h.typedefs.(type);
