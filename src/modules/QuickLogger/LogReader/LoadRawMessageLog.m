@@ -18,12 +18,17 @@ GET_NUM_BYTES       = 5;
 
 if ~exist('get_full_log','var')
     get_full_log = true;
+elseif iscell(get_full_log) % CMG 11/11/21 Allow custom ignore lists
+    ignorelist = get_full_log;
+    get_full_log = false;
+elseif islogical(get_full_log)
+    if ~get_full_log
+        ignorelist = {'SPIKE_SNIPPET','REJECTED_SNIPPET','RAW_DIGITAL_EVENT','RAW_SPIKECOUNT','PLAYSOUND','TIMING_MESSAGE'};
+    end
 end
 
 %IGNORE LARGE FIELDS WE DON'T OFTEN NEED: Prep ignore list
 if ~get_full_log
-   % ignorelist = {'SPIKE_SNIPPET','REJECTED_SNIPPET','DIGITAL_EVENT','RAW_SPIKECOUNT','RAW_CTSDATA','PLAYSOUND','TIMING_MESSAGE','MPL_RAW_PERCEPT'};
-    ignorelist = {'SPIKE_SNIPPET','REJECTED_SNIPPET','RAW_DIGITAL_EVENT','RAW_SPIKECOUNT','PLAYSOUND','TIMING_MESSAGE'};
     ignorenums = [];
     badentries = cellfun(@isempty,RTMA.MTN_by_MT);
     badentries = find(~badentries);

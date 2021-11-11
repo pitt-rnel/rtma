@@ -1,4 +1,4 @@
-function OrganizedLog = OrganizeLogByMsgType( LinearLog, RTMA)
+function OrganizedLog = OrganizeLogByMsgType(LinearLog, RTMA, get_full_log)
 
 % OrganizedLog = OrganizeLogByMsgType( LinearLog, RTMA)
 %
@@ -6,6 +6,31 @@ function OrganizedLog = OrganizeLogByMsgType( LinearLog, RTMA)
 % type.
 
 % Meel Velliste 12/23/2008
+    
+    % CMG 11/11/21 Use same ignorelist function as LoadMessageLog
+    if ~exist('get_full_log','var')
+        get_full_log = true;
+    elseif iscell(get_full_log) % CMG 11/11/21 Allow custom ignore lists
+        ignorelist = get_full_log;
+        get_full_log = false;
+    elseif islogical(get_full_log)
+        if ~get_full_log
+            ignorelist = {'SPIKE_SNIPPET','REJECTED_SNIPPET','RAW_DIGITAL_EVENT','RAW_SPIKECOUNT','PLAYSOUND','TIMING_MESSAGE'};
+        end
+    end
+
+    %IGNORE LARGE FIELDS WE DON'T OFTEN NEED: Prep ignore list
+    ignorenums = [];
+    if ~get_full_log
+        badentries = cellfun(@isempty,RTMA.MTN_by_MT);
+        badentries = find(~badentries);
+        for a = 1:length(ignorelist)
+           t = find(ismember(RTMA.MTN_by_MT(badentries),ignorelist{a}));
+           if ~isempty(t)
+               ignorenums(end+1) = badentries(t)-1;
+           end
+        end
+    end
 
     % Initialize the output structure
     OrganizedLog = [];
@@ -20,6 +45,9 @@ function OrganizedLog = OrganizeLogByMsgType( LinearLog, RTMA)
         % For each message type, gather all the data for that type into a
         % field in the output struct
         mt = unique_MT(i);
+        if ismember(mt, ignorenums)
+           continue 
+        end
         mt_name = RTMA.MTN_by_MT{mt+1};
         mt_data_format = RTMA.MDF_by_MT{mt+1};
         mt_mask = (MT == mt);

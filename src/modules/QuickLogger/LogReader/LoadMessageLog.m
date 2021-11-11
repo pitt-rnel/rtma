@@ -15,4 +15,4 @@ if ~exist('get_full_log','var')
 end
 
 RawLog = LoadRawMessageLog( Filename, RTMA, get_full_log);
-Log = OrganizeLogByMsgType( RawLog, RTMA);
+Log = OrganizeLogByMsgType( RawLog, RTMA, get_full_log);
