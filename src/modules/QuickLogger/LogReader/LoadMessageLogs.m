@@ -39,7 +39,7 @@ end
         % Load message log from the binary file
         input_file = FileNames{i};
         input_file_path = [DirName '/' input_file];
-        Log = LoadMessageLog(input_file_path, RTMA, get_full_log);
+        [Log, ignorelist] = LoadMessageLog(input_file_path, RTMA, get_full_log);
         % Offset message sequence numbers so that they form one continuous
         % sequence in the concatenated log (instead of starting over from 1
         % for each file)
@@ -74,6 +74,8 @@ end
     if ~isempty(Logs)
         BigLog = CatStructFields( Logs, 'horizontal', 'merge-fields');
     end
+    BigLog.IgnoreList = ignorelist;
+        
       
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,4 +1,4 @@
-function OrganizedLog = OrganizeLogByMsgType(LinearLog, RTMA, get_full_log)
+function OrganizedLog = OrganizeLogByMsgType(LinearLog, RTMA, ignorelist)
 
 % OrganizedLog = OrganizeLogByMsgType( LinearLog, RTMA)
 %
@@ -6,23 +6,9 @@ function OrganizedLog = OrganizeLogByMsgType(LinearLog, RTMA, get_full_log)
 % type.
 
 % Meel Velliste 12/23/2008
-    
+
     % CMG 11/11/21 Use same ignorelist function as LoadMessageLog
-    if ~exist('get_full_log','var')
-        get_full_log = true;
-        ignorelist = {};
-    elseif iscell(get_full_log) % CMG 11/11/21 Allow custom ignore lists
-        ignorelist = get_full_log;
-        get_full_log = false;
-    elseif islogical(get_full_log) || ismember(get_full_log, [0, 1])
-        if ~get_full_log
-            ignorelist = {'SPIKE_SNIPPET','REJECTED_SNIPPET','RAW_DIGITAL_EVENT','RAW_SPIKECOUNT','PLAYSOUND','TIMING_MESSAGE'};
-        else
-            ignorelist = {};
-        end
-    else
-        error('Invalid ''get_full_log'' value')
-    end
+    ignore_logit = ~isempty(ignorelist);
 
     % Initialize the output structure
     OrganizedLog = [];
@@ -38,7 +24,7 @@ function OrganizedLog = OrganizeLogByMsgType(LinearLog, RTMA, get_full_log)
         % field in the output struct
         mt = unique_MT(i);
         mt_name = RTMA.MTN_by_MT{mt+1};
-        if ismember(mt_name, ignorelist) % CMG 22/1/5 IgnoreList (for some reason just using continue didn't work here)
+        if ignore_logit && ismember(mt_name, ignorelist) % CMG 22/1/5 IgnoreList
             OrganizedLog.Headers.(mt_name) = [];
             OrganizedLog.Data.(mt_name) = [];
             OrganizedLog.SequenceNo.(mt_name) = [];

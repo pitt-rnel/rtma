@@ -14,5 +14,5 @@ App_Basedir= getenv('ROBOTAPP');
 
 load([App_Basedir '/Common/include/RTMA_config.mat']);
 
-RawLog = LoadRawMessageLog( Filename, RTMA);
-Log = OrganizeLogByMsgType( RawLog, RTMA);
+[RawLog, ignorelist] = LoadRawMessageLog( Filename, RTMA, true);
+Log = OrganizeLogByMsgType( RawLog, RTMA, ignorelist);
