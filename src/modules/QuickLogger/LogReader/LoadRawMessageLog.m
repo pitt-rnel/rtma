@@ -19,10 +19,10 @@ GET_NUM_BYTES       = 5;
 if ~exist('get_full_log','var')
     get_full_log = true;
 elseif iscell(get_full_log) % CMG 11/11/21 Allow custom ignore lists
-    ignorelist = get_full_log;
+    ignorelist = get_full_log; % Custom list
     get_full_log = false;
 elseif islogical(get_full_log)
-    if ~get_full_log
+    if ~get_full_log % The default list
         ignorelist = {'SPIKE_SNIPPET','REJECTED_SNIPPET','RAW_DIGITAL_EVENT','RAW_SPIKECOUNT','PLAYSOUND','TIMING_MESSAGE'};
     end
 end

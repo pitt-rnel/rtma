@@ -92,14 +92,16 @@ function [SeqNos, LastSeqNo] = OffsetSequenceNos( SeqNos, LastSeqNo)
     last_seq_no = 0;
     for i = 1 : length( MsgNames)
         msg_name = MsgNames{i};
-        lsn = SeqNos.(msg_name)(end); % Last sequence number of current message type
-        % Look for the last sequence number locally in the current log
-        if( lsn > last_seq_no)
-            last_seq_no = lsn;
+        if ~isempty(SeqNos.(msg_name)) % CMG 22/1/5 ignore previously filtered out values from ignorelist
+            lsn = SeqNos.(msg_name)(end); % Last sequence number of current message type
+            % Look for the last sequence number locally in the current log
+            if( lsn > last_seq_no)
+                last_seq_no = lsn;
+            end
+            % Increment sequence numbers by the global last sequence number, so
+            % that the current log continues where the previous one left off
+            SeqNos.(msg_name) = SeqNos.(msg_name) + LastSeqNo;
         end
-        % Increment sequence numbers by the global last sequence number, so
-        % that the current log continues where the previous one left off
-        SeqNos.(msg_name) = SeqNos.(msg_name) + LastSeqNo;
     end
     % Increment the global last sequence number by the local one, so that
     % the next log may continue where this one left off
