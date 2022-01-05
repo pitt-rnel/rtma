@@ -20,10 +20,10 @@ CLANG2PY   = /usr/local/lib/python3.7/site-packages/ctypeslib/clang2py.py
 all:  _PyRTMA2.so _PyRTMA3.so RTMA_types.py
 
 PyRTMA2.py: PyRTMA2.i
-	${SWIG} ${SYMBOLS} ${INCLUDES} -c++ -python PyRTMA2.i
+	${SWIG} ${SYMBOLS} ${INCLUDES} -c++ -python -threads PyRTMA2.i
 
 PyRTMA3.py: PyRTMA3.i
-	${SWIG} ${SYMBOLS} ${INCLUDES} -c++ -python PyRTMA3.i
+	${SWIG} ${SYMBOLS} ${INCLUDES} -c++ -python -threads PyRTMA3.i
 
 _PyRTMA2.so:  PyRTMA2.py
 	${GCC} ${CPPFLAGS} ${INCLUDES} ${SYMBOLS} -I${PY2_INC} ${LDFLAGS_PY2} PyRTMA2_wrap.cxx -o _PyRTMA2.so

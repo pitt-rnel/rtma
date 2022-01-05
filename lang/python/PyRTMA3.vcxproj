@@ -90,7 +90,7 @@ swig -c++ -python -I../../include -I../../include/internal "%(FullPath)"
 echo PYTHON3_INCLUDE: %PYTHON3_INCLUDE%
 echo PYTHON3_LIB: %PYTHON3_LIB%
 echo on
-swig -c++ -python -I../../include -I../../include/internal "%(FullPath)"
+swig -c++ -python -threads -I../../include -I../../include/internal "%(FullPath)"
 </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Py3Release|Win32'">%(Filename)_wrap.cxx;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Py3Release|x64'">%(Filename)_wrap.cxx;%(Outputs)</Outputs>
