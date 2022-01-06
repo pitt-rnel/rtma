@@ -8,8 +8,13 @@ function BigLog = LoadMessageLogs( DirName, FileNames, RTMA, get_full_log)
 % to look at data associated with any particular message type.
 % RTMA is a structure containing RTMA message definitions (saved from a
 % matlab module at runtime when message logs were recorded.
+%
+% optional input get_full_log: logical value will skip loading from a
+% default set of messages to ignore when set to false. Can also be a cell
+% array of message types to ignore.
 
 % Meel Velliste 12/29/2008
+% CG and JW 2021
 
 if ~exist('get_full_log','var')
     get_full_log = true;
@@ -22,11 +27,12 @@ end
     end
 
     %BW: Arrange in chronological order first:
+    timestamp = zeros(length(FileNames));
     for a = 1:length(FileNames)
         f = dir(fullfile(DirName,FileNames{a}));
         timestamp(a) = f.datenum;
     end
-    [v idx] = sort(timestamp);
+    [~, idx] = sort(timestamp);
     FileNames = FileNames(idx);
     
     % Process all input files and gather individual message logs
@@ -39,7 +45,7 @@ end
         % Load message log from the binary file
         input_file = FileNames{i};
         input_file_path = [DirName '/' input_file];
-        Log = LoadMessageLog( input_file_path, RTMA, get_full_log);
+        [Log, ignorelist] = LoadMessageLog(input_file_path, RTMA, get_full_log);
         % Offset message sequence numbers so that they form one continuous
         % sequence in the concatenated log (instead of starting over from 1
         % for each file)
@@ -74,6 +80,8 @@ end
     if ~isempty(Logs)
         BigLog = CatStructFields( Logs, 'horizontal', 'merge-fields');
     end
+    BigLog.IgnoreList = ignorelist;
+        
       
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -92,14 +100,16 @@ function [SeqNos, LastSeqNo] = OffsetSequenceNos( SeqNos, LastSeqNo)
     last_seq_no = 0;
     for i = 1 : length( MsgNames)
         msg_name = MsgNames{i};
-        lsn = SeqNos.(msg_name)(end); % Last sequence number of current message type
-        % Look for the last sequence number locally in the current log
-        if( lsn > last_seq_no)
-            last_seq_no = lsn;
+        if ~isempty(SeqNos.(msg_name)) % CMG 22/1/5 ignore previously filtered out values from ignorelist
+            lsn = SeqNos.(msg_name)(end); % Last sequence number of current message type
+            % Look for the last sequence number locally in the current log
+            if( lsn > last_seq_no)
+                last_seq_no = lsn;
+            end
+            % Increment sequence numbers by the global last sequence number, so
+            % that the current log continues where the previous one left off
+            SeqNos.(msg_name) = SeqNos.(msg_name) + LastSeqNo;
         end
-        % Increment sequence numbers by the global last sequence number, so
-        % that the current log continues where the previous one left off
-        SeqNos.(msg_name) = SeqNos.(msg_name) + LastSeqNo;
     end
     % Increment the global last sequence number by the local one, so that
     % the next log may continue where this one left off

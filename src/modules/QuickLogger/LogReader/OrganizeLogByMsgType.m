@@ -1,4 +1,4 @@
-function OrganizedLog = OrganizeLogByMsgType( LinearLog, RTMA)
+function OrganizedLog = OrganizeLogByMsgType(LinearLog, RTMA, ignorelist)
 
 % OrganizedLog = OrganizeLogByMsgType( LinearLog, RTMA)
 %
@@ -6,6 +6,9 @@ function OrganizedLog = OrganizeLogByMsgType( LinearLog, RTMA)
 % type.
 
 % Meel Velliste 12/23/2008
+
+    % CMG 11/11/21 Use same ignorelist function as LoadMessageLog
+    ignore_logit = ~isempty(ignorelist);
 
     % Initialize the output structure
     OrganizedLog = [];
@@ -21,11 +24,17 @@ function OrganizedLog = OrganizeLogByMsgType( LinearLog, RTMA)
         % field in the output struct
         mt = unique_MT(i);
         mt_name = RTMA.MTN_by_MT{mt+1};
-        mt_data_format = RTMA.MDF_by_MT{mt+1};
-        mt_mask = (MT == mt);
-        OrganizedLog.Headers.(mt_name) = CatStructFields( LinearLog.Headers(mt_mask), 'horizontal');
-        OrganizedLog.Data.(mt_name)    = GatherData( LinearLog.Data(mt_mask), mt_data_format, mt_name);
-        OrganizedLog.SequenceNo.(mt_name) = find( mt_mask);
+        if ignore_logit && ismember(mt_name, ignorelist) % CMG 22/1/5 IgnoreList
+            OrganizedLog.Headers.(mt_name) = [];
+            OrganizedLog.Data.(mt_name) = [];
+            OrganizedLog.SequenceNo.(mt_name) = [];
+        else
+            mt_data_format = RTMA.MDF_by_MT{mt+1};
+            mt_mask = (MT == mt);
+            OrganizedLog.Headers.(mt_name) = CatStructFields( LinearLog.Headers(mt_mask), 'horizontal');
+            OrganizedLog.Data.(mt_name)    = GatherData( LinearLog.Data(mt_mask), mt_data_format, mt_name);
+            OrganizedLog.SequenceNo.(mt_name) = find( mt_mask);
+        end
     end
     
 
