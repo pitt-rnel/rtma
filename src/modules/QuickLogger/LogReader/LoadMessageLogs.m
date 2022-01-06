@@ -8,8 +8,13 @@ function BigLog = LoadMessageLogs( DirName, FileNames, RTMA, get_full_log)
 % to look at data associated with any particular message type.
 % RTMA is a structure containing RTMA message definitions (saved from a
 % matlab module at runtime when message logs were recorded.
+%
+% optional input get_full_log: logical value will skip loading from a
+% default set of messages to ignore when set to false. Can also be a cell
+% array of message types to ignore.
 
 % Meel Velliste 12/29/2008
+% CG and JW 2021
 
 if ~exist('get_full_log','var')
     get_full_log = true;
@@ -22,11 +27,12 @@ end
     end
 
     %BW: Arrange in chronological order first:
+    timestamp = zeros(length(FileNames));
     for a = 1:length(FileNames)
         f = dir(fullfile(DirName,FileNames{a}));
         timestamp(a) = f.datenum;
     end
-    [v idx] = sort(timestamp);
+    [~, idx] = sort(timestamp);
     FileNames = FileNames(idx);
     
     % Process all input files and gather individual message logs

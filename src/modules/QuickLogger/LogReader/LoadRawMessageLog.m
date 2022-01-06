@@ -1,4 +1,4 @@
-function [Log, ignorelist] = LoadRawMessageLog( Filename, RTMA, get_full_log)
+function [Log, IgnoreList] = LoadRawMessageLog( Filename, RTMA, get_full_log)
 
 % Log = LoadRawMessageLog( Filename, RTMA)
 %
@@ -7,8 +7,13 @@ function [Log, ignorelist] = LoadRawMessageLog( Filename, RTMA, get_full_log)
 % just a linear array of messages in the order in which they were recorded.
 % RTMA is a structure containing RTMA message definitions (saved from a
 % matlab module at runtime when Filename was recorded.
+%
+% optional input get_full_log: logical value will skip loading from a
+% default set of messages to ignore when set to false. Can also be a cell
+% array of message types to ignore.
 
 % Meel Velliste 10/31/2008
+% CG and JW 2021
 
 OPEN_FILE           = 1;
 CLOSE_FILE          = 2;
@@ -18,25 +23,25 @@ GET_NUM_BYTES       = 5;
 
 if ~exist('get_full_log','var')
     get_full_log = true;
-    ignorelist = {};
+    IgnoreList = {};
 elseif iscell(get_full_log) % CMG 11/11/21 Allow custom ignore lists
-    ignorelist = get_full_log; % Custom list
+    IgnoreList = get_full_log; % Custom list
     get_full_log = false;
 elseif (islogical(get_full_log) || ismember(get_full_log, [1,0]))
     if ~get_full_log % The default list
-        ignorelist = {'SPIKE_SNIPPET','REJECTED_SNIPPET','RAW_DIGITAL_EVENT','RAW_SPIKECOUNT','PLAYSOUND','TIMING_MESSAGE'};
+        IgnoreList = {'SPIKE_SNIPPET','REJECTED_SNIPPET','RAW_DIGITAL_EVENT','RAW_SPIKECOUNT','PLAYSOUND','TIMING_MESSAGE'};
     else 
-        ignorelist = {};
+        IgnoreList = {};
     end
 end
 
 %IGNORE LARGE FIELDS WE DON'T OFTEN NEED: Prep ignore list
-if ~get_full_log && ~isempty(ignorelist)
+if ~get_full_log && ~isempty(IgnoreList)
     ignorenums = [];
     badentries = cellfun(@isempty,RTMA.MTN_by_MT);
     badentries = find(~badentries);
-    for a = 1:length(ignorelist)
-       t = find(ismember(RTMA.MTN_by_MT(badentries),ignorelist{a}));
+    for a = 1:length(IgnoreList)
+       t = find(ismember(RTMA.MTN_by_MT(badentries),IgnoreList{a}));
        if ~isempty(t)
            ignorenums(end+1) = badentries(t)-1;
        end
@@ -75,7 +80,7 @@ try
         % If the message has a data format defined, but the actual message has no data, then issue a warning (this means that
         % a message that has been defined with data was actually sent as a signal)
         if( NumDataBytes == 0 && ~isempty( DataTemplate))
-            if( ischar( DataTemplate) && strmatch( 'VARIABLE_LENGTH_ARRAY', DataTemplate))
+            if( ischar( DataTemplate) && strncmp( 'VARIABLE_LENGTH_ARRAY', DataTemplate, 21))
                 % Variable length arrays are allowed to have no data
                 % without warning
             else
@@ -89,7 +94,7 @@ try
         if( NumDataBytes > 0)
             % If data is a variable length message, then do tricky stuff,
             % otherwise just load data using the DataTemplate
-            if( ischar( DataTemplate) && strmatch( 'VARIABLE_LENGTH_ARRAY', DataTemplate))
+            if( ischar( DataTemplate) && strncmp( 'VARIABLE_LENGTH_ARRAY', DataTemplate, 21))
                 DataTemplate = CreateTemplateForVariableLengthArray( DataTemplate, NumDataBytes, RTMA);
             end
             try
@@ -101,20 +106,26 @@ try
                     Log.Data{i} = LogReader( READ_DATA_BLOCK, DataTemplate, i-1, NumDataBytes); % i-1 because the internal mex code expects the index as a 0-based C-style index
                 end
                 
-            catch
-                err = lasterror( );
+            catch ME
+                %err = lasterror( );
+                warning('off', 'MATLAB:structOnObject');
+                err = struct(ME);
+                warning('on', 'MATLAB:structOnObject');
                 MsgType = RTMA.MTN_by_MT{H.msg_type+1};
                 err.message = sprintf( 'Error while trying to read data block (i = %i, msg_type = %i [%s])\n%s', i, H.msg_type, MsgType, err.message);
                 rethrow( err);
             end
         end
     end
-catch
+catch ME
     % Close file
     LogReader( CLOSE_FILE);
     % Re-throw error
-    disp( 'Caught error in LoadRawMessageLog and cleaned up (do not remove this because the clean-up is quite necessary to avoid a memory leak)');
-    le = lasterror();
+    fprintf( '\nCaught error in LoadRawMessageLog and cleaned up (do not remove this because the clean-up is quite necessary to avoid a memory leak)\n');
+    %le = lasterror();
+    warning('off', 'MATLAB:structOnObject');
+    le = struct(ME);
+    warning('on', 'MATLAB:structOnObject');
     rethrow( le);
 end
 
