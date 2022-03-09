@@ -105,7 +105,7 @@ If you'd like to compile from source, clone the repository and follow these inst
     	
         cd RTMA\lang\matlab
         make
-        cd RTMA\src\utils\LogReader
+        cd RTMA\src\module\QuickLogger\LogReader
         make
 
 

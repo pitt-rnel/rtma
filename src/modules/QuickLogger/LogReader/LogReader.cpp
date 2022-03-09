@@ -7,8 +7,8 @@
 // Copyright (c) 2008 - Meel Velliste, University of Pittsburgh
 
 // Message Buffer class
-#include "../../../../../Util/mex_malloc.cpp"
-#include "../../../../../Util/MyCException.h"
+#include "../../../../include/internal/mex_hack.h"
+#include "../../../../include/MyCException.h"
 #include "../MessageBuffer.h"
 
 extern "C" {
