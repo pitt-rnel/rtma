@@ -18,29 +18,29 @@ void *MyAlloc( size_t s)
 	return p;
 }
 
-void* operator new( size_t s) throw(std::bad_alloc)
+void* operator new( size_t s) //throw(std::bad_alloc)
 {
 	void *p = MyAlloc( s);
 	if( p == NULL) throw std::bad_alloc();
 	return p;
 }
-void operator delete( void *p) throw()
+void operator delete( void *p) //throw()
 {
 	mxFree( p);
 }
-void* operator new[]( size_t s) throw(std::bad_alloc)
+void* operator new[]( size_t s) //throw(std::bad_alloc)
 {
 	void *p = MyAlloc( s);
 	if( p == NULL) throw std::bad_alloc();
 	return p;
 }
-void* operator new[]( size_t s, size_t n) throw(std::bad_alloc)
+void* operator new[]( size_t s, size_t n) //throw(std::bad_alloc)
 {
 	void *p = MyAlloc( s*n);
 	if( p == NULL) throw std::bad_alloc();
 	return p;
 }
-void operator delete[]( void *p) throw()
+void operator delete[]( void *p) //throw()
 {
 	mxFree( p);
 }
