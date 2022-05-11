@@ -27,7 +27,7 @@ end
     end
 
     %BW: Arrange in chronological order first:
-    timestamp = zeros(length(FileNames));
+    timestamp = zeros(1,length(FileNames));
     for a = 1:length(FileNames)
         f = dir(fullfile(DirName,FileNames{a}));
         timestamp(a) = f.datenum;
@@ -49,13 +49,13 @@ end
         % Offset message sequence numbers so that they form one continuous
         % sequence in the concatenated log (instead of starting over from 1
         % for each file)
-        PrevLastSequenceNo = LastSequenceNo;
-        [Log.SequenceNo, LastSequenceNo] = OffsetSequenceNos( Log.SequenceNo, LastSequenceNo);
+        %PrevLastSequenceNo = LastSequenceNo;
+        [Log.SequenceNo, MinSeqNo, LastSequenceNo] = OffsetSequenceNos( Log.SequenceNo, LastSequenceNo);
         % Create an index that allows us to track which file each message
         % came from
         Log.FileIndex = CreateFileIndex( Log.SequenceNo, i);
         Log.FileName = {[DirName '/' input_file]};
-        Log.SequenceNumRange = [PrevLastSequenceNo+1 LastSequenceNo]';  
+        Log.SequenceNumRange = [MinSeqNo LastSequenceNo]';  
         
         %IGNORE LARGE FIELDS WE DON'T OFTEN NEED:
 %         if ~get_full_log
@@ -94,18 +94,25 @@ function Index = CreateFileIndex( Template, FileNo)
     end
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [SeqNos, LastSeqNo] = OffsetSequenceNos( SeqNos, LastSeqNo)
+function [SeqNos, MinSeqNo, LastSeqNo] = OffsetSequenceNos( SeqNos, LastSeqNo)
     
     MsgNames = fieldnames( SeqNos);
+    min_seq_no = Inf;
     last_seq_no = 0;
     for i = 1 : length( MsgNames)
         msg_name = MsgNames{i};
         if ~isempty(SeqNos.(msg_name)) % CMG 22/1/5 ignore previously filtered out values from ignorelist
+            msn = SeqNos.(msg_name)(1); % min seq no isn't necessarily 1, if some message types are ignored, so track this too
             lsn = SeqNos.(msg_name)(end); % Last sequence number of current message type
+            % Look for the first sequence number locally in the current log
+            if msn < min_seq_no
+                min_seq_no = msn;
+            end
             % Look for the last sequence number locally in the current log
-            if( lsn > last_seq_no)
+            if lsn > last_seq_no
                 last_seq_no = lsn;
             end
+            
             % Increment sequence numbers by the global last sequence number, so
             % that the current log continues where the previous one left off
             SeqNos.(msg_name) = SeqNos.(msg_name) + LastSeqNo;
@@ -113,5 +120,7 @@ function [SeqNos, LastSeqNo] = OffsetSequenceNos( SeqNos, LastSeqNo)
     end
     % Increment the global last sequence number by the local one, so that
     % the next log may continue where this one left off
+    MinSeqNo = LastSeqNo + min_seq_no;
     LastSeqNo = LastSeqNo + last_seq_no;
+    
     
