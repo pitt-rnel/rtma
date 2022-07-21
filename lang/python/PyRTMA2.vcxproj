@@ -18,11 +18,11 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Py2Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Py2Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -84,6 +84,12 @@ echo PYTHON2_LIB: %PYTHON2_LIB%
 echo on
 swig -c++ -python -I../../include -I../../include/internal "%(FullPath)"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Py2Release|x64'">%(Filename)_wrap.cxx;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Py2Release|Win32'">echo In order to function correctly, please ensure the following environment variables are correctly set:
+echo PYTHON2_INCLUDE: %PYTHON2_INCLUDE%
+echo PYTHON2_LIB: %PYTHON2_LIB%
+echo on
+swig -c++ -python -I../../include -I../../include/internal "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Py2Release|Win32'">%(Filename)_wrap.cxx;%(Outputs)</Outputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
