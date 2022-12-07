@@ -40,17 +40,19 @@ installed (in a future release, this requirement may be eliminated). If you'd li
 see below further requirements:
 
 #### Python
-- Version >= 2.6 (python3 is now supported!)
-- Install swig >= 2.0.3 (make sure swig executable is on Path. Latest SWIG 4.0 works.) (http://www.swig.org/download.html)
-- Install LLVM-Clang compiler
-  - Windows/Linux: http://releases.llvm.org/download.html
-  - MacOS: Install XCode command line tools (Clang is default compiler on MacOS). You may also need to link libclang.dylib to a standard library location (e.g. ~/lib or where ever you copy libRTMA.dylib, see Linux/Mac Installation step 4. below)
+- Version >= 2.6 (python3.7 preferred)
+- Install swig >= 2.0.3 (make sure swig executable is on Path. Latest SWIG 4.1 works.) (http://www.swig.org/download.html)
 - Install Clang and ctypeslib2 python packages
 	`pip install clang` and `pip install ctypeslib2`
 - Previously a package called "ctypesgen" was used instead of clang/ctypeslib2. This has recently been updated to support Python3 and can be used as an alternative to clang/ctypeslib2 if there are any issues with clang/ctypeslib2. This package can be found on GitHub.
+- Install LLVM-Clang compiler
+  - Windows/Linux: http://releases.llvm.org/download.html
+  - MacOS: Install XCode command line tools (Clang is default compiler on MacOS). You may also need to link libclang.dylib to a standard library location (e.g. ~/lib or where ever you copy libRTMA.dylib, see Linux/Mac Installation step 4. below)
+  - Note: the latest version of LLVM may not work with the clang python bindings. For best results, check python bindings version with `pip show clang` and install the same version of LLVM.
+
 
 #### C&#35;
-- Windows only, Visual Studio 2005 or later. Latest VS2019 works.
+- Windows only, Visual Studio 2005 or later. Latest VS2022 preferred.
 
 #### Matlab 
 - Version >= 2007b
@@ -80,7 +82,7 @@ Clone the repository and compile the source as follows:
 
         cd RTMA/lang/matlab
         make
-        cd RTMA/src/utils/LogReader
+        cd RTMA/src/modules/QuickLogger/LogReader
         make
 
 6. If you plan to use the python interface, append `RTMA/lang/python` to `PYTHONPATH` environment variable
@@ -105,8 +107,9 @@ If you'd like to compile from source, clone the repository and follow these inst
     	
         cd RTMA\lang\matlab
         make
-        cd RTMA\src\module\QuickLogger\LogReader
+        cd RTMA\src\modules\QuickLogger\LogReader
         make
+    Note that 64-bit Windows mex files are tracked in the repo and this step is usually unecessary when running 64-bit Windows
 
 
 ## Directory Organization
