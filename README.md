@@ -42,10 +42,10 @@ see below further requirements:
 #### Python
 - Version >= 2.6 (python3.7 preferred)
 - Install swig >= 2.0.3 (make sure swig executable is on Path. Latest SWIG 4.1 works.) (http://www.swig.org/download.html)
-- Install Clang and ctypeslib2 python packages
-	`pip install clang` and `pip install ctypeslib2`
+- Install Clang and ctypeslib2 python packages (ctypeslib2 v2.2.2 known to work)
+	`pip install clang` and `pip install ctypeslib2==2.2.2`
 - Previously a package called "ctypesgen" was used instead of clang/ctypeslib2. This has recently been updated to support Python3 and can be used as an alternative to clang/ctypeslib2 if there are any issues with clang/ctypeslib2. This package can be found on GitHub.
-- Install LLVM-Clang compiler
+- Install LLVM-Clang compiler (version 11.0 known to work)
   - Windows/Linux: http://releases.llvm.org/download.html
   - MacOS: Install XCode command line tools (Clang is default compiler on MacOS). You may also need to link libclang.dylib to a standard library location (e.g. ~/lib or where ever you copy libRTMA.dylib, see Linux/Mac Installation step 4. below)
   - Note: the latest version of LLVM may not work with the clang python bindings. For best results, check python bindings version with `pip show clang` and install the same version of LLVM.
