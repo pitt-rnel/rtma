@@ -6,6 +6,8 @@ INCLUDEPATH += $$BASE_DIR/include $$BASE_DIR/include/internal
 
 
 CONFIG += release thread warn_on dll
+# uncomment below to add debug info
+#CONFIG += force_debug_info
 CONFIG -= qt
 TARGET = RTMA
 

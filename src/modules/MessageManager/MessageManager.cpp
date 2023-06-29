@@ -41,8 +41,10 @@ int main( int argc, char *argv[])
 
 CMessageManager::CMessageManager( )
 {
-  m_Version = "2.10hst";
+  m_Version = "2.11bci";
   m_NextDynamicModIdOffset = 0;
+
+  InitializeAbsTime();
 
   // from RP3 RTMA (for timing message)
   #ifdef __unix__ 
