@@ -9,7 +9,7 @@
 //              correctly compiled. _MEX_FILE_ must be defined in order
 //              for the contents of this file to take effect.
 
-#include "mex_hack.h"
+#include "../../include/internal/mex_hack.h"
 
 void *MyAlloc( size_t s)
 {
@@ -18,29 +18,34 @@ void *MyAlloc( size_t s)
 	return p;
 }
 
-void* operator new( size_t s) throw(std::bad_alloc)
+void* operator new( size_t s)
+// void* operator new( size_t s) throw(std::bad_alloc)
 {
 	void *p = MyAlloc( s);
 	if( p == NULL) throw std::bad_alloc();
 	return p;
 }
-void operator delete( void *p) throw()
+void operator delete( void *p) noexcept
+// void operator delete( void *p) throw()
 {
 	mxFree( p);
 }
-void* operator new[]( size_t s) throw(std::bad_alloc)
+void* operator new[]( size_t s)
+// void* operator new[]( size_t s) throw(std::bad_alloc)
 {
 	void *p = MyAlloc( s);
 	if( p == NULL) throw std::bad_alloc();
 	return p;
 }
-void* operator new[]( size_t s, size_t n) throw(std::bad_alloc)
+void* operator new[]( size_t s, size_t n)
+// void* operator new[]( size_t s, size_t n) throw(std::bad_alloc)
 {
 	void *p = MyAlloc( s*n);
 	if( p == NULL) throw std::bad_alloc();
 	return p;
 }
-void operator delete[]( void *p) throw()
+void operator delete[]( void *p) noexcept
+// void operator delete[]( void *p) throw()
 {
 	mxFree( p);
 }
