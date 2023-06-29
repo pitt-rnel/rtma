@@ -17,7 +17,8 @@ extern "C" {
 // Functions for converting matlab arrays and structures to
 // C arrays and structures, and vice versa
 #define NUM_BYTES_TO_ALIGN 8 // 8-byte (64-bit) alignment is assumed
-#include "../../../../lang/Matlab/Matlab2C.c"
+// #include "/ihome/rgaunt/joy47/projects/rtma/lang/matlab/Matlab2C.c"
+#include "../../../../lang/matlab/Matlab2C.c"
 
 // Op-codes for the LogReader mex function
 #include "LogReader.h"
@@ -84,11 +85,11 @@ mexFunction(
 //         blahblah bb;
 //         int y;
 //     } blah2;
-//     
+//
 //     char error_txt[1000]={0};
 //     sprintf(error_txt, "Data Size is [%i]",sizeof(blah2));
 //     mexErrMsgTxt( error_txt);
-    
+
     try {
 
         if( num_input_args < 1) throw MyCException( "MatlabRTMA takes at least 1 argument (an op-code)!");
