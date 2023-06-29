@@ -18,7 +18,6 @@ extern "C" {
 // C arrays and structures, and vice versa
 #define NUM_BYTES_TO_ALIGN 8 // 8-byte (64-bit) alignment is assumed
 #include "../../../../lang/matlab/Matlab2C.c"
-// #include "../../../../lang/Matlab/Matlab2C.c"
 
 // Op-codes for the LogReader mex function
 #include "LogReader.h"
