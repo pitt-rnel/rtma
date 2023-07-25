@@ -69,7 +69,7 @@ public:
 
 	CMessage( );
 	CMessage( MSG_TYPE mt);
-	CMessage( MSG_TYPE mt, void *pData, int num_bytes);
+	CMessage( MSG_TYPE mt, void *pData, size_t num_bytes);
 	~CMessage( ) noexcept(false);
 
 	void *
@@ -79,13 +79,13 @@ public:
 	GetData( void *pData);
 
 	int
-	SetData( void *pData, int num_bytes);
+	SetData( void *pData, size_t num_bytes);
 
 	int
-	AllocateData( int num_bytes);
+	AllocateData( size_t num_bytes);
 
 	int
-	Set( MSG_TYPE mt, void *pData = NULL, int num_bytes = 0);
+	Set( MSG_TYPE mt, void *pData = NULL, size_t num_bytes = 0);
 
 	int
 	Receive( UPipe *input_pipe);

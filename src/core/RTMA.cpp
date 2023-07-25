@@ -66,12 +66,12 @@ CMessage::CMessage( MSG_TYPE mt)
 	} CATCH_and_THROW( "CMessage::CMessage( MSG_TYPE mt)");
 }
 
-CMessage::CMessage( MSG_TYPE mt, void *pData, int num_bytes)
+CMessage::CMessage( MSG_TYPE mt, void *pData, size_t num_bytes)
 {
 	TRY {
 		large_data = NULL;
 		Set( mt, pData, num_bytes);
-	} CATCH_and_THROW( "CMessage::CMessage( MSG_TYPE mt, void *pData, int num_bytes)");
+	} CATCH_and_THROW( "CMessage::CMessage( MSG_TYPE mt, void *pData, size_t num_bytes)");
 }
 
 CMessage::~CMessage( ) noexcept(false)
@@ -111,7 +111,7 @@ CMessage::GetData( void *pData)
 }
 
 int
-CMessage::SetData( void *pData, int num_bytes)
+CMessage::SetData( void *pData, size_t num_bytes)
 {
 	TRY {
 		if( !AllocateData( num_bytes)) return 0;
@@ -126,11 +126,11 @@ CMessage::SetData( void *pData, int num_bytes)
 
 		}
 		return 1;
-	} CATCH_and_THROW( "CMessage::SetData( void *pData, int num_bytes)");
+	} CATCH_and_THROW( "CMessage::SetData( void *pData, size_t num_bytes)");
 }
 
 int
-CMessage::AllocateData( int num_bytes)
+CMessage::AllocateData( size_t num_bytes)
 {
 	TRY {
 		if( large_data != NULL) {
@@ -144,13 +144,13 @@ CMessage::AllocateData( int num_bytes)
 			if( large_data == NULL) return 0;
 
 		}
-		num_data_bytes = num_bytes;
+		num_data_bytes = (int) num_bytes;
 		return 1;
-	} CATCH_and_THROW( "CMessage::AllocateData( int num_bytes)");
+	} CATCH_and_THROW( "CMessage::AllocateData( size_t num_bytes)");
 }
 
 int
-CMessage::Set( MSG_TYPE mt, void *pData, int num_bytes)
+CMessage::Set( MSG_TYPE mt, void *pData, size_t num_bytes)
 {
 	TRY {
 		msg_type = mt;
@@ -169,7 +169,7 @@ CMessage::Set( MSG_TYPE mt, void *pData, int num_bytes)
 		reserved = 0;
 
 		return SetData( pData, num_bytes);
-	} CATCH_and_THROW( "CMessage::Set( MSG_TYPE mt, void *pData, int num_bytes)");
+	} CATCH_and_THROW( "CMessage::Set( MSG_TYPE mt, void *pData, size_t num_bytes)");
 }
 
 
