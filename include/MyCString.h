@@ -72,7 +72,7 @@ class MyCString
 {
 private:
 	char* m_Content;
-	int   m_Len;
+	size_t m_Len;
 
 	//tokenizing members
 	char* m_Delims;      //char array of delimiters
@@ -132,7 +132,7 @@ public:
 	//setting / getting content
 	void  Reset();
 	int   IsNull()const;
-	int   GetLen()const;
+	size_t   GetLen()const;
 	void  SetContent(const MyCString &str);
 	void  SetContent(const char* str);
 	char* GetContent () const;
