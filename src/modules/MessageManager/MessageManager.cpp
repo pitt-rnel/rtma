@@ -332,7 +332,7 @@ CMessageManager::DistributeMessage( CMessage *M)
 						    DEBUG_TEXT( "Forwarded!");
 					}
 				}
-				catch( UPipeClosedException &E) { 
+				catch( UPipeClosedException) { 
 					DEBUG_TEXT( "Failed to Forward Message, destination module socket is closed/dead"); 
 				} 				
 			}
