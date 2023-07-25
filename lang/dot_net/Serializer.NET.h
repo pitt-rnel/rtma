@@ -119,7 +119,7 @@ namespace RTMA {
 		{
 			void *pEndData = SerializeData( Data, pOutputBuffer);
 
-			int CheckSum = (char *) pEndData - (char *) pOutputBuffer;
+			int CheckSum = (int)((char *) pEndData - (char *) pOutputBuffer);
 			if( CheckSum != NumDataBytes) throw gcnew Exception( "Wrong number of bytes serialized");
 		}
 
@@ -143,7 +143,7 @@ namespace RTMA {
 			}
 			pEnd = DeserializeData( Output, pInput);
 
-			int CheckSum = (char *) pEnd - (char *) pInput;
+			int CheckSum = (int)((char *) pEnd - (char *) pInput);
 			if( CheckSum != NumDataBytes) throw gcnew Exception( "Wrong number of bytes de-serialized (" + CheckSum.ToString() + " instead of the expected " + NumDataBytes.ToString() + ")");
 		}
 
