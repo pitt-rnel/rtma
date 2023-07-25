@@ -15,6 +15,7 @@
 	#ifndef WINSOCK_H
 		#define WINSOCK_H
 		#define FD_SETSIZE UPipeServer::MAX_CLIENTS
+		#define _WINSOCK_DEPRECATED_NO_WARNINGS // supress warning for use of gethostbyname() TODO use getaddrinfo instead
 		#include <winsock2.h>
 	#endif
 #else
