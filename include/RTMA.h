@@ -70,7 +70,7 @@ public:
 	CMessage( );
 	CMessage( MSG_TYPE mt);
 	CMessage( MSG_TYPE mt, void *pData, int num_bytes);
-	~CMessage( );
+	~CMessage( ) noexcept(false);
 
 	void *
 	GetDataPointer( void);
@@ -164,7 +164,7 @@ public:
 
 	RTMA_Module( MODULE_ID ModuleID, HOST_ID HostID);
 
-	~RTMA_Module( );
+	~RTMA_Module( ) noexcept(false);
 
 	void
 	Cleanup( void);

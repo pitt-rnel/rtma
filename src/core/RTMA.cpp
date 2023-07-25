@@ -74,7 +74,7 @@ CMessage::CMessage( MSG_TYPE mt, void *pData, int num_bytes)
 	} CATCH_and_THROW( "CMessage::CMessage( MSG_TYPE mt, void *pData, int num_bytes)");
 }
 
-CMessage::~CMessage( )
+CMessage::~CMessage( ) noexcept(false)
 {
 	TRY {
 		if( large_data != NULL) {
@@ -360,7 +360,7 @@ void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID)
 	} CATCH_and_THROW( "void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID)");
 }
 
-RTMA_Module::~RTMA_Module( )
+RTMA_Module::~RTMA_Module( ) noexcept(false)
 {
 	TRY {
 		Cleanup();
@@ -465,7 +465,7 @@ int
 RTMA_Module::DisconnectFromMMM( void)
 {
 	TRY {
-		int status;
+		//int status;
 		DEBUG_TEXT_("DisconnectFromMMM():");
 		if(m_Connected)
 		{
@@ -509,8 +509,8 @@ RTMA_Module::IsConnected( void)
 				return 1;
 			} catch( UPipeException) {
 				return 0;
-			} catch (UPipeClosedException) {
-			    return 0;
+			//} catch (UPipeClosedException) {
+			//    return 0;
 			}
 		}
 	} CATCH_and_THROW( "RTMA_Module::IsConnected( void)");

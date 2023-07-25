@@ -288,7 +288,7 @@ public:
 	}
 
 	// Destructor
-	virtual ~UPipeServer() {
+	virtual ~UPipeServer() noexcept(false) {
 		TRY {
 		} CATCH_and_THROW( "UPipeServer::~UPipeServer");
 	}
@@ -373,7 +373,7 @@ public:
 	}
 
 	// Destructor makes sure we disconnect cleanly
-	virtual ~UPipeClient() {
+	virtual ~UPipeClient() noexcept(false) {
 		TRY {
 			if( _pServerPipe != NULL) delete _pServerPipe;
 		} CATCH_and_THROW( "UPipeClient::~UPipeClient");
