@@ -475,7 +475,7 @@ namespace RTMA {
 
 		//
 		//
-		int
+		/*int
 		SetTimer( unsigned int SnoozeTime) {
 			TRY {
 
@@ -484,11 +484,11 @@ namespace RTMA {
 				return TimerID;
 
 			} CATCH_and_THROW_dotNET( "Error in RTMA.Module.SetTimer(): ")
-		}
+		}*/
 
 		//
 		//
-		int
+		/*int
 		CancelTimer( int TimerID) {
 			TRY {
 
@@ -497,7 +497,7 @@ namespace RTMA {
 				return status;
 
 			} CATCH_and_THROW_dotNET( "Error in RTMA.Module.CancelTimer(): ")
-		}
+		}*/
 
 		//
 		//

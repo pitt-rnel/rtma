@@ -252,20 +252,20 @@ CMessageManager::ProcessMessage( CMessage *M, UPipe *pSourcePipe)
 			SendAcknowledge( mod_id);
 			break;
 
-		case MT_SHUTDOWN_RTMA:
-			prev_priority_class = GetMyPriority();
-			SetMyPriority(NORMAL_PRIORITY_CLASS);
-			DistributeMessage(M);//since we will exit the loop after that- we need to forward this message first
-			ShutdownAllModules( );
-			UPipeAutoServer::_keepRunning = false;
-			break;
+		//case MT_SHUTDOWN_RTMA:
+		//	prev_priority_class = GetMyPriority();
+		//	SetMyPriority(NORMAL_PRIORITY_CLASS);
+		//	DistributeMessage(M);//since we will exit the loop after that- we need to forward this message first
+		//	ShutdownAllModules( );
+		//	UPipeAutoServer::_keepRunning = false;
+		//	break;
 
-		case MT_SHUTDOWN_APP:
-			prev_priority_class = GetMyPriority();
-			SetMyPriority(NORMAL_PRIORITY_CLASS);
-			ShutdownAllModules(0,0); //shutdown only application modules (not core modules or daemons)
-			SetMyPriority(prev_priority_class);
-			break;
+		//case MT_SHUTDOWN_APP:
+		//	prev_priority_class = GetMyPriority();
+		//	SetMyPriority(NORMAL_PRIORITY_CLASS);
+		//	ShutdownAllModules(0,0); //shutdown only application modules (not core modules or daemons)
+		//	SetMyPriority(prev_priority_class);
+		//	break;
 
 		default:
 			DEBUG_TEXT( "Nothing to do!");
@@ -508,7 +508,7 @@ CMessageManager::ConnectModule( MODULE_ID module_id, UPipe *pSourcePipe, short l
 				m_ConnectedModules[module_id].DaemonStatus = daemon_status;
 
 				// Add default subscription to TIMER_EXPIRED
-				if( !logger_status) AddSubscription( module_id, MT_TIMER_EXPIRED);
+				//if( !logger_status) AddSubscription( module_id, MT_TIMER_EXPIRED);
 			}
 		}
 	}
@@ -548,17 +548,17 @@ CMessageManager::ShutdownModule( MODULE_ID mod_id)
 	{
 		switch(mod_id)
 		{
-			case MID_COMMAND_MODULE:
+			//case MID_COMMAND_MODULE:
 				//never shutdown Command Module
-			break;
+			//break;
 
-			case MID_APPLICATION_MODULE:
-				DispatchSignal( MT_AM_EXIT, mod_id);
-			break;
+			//case MID_APPLICATION_MODULE:
+			//	DispatchSignal( MT_AM_EXIT, mod_id);
+			//break;
 
-			case MID_STATUS_MODULE:
-				DispatchSignal( MT_SM_EXIT, mod_id);
-			break;
+			//case MID_STATUS_MODULE:
+			//	DispatchSignal( MT_SM_EXIT, mod_id);
+			//break;
 
 			case MID_QUICKLOGGER:
 				DispatchSignal( MT_LM_EXIT, mod_id);
@@ -580,7 +580,7 @@ CMessageManager::ShutdownAllModules( int shutdown_RTMA, int shutdown_daemons)
 	int start_mod_id;
 
 	if(shutdown_RTMA) {
-		start_mod_id = MID_COMMAND_MODULE; //shutdown RTMA modules as well
+		start_mod_id = 1;//MID_COMMAND_MODULE; //shutdown RTMA modules as well
 		shutdown_daemons = 1;
 	} else {
 		start_mod_id = MAX_RTMA_MODULE_ID+1;  //shutdown only application modules
