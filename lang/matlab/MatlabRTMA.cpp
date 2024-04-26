@@ -55,8 +55,8 @@ mexFunction(
 
 	double timeout;
     int status;
-	unsigned int SnoozeTime;
-    int TimerID;
+	//unsigned int SnoozeTime;
+    //int TimerID;
     int logger_status;
 
     void *pData;
@@ -250,7 +250,7 @@ mexFunction(
             output_arg[0] = ReturnData;
             break;
 
-        case SET_TIMER:
+        /*case SET_TIMER:
 
             if( num_input_args < 2) Error( "incorrect number of arguments");
             if( TheModule.IsConnected( )) {
@@ -271,7 +271,7 @@ mexFunction(
                 status = -1;
             }
             output_arg[0] = mxCreateDoubleScalar( (double) status);
-            break;
+            break;*/
 
         case SEND_MODULE_READY:
             if( TheModule.IsConnected( )) {

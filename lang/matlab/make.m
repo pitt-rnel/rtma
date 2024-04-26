@@ -12,7 +12,8 @@ if( ~ispc && ~isunix)
 end
 
 % base_dir = '../..';
-base_dir = fullfile(getHstPath,'..','rtma'); %'git\rtma
+%base_dir = fullfile(getHstPath,'..','rtma'); %'git\rtma
+base_dir = fullfile(fileparts(mfilename("fullpath")), '..', '..');
 core_dir = [base_dir '/src/core'];
 pipelib_dir = [core_dir '/PipeLib'];
 
