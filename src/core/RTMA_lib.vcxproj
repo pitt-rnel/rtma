@@ -133,15 +133,18 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Default</LanguageStandard>
     </ClCompile>
     <PostBuildEvent>
       <Command>copy $(OutDir)RTMA*.lib ..\..\lib</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ClientLogger.cpp" />
     <ClCompile Include="RTMA.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\ClientLogger.h" />
     <ClInclude Include="..\..\include\DataLoggerTypes.h" />
     <ClInclude Include="..\..\include\internal\Debug.h" />
     <ClInclude Include="..\..\include\internal\mex_hack.h" />

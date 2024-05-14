@@ -31,6 +31,8 @@
 #define DEFAULT_PIPE_SERVER_NAME_FOR_MM ":7111" // MessageManager accepts connections from any incoming interface by default
 
 
+class RTMA_Logger; // defined in ClientLogger.h (avoid circular import here)
+
 /* ----------------------------------------------------------------------------
    |                       CMessage class                                      |
    ----------------------------------------------------------------------------*/
@@ -122,6 +124,9 @@ protected:
 	MSG_COUNT   m_SelfMessageCount;
 	int         m_Connected;
 	UPipe       *_pMMPipe; //pipe handle for communicating with the Message Manager
+
+	// logging
+	RTMA_Logger *_logger;
 
 	int
 	WaitForAcknowledgement(double timeout = -1, CMessage* rcvMsg = NULL); // Waits for MT_ACKNOWLEDGE for up to timeout seconds
@@ -241,6 +246,22 @@ public:
 
 	MODULE_ID 
 	GetModuleID(){ return m_ModuleID;}
+
+	// log functions
+	RTMA_Logger* GetLoggerPointer(void);
+	std::string GetLogName(void);
+	void SetLogName(const char* log_name);
+	int GetLogLevel(void);
+	void SetLogLevel(int log_level);
+	std::string GetLogFilename(void);
+	void SetLogFilename(const char* log_filename);
+	void Debug(const char* message, const char* src_func, const char* src_file, int src_line);
+	void Info(const char* message, const char* src_func, const char* src_file, int src_line);
+	void Warning(const char* message, const char* src_func, const char* src_file, int src_line);
+	void Error(const char* message, const char* src_func, const char* src_file, int src_line);
+	void Critical(const char* message, const char* src_func, const char* src_file, int src_line);
+	// main log function (accepts any level integer)
+	void Log(const char* message, int level, const char* src_func, const char* src_file, int src_line);
 };
 
 /* ----------------------------------------------------------------------------

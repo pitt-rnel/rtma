@@ -4,6 +4,8 @@
 
 #include "Debug.h"
 
+#include "ClientLogger.h"
+
 //namespace RTMA {
 
 //////////////////////////////////////////////////////////////////////////////
@@ -284,6 +286,9 @@ void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID)
 	TRY {
 		_pipeClient = NULL;
 		_MMpipe = NULL;
+		char* log_name;
+		sprintf(log_name, "Module % d", ModuleID);
+		*_logger = RTMA_Logger(log_name, LogLevel::lINFO, this);
 		m_ModuleID = ModuleID;
 		m_HostID = HostID;
 		m_MessageCount = 0;
@@ -741,6 +746,97 @@ RTMA_Module::GetPid( void)
 	TRY {
 		return m_Pid;
 	} CATCH_and_THROW( "RTMA_Module::GetPid( void)");
+}
+
+RTMA_Logger* RTMA_Module::GetLoggerPointer( void)
+{
+	TRY{
+		return _logger;
+	} CATCH_and_THROW("RTMA_Module::GetLoggerPointer( void)");
+}
+
+std::string RTMA_Module::GetLogName(void)
+{
+	TRY{
+		return _logger->get_log_name();
+	} CATCH_and_THROW("RTMA_Module::GetLogName( void)");
+}
+
+void RTMA_Module::SetLogName(const char* log_name)
+{
+	TRY{
+		_logger->set_log_name(log_name);
+	} CATCH_and_THROW("RTMA_Module::SetLogName(const char* log_name)");
+}
+
+int RTMA_Module::GetLogLevel(void)
+{
+	TRY{
+		return _logger->level;
+	} CATCH_and_THROW("RTMA_Module::GetLogLevel(void)");
+}
+
+void RTMA_Module::SetLogLevel(int log_level)
+{
+	TRY{
+		_logger->level = log_level;
+	} CATCH_and_THROW("RTMA_Module::SetLogLevel(int log_level)");
+}
+
+std::string RTMA_Module::GetLogFilename(void)
+{
+	TRY{
+		return _logger->get_log_filename();
+	} CATCH_and_THROW("RTMA_Module::GetLogFilename(void)");
+}
+
+void RTMA_Module::SetLogFilename(const char* log_filename)
+{
+	TRY{
+		_logger->set_log_filename(log_filename);
+	} CATCH_and_THROW("RTMA_Module::SetLogFilename(const char* log_filename)");
+}
+
+void RTMA_Module::Debug(const char* message, const char* src_func, const char* src_file, int src_line)
+{
+	TRY{
+		_logger->debug(message, src_func, src_file, src_line);
+	} CATCH_and_THROW("RTMA_Module::Debug(const char* message, const char* src_func, const char* src_file, int src_line)");
+}
+
+void RTMA_Module::Info(const char* message, const char* src_func, const char* src_file, int src_line)
+{
+	TRY{
+		_logger->info(message, src_func, src_file, src_line);
+	} CATCH_and_THROW("RTMA_Module::Info(const char* message, const char* src_func, const char* src_file, int src_line)");
+}
+
+void RTMA_Module::Warning(const char* message, const char* src_func, const char* src_file, int src_line)
+{
+	TRY{
+		_logger->warning(message, src_func, src_file, src_line);
+	} CATCH_and_THROW("RTMA_Module::Warning(const char* message, const char* src_func, const char* src_file, int src_line)");
+}
+
+void RTMA_Module::Error(const char* message, const char* src_func, const char* src_file, int src_line)
+{
+	TRY{
+		_logger->error(message, src_func, src_file, src_line);
+	} CATCH_and_THROW("RTMA_Module::Error(const char* message, const char* src_func, const char* src_file, int src_line)");
+}
+
+void RTMA_Module::Critical(const char* message, const char* src_func, const char* src_file, int src_line)
+{
+	TRY{
+		_logger->critical(message, src_func, src_file, src_line);
+	} CATCH_and_THROW("RTMA_Module::Critical(const char* message, const char* src_func, const char* src_file, int src_line)");
+}
+
+void RTMA_Module::Log(const char* message, int level, const char* src_func, const char* src_file, int src_line)
+{
+	TRY{
+		_logger->log(message, level, src_func, src_file, src_line);
+	} CATCH_and_THROW("RTMA_Module::Log(const char* message, int level, const char* src_func, const char* src_file, int src_line)");
 }
 
 /*
