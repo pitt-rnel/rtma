@@ -142,6 +142,7 @@
     <ClCompile Include="RTMA.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\DataLoggerTypes.h" />
     <ClInclude Include="..\..\include\internal\Debug.h" />
     <ClInclude Include="..\..\include\internal\mex_hack.h" />
     <ClInclude Include="..\..\include\RTMA.h" />

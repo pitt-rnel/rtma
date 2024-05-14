@@ -16,15 +16,6 @@
 // Sized integer types (added with pyrtma v2.3 updates)
 #include <stdint.h>
 
-/*#ifdef _UNIX_C
-	#include <sys/types.h> //for getpid()
-	#include <unistd.h>    //for getpid()
-	#include <sys/time.h>  //for gettimeofday()
-	#include <signal.h>
-#else
-	#include <windows.h>
-#endif */
-
 #include <stdio.h>
 #include <string>
 
@@ -38,14 +29,6 @@
 
 #define DEFAULT_PIPE_SERVER_NAME_FOR_MODULES "localhost:7111" // Modules connect locally by default
 #define DEFAULT_PIPE_SERVER_NAME_FOR_MM ":7111" // MessageManager accepts connections from any incoming interface by default
-
-/*#ifdef _UNIX_C
-	#define THIS_MODULE_BASE_PRIORITY  0
-	#define NORMAL_PRIORITY_CLASS      1
-#else
-	#define THIS_MODULE_BASE_PRIORITY  0x00008000//ABOVE_NORMAL_PRIORITY_CLASS
-	//#define THIS_MODULE_BASE_PRIORITY  ABOVE_NORMAL_PRIORITY_CLASS//ABOVE_NORMAL_PRIORITY_CLASS NORMAL_PRIORITY_CLASS
-#endif */
 
 
 /* ----------------------------------------------------------------------------
@@ -159,10 +142,6 @@ protected:
 	//reports the profile data to a binary file if RTMA_PROFILE is defined in RTMA_profile.h
 public:
 
-	#ifdef USE_DYNAMIC_DATA
-	DD m_RTMA; //holds C equivalent to Matlab RTMA struct (all MTs, MDFs, MT names etc)
-	#endif
-
 	RTMA_Module( );
 
 	RTMA_Module( MODULE_ID ModuleID, HOST_ID HostID);
@@ -223,11 +202,6 @@ public:
 	SendMessageRTMA( CMessage *M, MODULE_ID dest_mod_id = 0, HOST_ID dest_host_id = 0);
 	// A copy of SendMessage() for the purpose of compiling into a .NET library, because SendMessage() itself conflicts with the Win32 API SendMessage.
 
-	#ifdef USE_DYNAMIC_DATA
-	int 
-	SendMessage(MSG_TYPE mt, const DD& dynamic_data, MODULE_ID dest_mod_id = 0, HOST_ID dest_host_id = 0);
-	#endif
-
 	int
 	SendSignal( MSG_TYPE MessageType, MODULE_ID dest_mod_id = 0, HOST_ID dest_host_id = 0);
 	// Send message that only has the header (no data after the header).
@@ -255,17 +229,6 @@ public:
 	//if MsgType is specified- will not return until the requested msg type was received (and will discard all other messages received)
 	//if MsgType is not specified- will return the first message received (in this case just a wrapper for ReadMessage) 
 
-	//int
-	//SetTimer(unsigned int time_ms);
-	//sets a local timer to expire within the time stated (in ms). Returns timer_id or -1 on failure
-
-	//int
-	//CancelTimer(int timer_id);
-
-	//int
-	//SelfNotifyExpiredTimer(int timer_id);
-	//sends MT_TIMER_EXPIRED to m_WrtInputPipe (self input pipe). Returns 0 on failure, 1 on success
-
 	double UpTime( void);
 
 	int GetPid( void);
@@ -289,9 +252,6 @@ SetMyPriority(int priority_class);
 
 int
 GetMyPriority();
-
-//double
-//GetAbsTime( void);
 
 //} // namespace RTMA
 

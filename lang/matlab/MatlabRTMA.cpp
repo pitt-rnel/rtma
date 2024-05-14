@@ -250,29 +250,6 @@ mexFunction(
             output_arg[0] = ReturnData;
             break;
 
-        /*case SET_TIMER:
-
-            if( num_input_args < 2) Error( "incorrect number of arguments");
-            if( TheModule.IsConnected( )) {
-                SnoozeTime = (unsigned int) mxGetScalar( input_arg[1]);
-                TimerID = TheModule.SetTimer( SnoozeTime);
-            } else {
-                TimerID = -1;
-            }
-            output_arg[0] = mxCreateDoubleScalar( (double) TimerID);
-            break;
-
-        case CANCEL_TIMER:
-            if( num_input_args < 2) Error( "incorrect number of arguments");
-            if( TheModule.IsConnected( )) {
-                TimerID = (unsigned int) mxGetScalar( input_arg[1]);
-                status = TheModule.CancelTimer( TimerID);
-            } else {
-                status = -1;
-            }
-            output_arg[0] = mxCreateDoubleScalar( (double) status);
-            break;*/
-
         case SEND_MODULE_READY:
             if( TheModule.IsConnected( )) {
                 status = TheModule.SendModuleReady( );
