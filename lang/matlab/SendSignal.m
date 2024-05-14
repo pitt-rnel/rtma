@@ -12,7 +12,7 @@ if( ~exist( 'DestHostID', 'var'))
 end
 
 % Make sure that the specified message type is a signal (i.e. has no data)
-if( isfield( RTMA.MDF, MessageType))
+if( isfield( RTMA.MDF, MessageType) && ~isempty(fieldnames(RTMA.MDF.(MessageType))) ) % signals are now in (non-empty) structs with no fields
     error( ['MessageType ' MessageType ' is supposed to have data and cannot be sent using SendSignal']);
 end
 

@@ -13,6 +13,9 @@
 #include "RTMA_types.h"
 #include "internal/UPipe.h"
 
+// Sized integer types (added with pyrtma v2.3 updates)
+#include <stdint.h>
+
 /*#ifdef _UNIX_C
 	#include <sys/types.h> //for getpid()
 	#include <unistd.h>    //for getpid()
@@ -60,10 +63,10 @@ public:
 	MODULE_ID	src_mod_id;
 	HOST_ID		dest_host_id;
 	MODULE_ID	dest_mod_id;
-	int			num_data_bytes;
-	int			remaining_bytes;
-	int			is_dynamic;
-	int			reserved;
+	int32_t		num_data_bytes;
+	int32_t		remaining_bytes;
+	int32_t		is_dynamic;
+	int32_t		reserved;
 	char data[MAX_CONTIGUOUS_MESSAGE_DATA];
 	char *large_data;
 
@@ -252,15 +255,15 @@ public:
 	//if MsgType is specified- will not return until the requested msg type was received (and will discard all other messages received)
 	//if MsgType is not specified- will return the first message received (in this case just a wrapper for ReadMessage) 
 
-	int
-	SetTimer(unsigned int time_ms);
+	//int
+	//SetTimer(unsigned int time_ms);
 	//sets a local timer to expire within the time stated (in ms). Returns timer_id or -1 on failure
 
-	int
-	CancelTimer(int timer_id);
+	//int
+	//CancelTimer(int timer_id);
 
-	int
-	SelfNotifyExpiredTimer(int timer_id);
+	//int
+	//SelfNotifyExpiredTimer(int timer_id);
 	//sends MT_TIMER_EXPIRED to m_WrtInputPipe (self input pipe). Returns 0 on failure, 1 on success
 
 	double UpTime( void);

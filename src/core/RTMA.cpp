@@ -18,32 +18,32 @@
 #endif
 
 //TIMER THREAD STUFF 
-typedef struct {
-	int timer_id;             //unique timer_id
-	unsigned int snooze_time; //expiration time in ms
-	int cancel_timer;         //can be set by the RTMA module to signal the thread to cancel this timer
-	double start_time;        //time at which this timer was set by the RTMA module
-}TIMER_INFO;
-//global array accessed by the timer thread & the RTMA module
-TIMER_INFO	Gm_Timers[MAX_INTERNAL_TIMERS];
-
-//TimerThread struct decleration
-typedef struct {
-    int thread_exists;
-    int keep_running;         //should the timer thread keep running
-    RTMA_Module *p;           //pointer to this
-    int last_error;		      //used by the thread to signal error
-    TIMER_INFO* timers;       //pointer to the global struct above
-#ifdef _UNIX_C                         
-    pthread_t thread_handle;  //handle to the thread
-    pthread_mutex_t tMutex;   //protects Gm_Timers   
-#else
-    HANDLE thread_handle;     //handle to the thread
-    HANDLE tMutex;            //protects Gm_Timers   
-#endif
-}TIMER_THREAD_INFO;
+//typedef struct {
+//	int timer_id;             //unique timer_id
+//	unsigned int snooze_time; //expiration time in ms
+//	int cancel_timer;         //can be set by the RTMA module to signal the thread to cancel this timer
+//	double start_time;        //time at which this timer was set by the RTMA module
+//}TIMER_INFO;
+////global array accessed by the timer thread & the RTMA module
+//TIMER_INFO	Gm_Timers[MAX_INTERNAL_TIMERS];
+//
+////TimerThread struct decleration
+//typedef struct {
+//    int thread_exists;
+//    int keep_running;         //should the timer thread keep running
+//    RTMA_Module *p;           //pointer to this
+//    int last_error;		      //used by the thread to signal error
+//    TIMER_INFO* timers;       //pointer to the global struct above
+//#ifdef _UNIX_C                         
+//    pthread_t thread_handle;  //handle to the thread
+//    pthread_mutex_t tMutex;   //protects Gm_Timers   
+//#else
+//    HANDLE thread_handle;     //handle to the thread
+//    HANDLE tMutex;            //protects Gm_Timers   
+//#endif
+//}TIMER_THREAD_INFO;
 //the struct that is actually passed to the TimerThread
-TIMER_THREAD_INFO Gm_TimerThreadInfo; //information that the thread needs for startup & operation
+//TIMER_THREAD_INFO Gm_TimerThreadInfo; //information that the thread needs for startup & operation
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -352,8 +352,8 @@ void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID)
 		#else
 			m_Pid = _getpid();
 		#endif
-		m_TimerCount=1;
-		Gm_TimerThreadInfo.thread_exists = 0;
+		//m_TimerCount=1;
+		//Gm_TimerThreadInfo.thread_exists = 0;
 
 		InitializeAbsTime();
 
@@ -371,19 +371,19 @@ void
 RTMA_Module::Cleanup( void)
 {
 	TRY {
-	  if(Gm_TimerThreadInfo.thread_exists == 1) // m_TimerCount > 1)
-		{
-		#ifdef _UNIX_C
-		  Gm_TimerThreadInfo.keep_running = 0;
-		  pthread_join(Gm_TimerThreadInfo.thread_handle, NULL);
-		  pthread_mutex_destroy(&Gm_TimerThreadInfo.tMutex);
-		#else
-		  TerminateThread(Gm_TimerThreadInfo.thread_handle, 0);
-		  CloseHandle(Gm_TimerThreadInfo.thread_handle);
-		  //The system closes the mutex handle automatically when the process terminates
-		#endif
-		  Gm_TimerThreadInfo.thread_exists = 0;
-		}
+	 // if(Gm_TimerThreadInfo.thread_exists == 1) // m_TimerCount > 1)
+		//{
+		//#ifdef _UNIX_C
+		//  Gm_TimerThreadInfo.keep_running = 0;
+		//  pthread_join(Gm_TimerThreadInfo.thread_handle, NULL);
+		//  pthread_mutex_destroy(&Gm_TimerThreadInfo.tMutex);
+		//#else
+		//  TerminateThread(Gm_TimerThreadInfo.thread_handle, 0);
+		//  CloseHandle(Gm_TimerThreadInfo.thread_handle);
+		//  //The system closes the mutex handle automatically when the process terminates
+		//#endif
+		//  Gm_TimerThreadInfo.thread_exists = 0;
+		//}
 		
 		if( m_Connected) {
 			DisconnectFromMMM( );
@@ -898,258 +898,258 @@ GetMyPriority()
  */
 
 //The timer thread
-#ifdef _UNIX_C
-void *TimerThread(void* lpParam)
-#else
-DWORD WINAPI
-TimerThread( LPVOID lpParam)
-#endif
-{
-	TIMER_THREAD_INFO *info = (TIMER_THREAD_INFO*) lpParam;
-	RTMA_Module *module  = 	info->p;
-	TIMER_INFO  *timers  =  info->timers;
-	int timers_expiring_soon=0;
-	int have_expired_timers =0;
-	int expired_timers[MAX_INTERNAL_TIMERS];
+//#ifdef _UNIX_C
+//void *TimerThread(void* lpParam)
+//#else
+//DWORD WINAPI
+//TimerThread( LPVOID lpParam)
+//#endif
+//{
+//	TIMER_THREAD_INFO *info = (TIMER_THREAD_INFO*) lpParam;
+//	RTMA_Module *module  = 	info->p;
+//	TIMER_INFO  *timers  =  info->timers;
+//	int timers_expiring_soon=0;
+//	int have_expired_timers =0;
+//	int expired_timers[MAX_INTERNAL_TIMERS];
+//
+//	for(int i=0; i< MAX_INTERNAL_TIMERS; i++)
+//		expired_timers[i]=0;
+//
+//	while( info->keep_running )
+//	{
+//		//lock mutex
+//		#ifdef _UNIX_C
+//			pthread_mutex_lock(&info->tMutex);
+//		#else
+//			DWORD status = WaitForSingleObject( info->tMutex, INFINITE );
+//			if(status == WAIT_ABANDONED) return 0; //RTMA module terminated while locking the mutex
+//			if(status == WAIT_FAILED){ info->last_error = GetLastError(); return 0;}
+//		#endif
+//		
+//		//look for expired timers
+//		int slot=0;
+//		timers_expiring_soon = 0;
+//		while( (slot < MAX_INTERNAL_TIMERS) && info->keep_running )
+//		{
+//			if(timers[slot].timer_id > 0)
+//			{
+//				if(timers[slot].cancel_timer) // a canceled timer
+//				{
+//					timers[slot].cancel_timer = 0;
+//					timers[slot].snooze_time  = 0;
+//					timers[slot].start_time   = 0;
+//					timers[slot].timer_id     = 0;
+//				}
+//				else //a valid timer
+//				{
+//					double snooze_time_sec = ((double)timers[slot].snooze_time)/1000;
+//					if(timers[slot].start_time + snooze_time_sec < GetAbsTime() )
+//					{
+//						expired_timers[slot] = 1;//this timer expired!
+//						have_expired_timers  = 1;
+//					}else if(timers[slot].start_time + snooze_time_sec + 0.02 > GetAbsTime() ){
+//						timers_expiring_soon = 1;//a timer will expire within the next 20ms
+//					}
+//				}
+//			}
+//			slot++;
+//		}
+//		#ifdef _UNIX_C
+//			pthread_mutex_unlock(&info->tMutex);
+//		#else
+//			ReleaseMutex(info->tMutex);
+//		#endif
+//
+//		//notify the RTMA Module of any expired timers. By releasing the mutex above- it can notify us of any canceled timers
+//		if(have_expired_timers)
+//		{
+//		#ifdef _UNIX_C
+//			pthread_mutex_lock(&info->tMutex);
+//		#else
+//			DWORD status = WaitForSingleObject( info->tMutex, INFINITE );
+//			if(status == WAIT_ABANDONED) return 0; //RTMA module terminated while locking the mutex
+//			if(status == WAIT_FAILED){ info->last_error = GetLastError(); return 0;}
+//		#endif
+//			for(int i=0; i < MAX_INTERNAL_TIMERS; i++)
+//			{
+//				if(expired_timers[i] == 1)
+//				{
+//					if(!timers[i].cancel_timer)//check if the module canceled the timer in the meanwhile
+//						module->SelfNotifyExpiredTimer(timers[i].timer_id);
+//					timers[i].cancel_timer = 0;
+//					timers[i].snooze_time  = 0;
+//					timers[i].start_time   = 0;
+//					timers[i].timer_id     = 0;
+//					expired_timers[i]      = 0;
+//				}
+//			}
+//		#ifdef _UNIX_C
+//			pthread_mutex_unlock(&info->tMutex);
+//		#else
+//			ReleaseMutex(info->tMutex);
+//		#endif
+//		}
+//		have_expired_timers = 0;
+//
+//		//try to sleep in 10ms increments until the last 10ms of any timer
+//		if(timers_expiring_soon || !info->keep_running)
+//			Sleep(1);
+//		else
+//			Sleep(10);
+//	}
+//
+//	return 0;
+//}
 
-	for(int i=0; i< MAX_INTERNAL_TIMERS; i++)
-		expired_timers[i]=0;
 
-	while( info->keep_running )
-	{
-		//lock mutex
-		#ifdef _UNIX_C
-			pthread_mutex_lock(&info->tMutex);
-		#else
-			DWORD status = WaitForSingleObject( info->tMutex, INFINITE );
-			if(status == WAIT_ABANDONED) return 0; //RTMA module terminated while locking the mutex
-			if(status == WAIT_FAILED){ info->last_error = GetLastError(); return 0;}
-		#endif
-		
-		//look for expired timers
-		int slot=0;
-		timers_expiring_soon = 0;
-		while( (slot < MAX_INTERNAL_TIMERS) && info->keep_running )
-		{
-			if(timers[slot].timer_id > 0)
-			{
-				if(timers[slot].cancel_timer) // a canceled timer
-				{
-					timers[slot].cancel_timer = 0;
-					timers[slot].snooze_time  = 0;
-					timers[slot].start_time   = 0;
-					timers[slot].timer_id     = 0;
-				}
-				else //a valid timer
-				{
-					double snooze_time_sec = ((double)timers[slot].snooze_time)/1000;
-					if(timers[slot].start_time + snooze_time_sec < GetAbsTime() )
-					{
-						expired_timers[slot] = 1;//this timer expired!
-						have_expired_timers  = 1;
-					}else if(timers[slot].start_time + snooze_time_sec + 0.02 > GetAbsTime() ){
-						timers_expiring_soon = 1;//a timer will expire within the next 20ms
-					}
-				}
-			}
-			slot++;
-		}
-		#ifdef _UNIX_C
-			pthread_mutex_unlock(&info->tMutex);
-		#else
-			ReleaseMutex(info->tMutex);
-		#endif
+//int
+//RTMA_Module::SetTimer(unsigned int time_ms)
+////sets a local timer to expire within the stated time in ms. 
+////Returns: [timer_id] OR [-1: no available timers, -2: failed to spawn thread, -3: failed to create mutex]
+//{
+//	TRY {
+//		int slot=0;
+//		
+//		if(Gm_TimerThreadInfo.thread_exists == 0)//m_TimerCount == 1)//we never spawned TimerThread!
+//		{
+//				//reset the global timers array
+//				while(slot < MAX_INTERNAL_TIMERS)
+//				{
+//					Gm_Timers[slot].cancel_timer = 0;
+//					Gm_Timers[slot].snooze_time  = 0;
+//					Gm_Timers[slot].timer_id     = 0;
+//					slot++;
+//				}
+//				//slot to be used for the first timer
+//				slot=0;
+//
+//				//initialize mutex & thread info
+//				Gm_TimerThreadInfo.keep_running  = 1;
+//				Gm_TimerThreadInfo.last_error    = 0;
+//				Gm_TimerThreadInfo.p             = this;
+//				Gm_TimerThreadInfo.thread_handle = 0;
+//				Gm_TimerThreadInfo.timers        = Gm_Timers;
+//			#ifdef _UNIX_C
+//				pthread_mutex_init(&Gm_TimerThreadInfo.tMutex, NULL);
+//				//Gm_TimerThreadInfo.tMutex        = PTHREAD_MUTEX_INITIALIZER;
+//			#else
+//				Gm_TimerThreadInfo.tMutex        = CreateMutex(NULL, FALSE, NULL);//mutex with default security attr, not owned, unnamed
+//				if(Gm_TimerThreadInfo.tMutex == NULL)
+//					return -3;
+//			#endif
+//
+//				//create timer info
+//				Gm_Timers[slot].timer_id     = m_TimerCount;
+//				Gm_Timers[slot].snooze_time  = time_ms;
+//				Gm_Timers[slot].cancel_timer = 0;
+//				Gm_Timers[slot].start_time   = GetAbsTime();
+//				
+//				//spawn TimerThread
+//			#ifdef _UNIX_C
+//				int status = pthread_create(&Gm_TimerThreadInfo.thread_handle, NULL, TimerThread, (void*) &Gm_TimerThreadInfo);
+//				if(status)
+//					return -2;
+//			#else
+//				Gm_TimerThreadInfo.thread_handle = CreateThread( NULL, 0, TimerThread, (LPVOID) &Gm_TimerThreadInfo, 0, NULL);
+//				if(Gm_TimerThreadInfo.thread_handle == NULL)
+//					return -2;
+//                        #endif
+//				Gm_TimerThreadInfo.thread_exists = 1;
+//				
+//
+//		}
+//		else
+//		{//TimerThread was already spawned before
+//			#ifdef _UNIX_C
+//				pthread_mutex_lock( &Gm_TimerThreadInfo.tMutex);
+//			#else
+//				WaitForSingleObject( Gm_TimerThreadInfo.tMutex, INFINITE );
+//			#endif
+//				while(slot < MAX_INTERNAL_TIMERS)
+//				{
+//					//find the first available slot
+//					if((Gm_Timers[slot].timer_id == 0) && (Gm_Timers[slot].cancel_timer == 0))
+//						break;
+//					else
+//						slot++;
+//				}
+//
+//				if(slot == MAX_INTERNAL_TIMERS)
+//				{
+//				#ifdef _UNIX_C
+//					pthread_mutex_unlock(&Gm_TimerThreadInfo.tMutex);
+//				#else
+//					ReleaseMutex(Gm_TimerThreadInfo.tMutex);
+//				#endif
+//					return -1;
+//				}else{
+//					//create timer info
+//					Gm_Timers[slot].timer_id     = m_TimerCount;
+//					Gm_Timers[slot].snooze_time  = time_ms;
+//					Gm_Timers[slot].cancel_timer = 0;
+//					Gm_Timers[slot].start_time   = GetAbsTime();
+//				#ifdef _UNIX_C
+//					pthread_mutex_unlock(&Gm_TimerThreadInfo.tMutex);
+//				#else
+//					ReleaseMutex(Gm_TimerThreadInfo.tMutex);
+//				#endif
+//				}
+//		}
+//
+//		m_TimerCount++;
+//		return (m_TimerCount - 1);
+//	} CATCH_and_THROW( "RTMA_Module::SetTimer(unsigned int time_ms)");
+//}
 
-		//notify the RTMA Module of any expired timers. By releasing the mutex above- it can notify us of any canceled timers
-		if(have_expired_timers)
-		{
-		#ifdef _UNIX_C
-			pthread_mutex_lock(&info->tMutex);
-		#else
-			DWORD status = WaitForSingleObject( info->tMutex, INFINITE );
-			if(status == WAIT_ABANDONED) return 0; //RTMA module terminated while locking the mutex
-			if(status == WAIT_FAILED){ info->last_error = GetLastError(); return 0;}
-		#endif
-			for(int i=0; i < MAX_INTERNAL_TIMERS; i++)
-			{
-				if(expired_timers[i] == 1)
-				{
-					if(!timers[i].cancel_timer)//check if the module canceled the timer in the meanwhile
-						module->SelfNotifyExpiredTimer(timers[i].timer_id);
-					timers[i].cancel_timer = 0;
-					timers[i].snooze_time  = 0;
-					timers[i].start_time   = 0;
-					timers[i].timer_id     = 0;
-					expired_timers[i]      = 0;
-				}
-			}
-		#ifdef _UNIX_C
-			pthread_mutex_unlock(&info->tMutex);
-		#else
-			ReleaseMutex(info->tMutex);
-		#endif
-		}
-		have_expired_timers = 0;
+//int
+//RTMA_Module::CancelTimer(int timer_id)
+////cancels a timer- returns 1 on success, 0 on failure (return value does not gurantee that the timer was actually canceled!)
+//{
+//	TRY {
+//		int slot=0;
+//		int timer_canceled=0;
+//		#ifdef _UNIX_C
+//			pthread_mutex_lock( &Gm_TimerThreadInfo.tMutex);
+//		#else
+//			WaitForSingleObject( Gm_TimerThreadInfo.tMutex, INFINITE );
+//		#endif
+//		while(slot < MAX_INTERNAL_TIMERS)
+//		{
+//			//find the timer
+//			if(Gm_Timers[slot].timer_id == timer_id)
+//			{
+//				if(Gm_Timers[slot].cancel_timer == 1)
+//					timer_canceled = 1;
+//				else
+//					Gm_Timers[slot].cancel_timer = 1;
+//				break;
+//			}else{
+//				slot++;
+//			}
+//		}
+//		
+//		#ifdef _UNIX_C
+//			pthread_mutex_unlock(&Gm_TimerThreadInfo.tMutex);
+//		#else
+//			ReleaseMutex(Gm_TimerThreadInfo.tMutex);
+//		#endif
+//
+//		return ((slot == MAX_INTERNAL_TIMERS)|| (timer_canceled == 1) ) ? 0 : 1;
+//	} CATCH_and_THROW( "RTMA_Module::CancelTimer(int timer_id)");
+//}
 
-		//try to sleep in 10ms increments until the last 10ms of any timer
-		if(timers_expiring_soon || !info->keep_running)
-			Sleep(1);
-		else
-			Sleep(10);
-	}
-
-	return 0;
-}
-
-
-int
-RTMA_Module::SetTimer(unsigned int time_ms)
-//sets a local timer to expire within the stated time in ms. 
-//Returns: [timer_id] OR [-1: no available timers, -2: failed to spawn thread, -3: failed to create mutex]
-{
-	TRY {
-		int slot=0;
-		
-		if(Gm_TimerThreadInfo.thread_exists == 0)//m_TimerCount == 1)//we never spawned TimerThread!
-		{
-				//reset the global timers array
-				while(slot < MAX_INTERNAL_TIMERS)
-				{
-					Gm_Timers[slot].cancel_timer = 0;
-					Gm_Timers[slot].snooze_time  = 0;
-					Gm_Timers[slot].timer_id     = 0;
-					slot++;
-				}
-				//slot to be used for the first timer
-				slot=0;
-
-				//initialize mutex & thread info
-				Gm_TimerThreadInfo.keep_running  = 1;
-				Gm_TimerThreadInfo.last_error    = 0;
-				Gm_TimerThreadInfo.p             = this;
-				Gm_TimerThreadInfo.thread_handle = 0;
-				Gm_TimerThreadInfo.timers        = Gm_Timers;
-			#ifdef _UNIX_C
-				pthread_mutex_init(&Gm_TimerThreadInfo.tMutex, NULL);
-				//Gm_TimerThreadInfo.tMutex        = PTHREAD_MUTEX_INITIALIZER;
-			#else
-				Gm_TimerThreadInfo.tMutex        = CreateMutex(NULL, FALSE, NULL);//mutex with default security attr, not owned, unnamed
-				if(Gm_TimerThreadInfo.tMutex == NULL)
-					return -3;
-			#endif
-
-				//create timer info
-				Gm_Timers[slot].timer_id     = m_TimerCount;
-				Gm_Timers[slot].snooze_time  = time_ms;
-				Gm_Timers[slot].cancel_timer = 0;
-				Gm_Timers[slot].start_time   = GetAbsTime();
-				
-				//spawn TimerThread
-			#ifdef _UNIX_C
-				int status = pthread_create(&Gm_TimerThreadInfo.thread_handle, NULL, TimerThread, (void*) &Gm_TimerThreadInfo);
-				if(status)
-					return -2;
-			#else
-				Gm_TimerThreadInfo.thread_handle = CreateThread( NULL, 0, TimerThread, (LPVOID) &Gm_TimerThreadInfo, 0, NULL);
-				if(Gm_TimerThreadInfo.thread_handle == NULL)
-					return -2;
-                        #endif
-				Gm_TimerThreadInfo.thread_exists = 1;
-				
-
-		}
-		else
-		{//TimerThread was already spawned before
-			#ifdef _UNIX_C
-				pthread_mutex_lock( &Gm_TimerThreadInfo.tMutex);
-			#else
-				WaitForSingleObject( Gm_TimerThreadInfo.tMutex, INFINITE );
-			#endif
-				while(slot < MAX_INTERNAL_TIMERS)
-				{
-					//find the first available slot
-					if((Gm_Timers[slot].timer_id == 0) && (Gm_Timers[slot].cancel_timer == 0))
-						break;
-					else
-						slot++;
-				}
-
-				if(slot == MAX_INTERNAL_TIMERS)
-				{
-				#ifdef _UNIX_C
-					pthread_mutex_unlock(&Gm_TimerThreadInfo.tMutex);
-				#else
-					ReleaseMutex(Gm_TimerThreadInfo.tMutex);
-				#endif
-					return -1;
-				}else{
-					//create timer info
-					Gm_Timers[slot].timer_id     = m_TimerCount;
-					Gm_Timers[slot].snooze_time  = time_ms;
-					Gm_Timers[slot].cancel_timer = 0;
-					Gm_Timers[slot].start_time   = GetAbsTime();
-				#ifdef _UNIX_C
-					pthread_mutex_unlock(&Gm_TimerThreadInfo.tMutex);
-				#else
-					ReleaseMutex(Gm_TimerThreadInfo.tMutex);
-				#endif
-				}
-		}
-
-		m_TimerCount++;
-		return (m_TimerCount - 1);
-	} CATCH_and_THROW( "RTMA_Module::SetTimer(unsigned int time_ms)");
-}
-
-int
-RTMA_Module::CancelTimer(int timer_id)
-//cancels a timer- returns 1 on success, 0 on failure (return value does not gurantee that the timer was actually canceled!)
-{
-	TRY {
-		int slot=0;
-		int timer_canceled=0;
-		#ifdef _UNIX_C
-			pthread_mutex_lock( &Gm_TimerThreadInfo.tMutex);
-		#else
-			WaitForSingleObject( Gm_TimerThreadInfo.tMutex, INFINITE );
-		#endif
-		while(slot < MAX_INTERNAL_TIMERS)
-		{
-			//find the timer
-			if(Gm_Timers[slot].timer_id == timer_id)
-			{
-				if(Gm_Timers[slot].cancel_timer == 1)
-					timer_canceled = 1;
-				else
-					Gm_Timers[slot].cancel_timer = 1;
-				break;
-			}else{
-				slot++;
-			}
-		}
-		
-		#ifdef _UNIX_C
-			pthread_mutex_unlock(&Gm_TimerThreadInfo.tMutex);
-		#else
-			ReleaseMutex(Gm_TimerThreadInfo.tMutex);
-		#endif
-
-		return ((slot == MAX_INTERNAL_TIMERS)|| (timer_canceled == 1) ) ? 0 : 1;
-	} CATCH_and_THROW( "RTMA_Module::CancelTimer(int timer_id)");
-}
-
-int
-RTMA_Module::SelfNotifyExpiredTimer(int timer_id)
-//sends MT_TIMER_EXPIRED to this module itself
-{
-	TRY {
-		MDF_TIMER_EXPIRED data;
-		data.timer_id = timer_id;
-
-		CMessage M(MT_TIMER_EXPIRED, (void*)&data, sizeof(data));
-		return SendMessage( &M, m_ModuleID, m_HostID);
-	} CATCH_and_THROW( "RTMA_Module::SelfNotifyExpiredTimer(int timer_id)");
-}
+//int
+//RTMA_Module::SelfNotifyExpiredTimer(int timer_id)
+////sends MT_TIMER_EXPIRED to this module itself
+//{
+//	TRY {
+//		MDF_TIMER_EXPIRED data;
+//		data.timer_id = timer_id;
+//
+//		CMessage M(MT_TIMER_EXPIRED, (void*)&data, sizeof(data));
+//		return SendMessage( &M, m_ModuleID, m_HostID);
+//	} CATCH_and_THROW( "RTMA_Module::SelfNotifyExpiredTimer(int timer_id)");
+//}
 
 //////////////////////////////////////////////////////////////////////////////
 //////////////////// GLOBAL FUNCTIONS/////////////////////////////////////////

@@ -83,7 +83,7 @@ try
             if( ischar( DataTemplate) && strncmp( 'VARIABLE_LENGTH_ARRAY', DataTemplate, 21))
                 % Variable length arrays are allowed to have no data
                 % without warning
-            else
+            elseif ~isempty(fieldnames(DataTemplate))
                 % Fixed format messages should not have no data, but not a
                 % fatal condition, so issue a warning
                 MsgType = RTMA.MTN_by_MT{H.msg_type+1};
