@@ -363,6 +363,7 @@ classdef RTMA_Logger < handle
                 rtma = LoadRtmaConfig;
             end
             self.logMsg = rtma.MDF.RTMA_LOG;
+            self.name = char(self.name); % convert string to char
             lenName = length(self.name);
             self.logMsg.name(1:lenName) = int8(self.name);
         end
@@ -457,6 +458,11 @@ classdef RTMA_Logger < handle
             global RTMA
             if self.is_rtma_connected
                 try
+                    % make sure we use chars and not strings
+                    file = char(file);
+                    funcName = char(funcName);
+                    message = char(message);
+
                     msg = self.logMsg;
                     msg.time = posixtime(datetime('now','TimeZone','UTC'));
                     msg.level = int32(level);
@@ -465,7 +471,7 @@ classdef RTMA_Logger < handle
                     msg.pathname(1:lenFile) = int8(file(1:lenFile));
                     lenFunc = min(length(funcName), 256);
                     msg.funcname(1:lenFunc) = int8(funcName(1:lenFunc));
-                    lenMsg = min(RTMA.defines.CC_MAX_LOG_LENGTH, length(message));
+                    lenMsg = min(RTMA.defines.MAX_LOG_LENGTH, length(message));
                     msg.message(1:lenMsg) = int8(message(1:lenMsg));
                     SendMessage(self.get_msg_type(level), msg);
                 catch
