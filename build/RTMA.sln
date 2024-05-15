@@ -23,6 +23,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RTMA_lib", "..\src\core\RTM
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PipeLib", "..\src\core\PipeLib\PipeLib.vcxproj", "{FD9D0C5C-5C41-426E-8758-4EC311F103B9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestClientLogger", "..\src\modules\Test\TestClientLogger\TestClientLogger.vcxproj", "{3D12CBE7-ED94-42C7-BB6A-E486A8AC5A67}"
+	ProjectSection(ProjectDependencies) = postProject
+		{85FABFA0-1A28-48CC-B418-75CB425D1FF8} = {85FABFA0-1A28-48CC-B418-75CB425D1FF8}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -63,6 +68,14 @@ Global
 		{FD9D0C5C-5C41-426E-8758-4EC311F103B9}.Release|Win32.Build.0 = Release|Win32
 		{FD9D0C5C-5C41-426E-8758-4EC311F103B9}.Release|x64.ActiveCfg = Release|x64
 		{FD9D0C5C-5C41-426E-8758-4EC311F103B9}.Release|x64.Build.0 = Release|x64
+		{3D12CBE7-ED94-42C7-BB6A-E486A8AC5A67}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3D12CBE7-ED94-42C7-BB6A-E486A8AC5A67}.Debug|Win32.Build.0 = Debug|Win32
+		{3D12CBE7-ED94-42C7-BB6A-E486A8AC5A67}.Debug|x64.ActiveCfg = Debug|x64
+		{3D12CBE7-ED94-42C7-BB6A-E486A8AC5A67}.Debug|x64.Build.0 = Debug|x64
+		{3D12CBE7-ED94-42C7-BB6A-E486A8AC5A67}.Release|Win32.ActiveCfg = Release|Win32
+		{3D12CBE7-ED94-42C7-BB6A-E486A8AC5A67}.Release|Win32.Build.0 = Release|Win32
+		{3D12CBE7-ED94-42C7-BB6A-E486A8AC5A67}.Release|x64.ActiveCfg = Release|x64
+		{3D12CBE7-ED94-42C7-BB6A-E486A8AC5A67}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

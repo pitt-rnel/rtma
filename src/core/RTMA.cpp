@@ -286,9 +286,10 @@ void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID)
 	TRY {
 		_pipeClient = NULL;
 		_MMpipe = NULL;
-		char* log_name;
+		char log_name[50];
 		sprintf(log_name, "Module % d", ModuleID);
-		*_logger = RTMA_Logger(log_name, LogLevel::lINFO, this);
+		_logger = new RTMA_Logger(log_name, LogLevel::lINFO);
+		_logger->set_rtma_client(this);
 		m_ModuleID = ModuleID;
 		m_HostID = HostID;
 		m_MessageCount = 0;
@@ -336,6 +337,7 @@ RTMA_Module::Cleanup( void)
 		if( m_Connected) {
 			DisconnectFromMMM( );
 		}
+		delete _logger;
 	} CATCH_and_THROW( "RTMA_Module::Cleanup( void)");
 }
 

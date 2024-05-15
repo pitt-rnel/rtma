@@ -60,19 +60,19 @@ void MyCException::Set(const MyCException &E)
 void MyCException::ReportToFile(const char* file_name)
 {
 	int itr;
-	ofstream ReportFile;
+	std::ofstream ReportFile;
 	MyCString time;
 
 	if(file_name != NULL)
-		ReportFile.open(MYCEXCEPTION_STACK_FILE_NAME, ios::app);
+		ReportFile.open(MYCEXCEPTION_STACK_FILE_NAME, std::ios::app);
 	else
-		ReportFile.open(file_name, ios::app);
+		ReportFile.open(file_name, std::ios::app);
 	//ReportFile << "--------------------------------------" << endl << "Stack trace created " << __DATE__ << " " << __TIME__ << endl << "--------------------------------------" << endl;
 	
-	ReportFile << endl << "--------------------------------------" << endl << "Stack trace" << endl << time << endl << "--------------------------------------" << endl;
+	ReportFile << std::endl << "--------------------------------------" << std::endl << "Stack trace" << std::endl << time << std::endl << "--------------------------------------" << std::endl;
 	for(itr=0; itr < m_TraceIndex; itr++){
 		ReportFile << "(" << itr+1 << ") ";
-		ReportFile << m_StackTrace[itr].GetContent() << endl;
+		ReportFile << m_StackTrace[itr].GetContent() << std::endl;
 	}
 	ReportFile.close();
 	

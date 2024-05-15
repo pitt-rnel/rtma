@@ -119,11 +119,10 @@ static int localtime_safe(tm* tmDest, time_t const* const sourceTime) {
 #endif
 }
 
-RTMA_Logger::RTMA_Logger(const char* log_name, int log_level, RTMA_Module* rtma_client, const char* log_filename) :
+RTMA_Logger::RTMA_Logger(const char* log_name, int log_level, const char* log_filename) :
     log_name_(log_name),
     level(log_level),
-    log_filename_(""),
-    rtma_client_(rtma_client)
+    log_filename_("")
 {
     log_msg_ = new CMessage(MT_RTMA_LOG);
     log_msg_->AllocateData(sizeof(MDF_RTMA_LOG));
@@ -154,6 +153,7 @@ std::string RTMA_Logger::get_log_name(void)
 
 void RTMA_Logger::set_log_name(const char* log_name) {
     log_name_ = log_name;
+    strcpy_safe(log_msg_data_->name, sizeof(log_msg_data_->name), log_name_.c_str());
 }
 
 std::string RTMA_Logger::get_log_filename(void)

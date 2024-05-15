@@ -32,7 +32,6 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
-using namespace std;
 #define itoa _itoa		// use ISO name for itoa (deprecated) - also note, most 'c' string functions are also deprecated.
 
 #include <stdio.h>
@@ -95,8 +94,8 @@ public:
 	~MyCString();
 
 	//operator overloading
-	friend ostream& operator<<(ostream& out, const MyCString& str);
-	friend istream& operator>>(istream& in, MyCString& dest);
+	friend std::ostream& operator<<(std::ostream& out, const MyCString& str);
+	friend std::istream& operator>>(std::istream& in, MyCString& dest);
 	
 	char operator[](int itr) const;
 	

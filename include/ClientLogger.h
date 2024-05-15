@@ -13,11 +13,6 @@
 #ifndef _RTMA_LOGGER_H_
 #define _RTMA_LOGGER_H_
 
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#define _HAS_STD_BYTE 0
-#endif
-
 #include <string>
 #include <fstream>
 
@@ -50,7 +45,7 @@ static int localtime_safe(tm* tmDest, time_t const* const sourceTime);
 
 class RTMA_Logger {
 public:
-    RTMA_Logger(const char* log_name = "", int log_level = LogLevel::lNOTSET, RTMA_Module* rtma_client = &RTMA_Module(0, 0), const char* log_filename = "");
+    RTMA_Logger(const char* log_name = "", int log_level = LogLevel::lNOTSET, const char* log_filename = "");
     ~RTMA_Logger();
 
     // default log level functions

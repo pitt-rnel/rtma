@@ -137,13 +137,13 @@ MyCString::~MyCString()
 }
 
 
-ostream& operator<<(ostream& out, const MyCString& str)
+std::ostream& operator<<(std::ostream& out, const MyCString& str)
 {
 	out<< str.GetContent();
 	return out;
 }
 
-istream& operator>>(istream& in, MyCString& dest)
+std::istream& operator>>(std::istream& in, MyCString& dest)
 {
 	//we do not know how big the istream will be, so we will do it in chunks
 	//TBC!!
