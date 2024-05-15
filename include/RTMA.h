@@ -119,7 +119,7 @@ private:
 	//Non block read: returns -1 if there was no message in the pipe, or the number of bytes read
 
 protected:
-
+	char        m_Name[MAX_NAME_LEN];
 	MSG_COUNT   m_MessageCount;
 	MSG_COUNT   m_SelfMessageCount;
 	int         m_Connected;
@@ -149,7 +149,9 @@ public:
 
 	RTMA_Module( );
 
-	RTMA_Module( MODULE_ID ModuleID, HOST_ID HostID);
+	//RTMA_Module( MODULE_ID ModuleID, HOST_ID HostID);
+
+	RTMA_Module(MODULE_ID ModuleID, HOST_ID HostID, char* ClientName=(char*)"");
 
 	~RTMA_Module( ) noexcept(false);
 
@@ -158,7 +160,7 @@ public:
 	//contains code executed by the dtor
 	
 	void
-	InitVariables( MODULE_ID ModuleID, HOST_ID HostID);
+	InitVariables( MODULE_ID ModuleID, HOST_ID HostID, char* name=(char*)"");
 
 	int
 	ConnectToMMM( int logger_status=0, int read_dd_file=0, int daemon_status=0);
@@ -168,6 +170,12 @@ public:
 	ConnectToMMM( char *server_name, int logger_status=0, int read_dd_file=0, int daemon_status=0);
 	// Opens a read and a write connection to the Message Management Module on the specified host and port
 	// specified in server_name, e.g. "somehost.com:1234" or "192.168.2.10:8888"
+
+	int
+	ConnectToMMM_V2(int logger_status = 0, int allow_multiple = 0, int daemon_status = 0);
+	
+	int
+	ConnectToMMM_V2( char* server_name, int logger_status = 0, int allow_multiple = 0, int daemon_status = 0);
 
 	int
 	DisconnectFromMMM( void);
@@ -246,6 +254,8 @@ public:
 
 	MODULE_ID 
 	GetModuleID(){ return m_ModuleID;}
+
+	char* GetName() { return m_Name; }
 
 	// log functions
 	RTMA_Logger* GetLoggerPointer(void);

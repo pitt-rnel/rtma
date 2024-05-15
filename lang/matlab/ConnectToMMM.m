@@ -60,7 +60,7 @@ for i = 1 : length( varargin)
     end
 end
 
-status = MatlabRTMA( RTMA.mex_opcode.CONNECT_TO_MMM, ModuleID, ServerName, logger_status);
+status = MatlabRTMA( RTMA.mex_opcode.CONNECT_TO_MMM, ModuleID, ServerName, logger_status, Name);
 if( status == 0); error( 'Could not connect to MessageManager'); end
 
 % Initialize RTMA runtime variables

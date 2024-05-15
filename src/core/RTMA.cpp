@@ -270,24 +270,30 @@ CMessage::GetHeader(void)
 RTMA_Module::RTMA_Module( )
 {
 	TRY {
-		InitVariables( -1, -1);
+		InitVariables( -1, -1, "");
 	} CATCH_and_THROW( "RTMA_Module::RTMA_Module( )");
 }
 
-RTMA_Module::RTMA_Module( MODULE_ID ModuleID, HOST_ID HostID)
+RTMA_Module::RTMA_Module(MODULE_ID ModuleID, HOST_ID HostID, char* ClientName)
 {
-	TRY {
-		InitVariables( ModuleID, HostID);
-	} CATCH_and_THROW( "RTMA_Module::RTMA_Module( MODULE_ID ModuleID, HOST_ID HostID)");
+	TRY{
+		InitVariables(ModuleID, HostID, ClientName);
+	} CATCH_and_THROW("RTMA_Module::RTMA_Module( MODULE_ID ModuleID, HOST_ID HostID, char* ClientName)");
 }
 
-void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID)
+void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID, char* name)
 {
-	TRY {
+	TRY{
+		strcpy(m_Name, name);
 		_pipeClient = NULL;
 		_MMpipe = NULL;
 		char log_name[50];
-		sprintf(log_name, "Module % d", ModuleID);
+		if (((std::string)m_Name).length() > 0) {
+			strcpy(log_name, m_Name);
+		}
+		else {
+			sprintf(log_name, "Module % d", ModuleID);
+		}
 		_logger = new RTMA_Logger(log_name, LogLevel::lINFO);
 		_logger->set_rtma_client(this);
 		m_ModuleID = ModuleID;
@@ -393,6 +399,82 @@ RTMA_Module::ConnectToMMM( char *server_name, int logger_status, int read_dd_fil
 		return status;
 
 	} CATCH_and_THROW( "RTMA_Module::ConnectToMMM( char *server_name, int logger_status, int read_dd_file, int daemon_status)");
+}
+
+// Connect V2
+int
+RTMA_Module::ConnectToMMM_V2(int logger_status, int allow_multiple, int daemon_status)
+// Opens a read and a write connection to the Message Management Module
+{
+	TRY{
+		return ConnectToMMM_V2(DEFAULT_PIPE_SERVER_NAME_FOR_MODULES, logger_status, allow_multiple, daemon_status);
+	} CATCH_and_THROW("RTMA_Module::ConnectToMMM_V2(int logger_status, int allow_multiple, int daemon_status)");
+}
+
+int
+RTMA_Module::ConnectToMMM_V2(char* server_name, int logger_status, int allow_multiple, int daemon_status)
+// Opens a read and a write connection to the Message Management Module
+{
+	TRY{
+		// Connect to server
+		_pipeClient = UPipeFactory::CreateClient(server_name);
+		_MMpipe = _pipeClient->Connect();
+
+		MDF_CONNECT data;
+		MDF_CONNECT_V2 data2;
+
+		if (logger_status) {
+			data.logger_status = 1;
+			data2.logger_status = 1;
+		}
+		else {
+			data.logger_status = 0;
+			data2.logger_status = 0;
+		}
+
+		if (allow_multiple) {
+			data2.allow_multiple = 1;
+		}
+		else {
+			data2.allow_multiple = 0;
+		}
+
+		if (daemon_status) {
+			data.daemon_status = 1;
+			data2.daemon_status = 1;
+		}
+		else {
+			data.daemon_status = 0;
+			data2.daemon_status = 0;
+		}
+
+		data2.pid = m_Pid;
+		data2.mod_id = m_ModuleID;
+		strcpy(data2.name, m_Name);
+
+		m_MessageCount = 1;
+		m_SelfMessageCount = 1;
+		CMessage M(MT_CONNECT, (void*)&data, sizeof(MDF_CONNECT));
+		CMessage M2(MT_CONNECT_V2, (void*)&data2, sizeof(MDF_CONNECT_V2));
+		
+		SendMessage(&M2);
+		SendMessage(&M);
+
+		CMessage ackMsg;
+		int status = WaitForAcknowledgement(1, &ackMsg); // Wait for up to 3 seconds
+		if (status == 0) {
+			throw MyCException("Did not receive ACK from MessageManager upon CONNECT");
+		}
+
+		// save own module ID from ACK if asked to be assigned dynamic ID
+		if (m_ModuleID == 0)
+			m_ModuleID = ackMsg.dest_mod_id;
+
+		m_Connected = 1;
+
+		return status;
+
+	} CATCH_and_THROW("RTMA_Module::ConnectToMMM_V2(char* server_name, int logger_status, int allow_multiple, int daemon_status)");
 }
 
 int

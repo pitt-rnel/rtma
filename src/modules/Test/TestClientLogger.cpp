@@ -14,8 +14,7 @@ int main(int argc, char** argv) {
     int log_level = LogLevel::lINFO;
     std::cout << "Starting logger test, log level = " << levelToNameStr(log_level) << std::endl;
     std::this_thread::sleep_for(250ms);
-    RTMA_Module client = RTMA_Module(0,0);
-    client.SetLogName("TestClientLog");
+    RTMA_Module client = RTMA_Module(0,0, (char *)"TestClientLog");
 
     client.Info("Setting log1 filename", LOG_SRC);
     client.SetLogFilename(LOG_FILENAME1);
@@ -28,7 +27,7 @@ int main(int argc, char** argv) {
         client.Error("RTMA client not set", LOG_SRC);
 
     client.Info("Connecting to MMM", LOG_SRC);
-    client.ConnectToMMM((char*) MM_IP);
+    client.ConnectToMMM_V2((char*) MM_IP);
     client.Info("Connected. This should be first log sent via RTMA.", LOG_SRC);
     std::this_thread::sleep_for(250ms);
     

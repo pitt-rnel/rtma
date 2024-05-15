@@ -51,8 +51,8 @@ void CQuickLogger::MainFunction()
 
 		// Get connected
 		int logger_status = 1;
-		InitVariables( MID_QUICKLOGGER, 0);
-		ConnectToMMM( logger_status);
+		InitVariables( MID_QUICKLOGGER, 0, (char*)"QuickLogger");
+		ConnectToMMM_V2( logger_status);
 		Subscribe( ALL_MESSAGE_TYPES);
 		if( SetMyPriority(NORMAL_PRIORITY_CLASS) == 0) throw MyCException( "SetMyPriority failed");
 		SendSignal( MT_LM_READY);
