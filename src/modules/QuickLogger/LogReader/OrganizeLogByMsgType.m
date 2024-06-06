@@ -24,6 +24,10 @@ function OrganizedLog = OrganizeLogByMsgType(LinearLog, RTMA, ignorelist)
         % field in the output struct
         mt = unique_MT(i);
         mt_name = RTMA.MTN_by_MT{mt+1};
+        if isempty(mt_name)
+            warning('Missing message definition for ID:%d', mt)
+            continue
+        end
         if ignore_logit && ismember(mt_name, ignorelist) % CMG 22/1/5 IgnoreList
             OrganizedLog.Headers.(mt_name) = [];
             OrganizedLog.Data.(mt_name) = [];
