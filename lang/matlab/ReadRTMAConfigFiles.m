@@ -18,18 +18,18 @@ function RTMA = ReadRTMAConfigFiles( RTMA_BaseDir, varargin)
         arg = varargin{i};
         % Make sure arguments are strings
         if( ~ischar(arg)), error( 'ReadRTMAConfigFiles() only takes string arguments'); end
-        InputFilenames(end+1) = {arg};
+        if ~isempty(arg)
+            InputFilenames(end+1) = {arg};
+        end
     end
-    
-    FilePaths = {};
 
     % If RTMA base directory provided, then add core definition file to the list
     if( ~isempty( RTMA_BaseDir))
-        FilePaths(end+1) = {fullfile(RTMA_BaseDir,'include','RTMA_types.h')};
+        InputFilenames(end+1) = {fullfile(RTMA_BaseDir,'include','RTMA_types.h')};
     end
 
     % Add user defined files to the list
-    FilePaths = [InputFilenames FilePaths];
+    FilePaths = InputFilenames;
     
     % Parse the file list
     h = ParseHFile( FilePaths{:});

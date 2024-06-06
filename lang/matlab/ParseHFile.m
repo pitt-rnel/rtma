@@ -635,14 +635,14 @@ function value = typecast( value, type, h)
     end
 
     switch( type)
-        case {'char', 'signed char'}, value = int8( value);
-        case {'unsigned char'}, value = uint8( value);
-        case {'short', 'signed short'}, value = int16( value);
-        case {'unsigned short'}, value = uint16( value);
-        case {'int', 'signed int', 'long'}, value = int32( value);
-        case {'unsigned int', 'unsigned long'}, value = uint32( value);
-        case {'unsigned long long'}, value = uint64(value);
-        case {'long long', 'signed long long'}, value = int64(value);
+        case {'char', 'signed char', 'int8_t'}, value = int8( value);
+        case {'unsigned char', 'uint8_t'}, value = uint8( value);
+        case {'short', 'signed short', 'int16_t'}, value = int16( value);
+        case {'unsigned short', 'uint16_t'}, value = uint16( value);
+        case {'int', 'signed int', 'long', 'int32_t'}, value = int32( value);
+        case {'unsigned int', 'unsigned long', 'uint32_t'}, value = uint32( value);
+        case {'unsigned long long', 'uint64_t'}, value = uint64(value);
+        case {'long long', 'signed long long', 'int64_t'}, value = int64(value);
         case {'double'}, value = double( value);
         case {'float'}, value = single( value);
         otherwise

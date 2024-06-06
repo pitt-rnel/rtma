@@ -12,11 +12,12 @@ if( ~ispc && ~isunix)
 end
 
 % base_dir = '../..';
-base_dir = fullfile(getHstPath,'..','rtma'); %'git\rtma
+%base_dir = fullfile(getHstPath,'..','rtma'); %'git\rtma
+base_dir = fullfile(fileparts(mfilename("fullpath")), '..', '..');
 core_dir = [base_dir '/src/core'];
 pipelib_dir = [core_dir '/PipeLib'];
 
-core_sources = [core_dir '/RTMA.cpp ' core_dir '/MyCException.cpp ' core_dir '/MyCString.cpp ' core_dir '/mex_hack.cpp '];
+core_sources = [core_dir '/RTMA.cpp ' core_dir '/MyCException.cpp ' core_dir '/MyCString.cpp ' core_dir '/mex_hack.cpp ' core_dir '/ClientLogger.cpp '];
 pipelib_sources = [pipelib_dir '/UPipe.cpp ' pipelib_dir '/SocketPipe.cpp ' pipelib_dir '/Timing.cpp '];
 
 sources = [base_dir '/lang/matlab/' 'MatlabRTMA.cpp ' core_sources pipelib_sources];

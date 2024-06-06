@@ -15,7 +15,7 @@ public:
 		TRY {
 		} CATCH_and_THROW( "CMessageBufferer::CMessageBufferer( )");
 	}
-	~CMessageBufferer( ) {
+	~CMessageBufferer( ) noexcept(false) {
 		TRY {
 		} CATCH_and_THROW( "CMessageBufferer::~CMessageBufferer( )");
 	}

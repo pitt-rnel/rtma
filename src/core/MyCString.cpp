@@ -137,13 +137,13 @@ MyCString::~MyCString()
 }
 
 
-ostream& operator<<(ostream& out, const MyCString& str)
+std::ostream& operator<<(std::ostream& out, const MyCString& str)
 {
 	out<< str.GetContent();
 	return out;
 }
 
-istream& operator>>(istream& in, MyCString& dest)
+std::istream& operator>>(std::istream& in, MyCString& dest)
 {
 	//we do not know how big the istream will be, so we will do it in chunks
 	//TBC!!
@@ -375,7 +375,7 @@ int  MyCString::IsNull() const
 	return (m_Len == 0) ? 1 : 0;	
 }
 
-int MyCString::GetLen() const
+size_t MyCString::GetLen() const
 {
 	return m_Len;
 }
@@ -401,7 +401,7 @@ void  MyCString::SetContent(const char* str)
 
 void MyCString::AppendContent(const MyCString &str)
 {
-	int str_len;
+	size_t str_len;
 	char* new_str=NULL;
 
 	if(str.IsNull() ){
@@ -426,7 +426,7 @@ void MyCString::AppendContent(const MyCString &str)
 
 void MyCString::AppendContent(const char* str, int len)
 {
-	int str_len;
+	size_t str_len;
 	char* new_str=NULL;
 	//don't append a NULL string
 	if(str == NULL)

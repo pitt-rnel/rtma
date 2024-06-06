@@ -1,15 +1,16 @@
-function ConnectToMMM( ModuleID, Reserved, MessageConfigFile, varargin)
+function ConnectToMMM( ModuleID, Name, MessageConfigFile, varargin)
 
-% ConnectToMMM( ModuleID, Reserved, MessageConfigFile, option1, option2, ...)
+% ConnectToMMM( ModuleID, Name, MessageConfigFile, option1, option2, ...)
 %
 % ModuleID specifies the numeric ID by which this module will be know to
 % RTMA. ModuleID can optionally be a string if a definition for that
-% string exists in the MessageConfigFile. MessageConfigFile specifies the
+% string exists in the MessageConfigFile. 
+% Name is an optional string defining a name for the client
+% MessageConfigFile specifies the
 % name of a MAT file that contains an RTMA structure containing message
-% definitions, module ID definitions etc. Reserved is an argument that
-% is there for backward compatibility. Its value does not matter. Options
-% are strings of the form '-optionname optionvalue'. The following options
-% have been defined:
+% definitions, module ID definitions etc. 
+% Options are strings of the form '-optionname optionvalue'. The following 
+% options have been defined:
 % '-logger' specifies that this module will receive all messages without
 %           even subscribing to any of them.
 % '-server_name hostname:port' specifies that the MessageManager to connect
@@ -21,6 +22,7 @@ clear MatlabRTMA;
 
 global RTMA;
 global RTMA_runtime;
+global RTMA_log;
 RTMA = [];
 RTMA_runtime = [];
 
@@ -58,14 +60,18 @@ for i = 1 : length( varargin)
     end
 end
 
-status = MatlabRTMA( RTMA.mex_opcode.CONNECT_TO_MMM, ModuleID, ServerName, logger_status);
+status = MatlabRTMA( RTMA.mex_opcode.CONNECT_TO_MMM, ModuleID, ServerName, logger_status, Name);
 if( status == 0); error( 'Could not connect to MessageManager'); end
 
 % Initialize RTMA runtime variables
-RTMA_runtime.ModuleID = ModuleID;
+RTMA_runtime.ModuleID = GetModuleID();
+RTMA_runtime.Name = Name;
 RTMA_runtime.Connected = true;
-RTMA_runtime.EventLoop_CurrentState = {};
-RTMA_runtime.StateTimeout_TimerID = [];
 RTMA_runtime.Subscribed = {};
 RTMA_runtime.Paused = {};
-%RTMA_runtime.EventMap = [];
+if isempty(Name)
+    log_name = sprintf("Module %d", RTMA_runtime.ModuleID);
+else
+    log_name = Name;
+end
+RTMA_log = RTMA_Logger.getLogger(log_name);

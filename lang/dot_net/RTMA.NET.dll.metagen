@@ -65,8 +65,6 @@ Class RTMA.Module: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
     ReadMessage(): PrivateScope, Public, HideBySig
     ReadMessage(Double): PrivateScope, Public, HideBySig
     ReadMessage(ReadType): PrivateScope, Public, HideBySig
-    SetTimer(UInt32): PrivateScope, Public, HideBySig
-    CancelTimer(Int32): PrivateScope, Public, HideBySig
     GetAbsTime(): PrivateScope, Public, HideBySig
     get_IsConnected(): PrivateScope, Public, HideBySig, SpecialName
     Dispose(): PrivateScope, Public, Final, Virtual, HideBySig

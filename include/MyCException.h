@@ -29,8 +29,6 @@
 #include <fstream>
 #include <cstring>
 #include <exception>
-using namespace std;
-
 
 #include <stdio.h>
 #include <stdlib.h>

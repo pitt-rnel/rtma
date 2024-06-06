@@ -51,12 +51,15 @@ mexFunction(
     short *HostAddress_raw;
     char HostAddress[MAX_HOST_ADDR_LENGTH];
     int HostAddressLength = 0;
+    short *ClientName_raw;
+    char ClientName[MAX_NAME_LEN];
+    int ClientNameLength = 0;
     MSG_TYPE MessageType;
 
 	double timeout;
     int status;
-	unsigned int SnoozeTime;
-    int TimerID;
+	//unsigned int SnoozeTime;
+    //int TimerID;
     int logger_status;
 
     void *pData;
@@ -83,7 +86,7 @@ mexFunction(
 
         case CONNECT_TO_MMM:
             
-            if( num_input_args < 4) Error( "incorrect number of arguments");
+            if( num_input_args < 5) Error( "incorrect number of arguments");
             if( TheModule.IsConnected( )) {
                 mexPrintf( "Disconnecting...\n");
                 TheModule.DisconnectFromMMM();
@@ -92,7 +95,20 @@ mexFunction(
             ModuleID = (MODULE_ID) mxGetScalar( input_arg[1]);
             HostAddressLength = mxGetNumberOfElements( input_arg[2]);
             logger_status = (int) mxGetScalar( input_arg[3]);
-            TheModule.InitVariables( ModuleID, 0);
+            ClientNameLength = mxGetNumberOfElements( input_arg[4]);
+
+            if (ClientNameLength > 0) {
+                if (ClientNameLength > MAX_NAME_LEN-1) Error( "Client name exceeds maximum allowed length");
+                ClientName_raw = (short*) mxGetData( input_arg[4]);
+                int i;
+                for( i = 0; i < ClientNameLength; i++) ClientName[i] = (char) ClientName_raw[i];
+                ClientName[i] = 0; // zero-terminate the string
+            }
+            else {
+                ClientName[0] = 0;
+            }
+
+            TheModule.InitVariables( ModuleID, 0, ClientName);
             try{
                 if( HostAddressLength > 0) {
                     // Convert unicode matlab string to regular character string
@@ -101,9 +117,9 @@ mexFunction(
                     int i;
                     for( i = 0; i < HostAddressLength; i++) HostAddress[i] = (char) HostAddress_raw[i];
                     HostAddress[i] = 0; // zero-terminate the string
-                    status = TheModule.ConnectToMMM( HostAddress, logger_status);
+                    status = TheModule.ConnectToMMM_V2( HostAddress, logger_status);
                 } else {
-                    status = TheModule.ConnectToMMM( logger_status);
+                    status = TheModule.ConnectToMMM_V2( logger_status);
                 }
             }catch(MyCException &E){
                 MyCString err("Failed to connect to MM:");
@@ -248,29 +264,6 @@ mexFunction(
             Template = input_arg[1];
             ReturnData = C2Matlab( Template, M.GetDataPointer(), M.num_data_bytes);
             output_arg[0] = ReturnData;
-            break;
-
-        case SET_TIMER:
-
-            if( num_input_args < 2) Error( "incorrect number of arguments");
-            if( TheModule.IsConnected( )) {
-                SnoozeTime = (unsigned int) mxGetScalar( input_arg[1]);
-                TimerID = TheModule.SetTimer( SnoozeTime);
-            } else {
-                TimerID = -1;
-            }
-            output_arg[0] = mxCreateDoubleScalar( (double) TimerID);
-            break;
-
-        case CANCEL_TIMER:
-            if( num_input_args < 2) Error( "incorrect number of arguments");
-            if( TheModule.IsConnected( )) {
-                TimerID = (unsigned int) mxGetScalar( input_arg[1]);
-                status = TheModule.CancelTimer( TimerID);
-            } else {
-                status = -1;
-            }
-            output_arg[0] = mxCreateDoubleScalar( (double) status);
             break;
 
         case SEND_MODULE_READY:

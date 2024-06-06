@@ -4,6 +4,8 @@
 
 #include "Debug.h"
 
+#include "ClientLogger.h"
+
 //namespace RTMA {
 
 //////////////////////////////////////////////////////////////////////////////
@@ -16,34 +18,6 @@
 	#define min(a,b)            (((a) < (b)) ? (a) : (b))
 	#endif
 #endif
-
-//TIMER THREAD STUFF 
-typedef struct {
-	int timer_id;             //unique timer_id
-	unsigned int snooze_time; //expiration time in ms
-	int cancel_timer;         //can be set by the RTMA module to signal the thread to cancel this timer
-	double start_time;        //time at which this timer was set by the RTMA module
-}TIMER_INFO;
-//global array accessed by the timer thread & the RTMA module
-TIMER_INFO	Gm_Timers[MAX_INTERNAL_TIMERS];
-
-//TimerThread struct decleration
-typedef struct {
-    int thread_exists;
-    int keep_running;         //should the timer thread keep running
-    RTMA_Module *p;           //pointer to this
-    int last_error;		      //used by the thread to signal error
-    TIMER_INFO* timers;       //pointer to the global struct above
-#ifdef _UNIX_C                         
-    pthread_t thread_handle;  //handle to the thread
-    pthread_mutex_t tMutex;   //protects Gm_Timers   
-#else
-    HANDLE thread_handle;     //handle to the thread
-    HANDLE tMutex;            //protects Gm_Timers   
-#endif
-}TIMER_THREAD_INFO;
-//the struct that is actually passed to the TimerThread
-TIMER_THREAD_INFO Gm_TimerThreadInfo; //information that the thread needs for startup & operation
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -66,15 +40,15 @@ CMessage::CMessage( MSG_TYPE mt)
 	} CATCH_and_THROW( "CMessage::CMessage( MSG_TYPE mt)");
 }
 
-CMessage::CMessage( MSG_TYPE mt, void *pData, int num_bytes)
+CMessage::CMessage( MSG_TYPE mt, void *pData, size_t num_bytes)
 {
 	TRY {
 		large_data = NULL;
 		Set( mt, pData, num_bytes);
-	} CATCH_and_THROW( "CMessage::CMessage( MSG_TYPE mt, void *pData, int num_bytes)");
+	} CATCH_and_THROW( "CMessage::CMessage( MSG_TYPE mt, void *pData, size_t num_bytes)");
 }
 
-CMessage::~CMessage( )
+CMessage::~CMessage( ) noexcept(false)
 {
 	TRY {
 		if( large_data != NULL) {
@@ -111,7 +85,7 @@ CMessage::GetData( void *pData)
 }
 
 int
-CMessage::SetData( void *pData, int num_bytes)
+CMessage::SetData( void *pData, size_t num_bytes)
 {
 	TRY {
 		if( !AllocateData( num_bytes)) return 0;
@@ -126,11 +100,11 @@ CMessage::SetData( void *pData, int num_bytes)
 
 		}
 		return 1;
-	} CATCH_and_THROW( "CMessage::SetData( void *pData, int num_bytes)");
+	} CATCH_and_THROW( "CMessage::SetData( void *pData, size_t num_bytes)");
 }
 
 int
-CMessage::AllocateData( int num_bytes)
+CMessage::AllocateData( size_t num_bytes)
 {
 	TRY {
 		if( large_data != NULL) {
@@ -144,13 +118,13 @@ CMessage::AllocateData( int num_bytes)
 			if( large_data == NULL) return 0;
 
 		}
-		num_data_bytes = num_bytes;
+		num_data_bytes = (int) num_bytes;
 		return 1;
-	} CATCH_and_THROW( "CMessage::AllocateData( int num_bytes)");
+	} CATCH_and_THROW( "CMessage::AllocateData( size_t num_bytes)");
 }
 
 int
-CMessage::Set( MSG_TYPE mt, void *pData, int num_bytes)
+CMessage::Set( MSG_TYPE mt, void *pData, size_t num_bytes)
 {
 	TRY {
 		msg_type = mt;
@@ -169,37 +143,8 @@ CMessage::Set( MSG_TYPE mt, void *pData, int num_bytes)
 		reserved = 0;
 
 		return SetData( pData, num_bytes);
-	} CATCH_and_THROW( "CMessage::Set( MSG_TYPE mt, void *pData, int num_bytes)");
+	} CATCH_and_THROW( "CMessage::Set( MSG_TYPE mt, void *pData, size_t num_bytes)");
 }
-
-
-#ifdef USE_DYNAMIC_DATA
-int
-CMessage::Set( MSG_TYPE mt, const DD& dynamic_data)
-{
-	TRY {
-		// get the serialized version of the dynamic data object
-		string ddserialized = dynamic_data.Serialize();
-
-		return Set(mt,ddserialized); 
-	} CATCH_and_THROW( "CMessage::Set( MSG_TYPE mt, const DD& dynamic_data)");
-}
-
-int
-CMessage::Set( MSG_TYPE mt, const std::string& dynamic_data)
-{
-	TRY {
-		// put the serialized data into CMessage's buffer
-		// and set our message type
-		int status = Set(mt,(void *)(dynamic_data.c_str()),(int)dynamic_data.size()+1);	// add one to catch the null
-
-		// re-set the DD flag
-		is_dynamic = 1;
-
-		return status; 
-	} CATCH_and_THROW( "CMessage::Set( MSG_TYPE mt, const std::string& dynamic_data)");
-}
-#endif //USE_DYNAMIC_DATA
 
 int
 CMessage::Receive( UPipe *input_pipe)
@@ -325,22 +270,32 @@ CMessage::GetHeader(void)
 RTMA_Module::RTMA_Module( )
 {
 	TRY {
-		InitVariables( -1, -1);
+		InitVariables( -1, -1, "");
 	} CATCH_and_THROW( "RTMA_Module::RTMA_Module( )");
 }
 
-RTMA_Module::RTMA_Module( MODULE_ID ModuleID, HOST_ID HostID)
+RTMA_Module::RTMA_Module(MODULE_ID ModuleID, HOST_ID HostID, char* ClientName)
 {
-	TRY {
-		InitVariables( ModuleID, HostID);
-	} CATCH_and_THROW( "RTMA_Module::RTMA_Module( MODULE_ID ModuleID, HOST_ID HostID)");
+	TRY{
+		InitVariables(ModuleID, HostID, ClientName);
+	} CATCH_and_THROW("RTMA_Module::RTMA_Module( MODULE_ID ModuleID, HOST_ID HostID, char* ClientName)");
 }
 
-void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID)
+void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID, char* name)
 {
-	TRY {
+	TRY{
+		strcpy(m_Name, name);
 		_pipeClient = NULL;
 		_MMpipe = NULL;
+		char log_name[50];
+		if (((std::string)m_Name).length() > 0) {
+			strcpy(log_name, m_Name);
+		}
+		else {
+			sprintf(log_name, "Module % d", ModuleID);
+		}
+		_logger = new RTMA_Logger(log_name, LogLevel::lINFO);
+		_logger->set_rtma_client(this);
 		m_ModuleID = ModuleID;
 		m_HostID = HostID;
 		m_MessageCount = 0;
@@ -352,15 +307,15 @@ void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID)
 		#else
 			m_Pid = _getpid();
 		#endif
-		m_TimerCount=1;
-		Gm_TimerThreadInfo.thread_exists = 0;
+		//m_TimerCount=1;
+		//Gm_TimerThreadInfo.thread_exists = 0;
 
 		InitializeAbsTime();
 
 	} CATCH_and_THROW( "void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID)");
 }
 
-RTMA_Module::~RTMA_Module( )
+RTMA_Module::~RTMA_Module( ) noexcept(false)
 {
 	TRY {
 		Cleanup();
@@ -371,23 +326,24 @@ void
 RTMA_Module::Cleanup( void)
 {
 	TRY {
-	  if(Gm_TimerThreadInfo.thread_exists == 1) // m_TimerCount > 1)
-		{
-		#ifdef _UNIX_C
-		  Gm_TimerThreadInfo.keep_running = 0;
-		  pthread_join(Gm_TimerThreadInfo.thread_handle, NULL);
-		  pthread_mutex_destroy(&Gm_TimerThreadInfo.tMutex);
-		#else
-		  TerminateThread(Gm_TimerThreadInfo.thread_handle, 0);
-		  CloseHandle(Gm_TimerThreadInfo.thread_handle);
-		  //The system closes the mutex handle automatically when the process terminates
-		#endif
-		  Gm_TimerThreadInfo.thread_exists = 0;
-		}
+	 // if(Gm_TimerThreadInfo.thread_exists == 1) // m_TimerCount > 1)
+		//{
+		//#ifdef _UNIX_C
+		//  Gm_TimerThreadInfo.keep_running = 0;
+		//  pthread_join(Gm_TimerThreadInfo.thread_handle, NULL);
+		//  pthread_mutex_destroy(&Gm_TimerThreadInfo.tMutex);
+		//#else
+		//  TerminateThread(Gm_TimerThreadInfo.thread_handle, 0);
+		//  CloseHandle(Gm_TimerThreadInfo.thread_handle);
+		//  //The system closes the mutex handle automatically when the process terminates
+		//#endif
+		//  Gm_TimerThreadInfo.thread_exists = 0;
+		//}
 		
 		if( m_Connected) {
 			DisconnectFromMMM( );
 		}
+		delete _logger;
 	} CATCH_and_THROW( "RTMA_Module::Cleanup( void)");
 }
 
@@ -440,32 +396,92 @@ RTMA_Module::ConnectToMMM( char *server_name, int logger_status, int read_dd_fil
 
 		m_Connected = 1;
 
-		#ifdef USE_DYNAMIC_DATA
-		if(read_dd_file)
-		{
-			//Read RTMA data from RTMA_config_dump.txt TextData file, if exists
-			try
-			{
-				m_RTMA.Load(RTMA_DD_FILENAME, true);//will throw an exception if the file does not exist
-			}catch(MyCException &E){
-				MyCString err;
-				E.AppendTraceToString(err);
-				CMessage R(MT_DYNAMIC_DD_READ_ERR, (void*)err.GetContent(), err.GetLen());
-				SendMessage(&R);
-			}
-		}
-		#endif
-
 		return status;
 
 	} CATCH_and_THROW( "RTMA_Module::ConnectToMMM( char *server_name, int logger_status, int read_dd_file, int daemon_status)");
+}
+
+// Connect V2
+int
+RTMA_Module::ConnectToMMM_V2(int logger_status, int allow_multiple, int daemon_status)
+// Opens a read and a write connection to the Message Management Module
+{
+	TRY{
+		return ConnectToMMM_V2(DEFAULT_PIPE_SERVER_NAME_FOR_MODULES, logger_status, allow_multiple, daemon_status);
+	} CATCH_and_THROW("RTMA_Module::ConnectToMMM_V2(int logger_status, int allow_multiple, int daemon_status)");
+}
+
+int
+RTMA_Module::ConnectToMMM_V2(char* server_name, int logger_status, int allow_multiple, int daemon_status)
+// Opens a read and a write connection to the Message Management Module
+{
+	TRY{
+		// Connect to server
+		_pipeClient = UPipeFactory::CreateClient(server_name);
+		_MMpipe = _pipeClient->Connect();
+
+		MDF_CONNECT data;
+		MDF_CONNECT_V2 data2;
+
+		if (logger_status) {
+			data.logger_status = 1;
+			data2.logger_status = 1;
+		}
+		else {
+			data.logger_status = 0;
+			data2.logger_status = 0;
+		}
+
+		if (allow_multiple) {
+			data2.allow_multiple = 1;
+		}
+		else {
+			data2.allow_multiple = 0;
+		}
+
+		if (daemon_status) {
+			data.daemon_status = 1;
+			data2.daemon_status = 1;
+		}
+		else {
+			data.daemon_status = 0;
+			data2.daemon_status = 0;
+		}
+
+		data2.pid = m_Pid;
+		data2.mod_id = m_ModuleID;
+		strcpy(data2.name, m_Name);
+
+		m_MessageCount = 1;
+		m_SelfMessageCount = 1;
+		CMessage M(MT_CONNECT, (void*)&data, sizeof(MDF_CONNECT));
+		CMessage M2(MT_CONNECT_V2, (void*)&data2, sizeof(MDF_CONNECT_V2));
+		
+		SendMessage(&M2);
+		SendMessage(&M);
+
+		CMessage ackMsg;
+		int status = WaitForAcknowledgement(1, &ackMsg); // Wait for up to 3 seconds
+		if (status == 0) {
+			throw MyCException("Did not receive ACK from MessageManager upon CONNECT");
+		}
+
+		// save own module ID from ACK if asked to be assigned dynamic ID
+		if (m_ModuleID == 0)
+			m_ModuleID = ackMsg.dest_mod_id;
+
+		m_Connected = 1;
+
+		return status;
+
+	} CATCH_and_THROW("RTMA_Module::ConnectToMMM_V2(char* server_name, int logger_status, int allow_multiple, int daemon_status)");
 }
 
 int
 RTMA_Module::DisconnectFromMMM( void)
 {
 	TRY {
-		int status;
+		//int status;
 		DEBUG_TEXT_("DisconnectFromMMM():");
 		if(m_Connected)
 		{
@@ -509,8 +525,8 @@ RTMA_Module::IsConnected( void)
 				return 1;
 			} catch( UPipeException) {
 				return 0;
-			} catch (UPipeClosedException) {
-			    return 0;
+			//} catch (UPipeClosedException) {
+			//    return 0;
 			}
 		}
 	} CATCH_and_THROW( "RTMA_Module::IsConnected( void)");
@@ -691,25 +707,6 @@ RTMA_Module::SendMessageRTMA( CMessage *M, MODULE_ID dest_mod_id, HOST_ID dest_h
 	} CATCH_and_THROW( "RTMA_Module::SendMessageRTMA( CMessage *M, MODULE_ID dest_mod_id, HOST_ID dest_host_id)");
 }
 
-#ifdef USE_DYNAMIC_DATA
-int 
-RTMA_Module::SendMessage(MSG_TYPE mt, const DD& dynamic_data, MODULE_ID dest_mod_id, HOST_ID dest_host_id)
-{
-	TRY {
-		CMessage M;
-
-		// A note:  This overall process is not very optimum.  First of
-		// all, the string will come out of DD::Serilize by value, thus
-		// it is copied on the way out.  It then must be copied char by char
-		// into CMessage's buffer.  This is a lot of data handling and could
-		// perhaps be optimized.
-
-		M.Set(mt,dynamic_data);	
-		return SendMessage( &M, dest_mod_id, dest_host_id);
-	} CATCH_and_THROW( "RTMA_Module::SendMessage(MSG_TYPE mt, const DD& dynamic_data, MODULE_ID dest_mod_id, HOST_ID dest_host_id)");
-}
-#endif
-
 int
 RTMA_Module::SendSignal( MSG_TYPE MessageType, UPipe *output_pipe, MODULE_ID dest_mod_id, HOST_ID dest_host_id)
 // Send message that only has the header (no data after the header).
@@ -835,6 +832,97 @@ RTMA_Module::GetPid( void)
 	} CATCH_and_THROW( "RTMA_Module::GetPid( void)");
 }
 
+RTMA_Logger* RTMA_Module::GetLoggerPointer( void)
+{
+	TRY{
+		return _logger;
+	} CATCH_and_THROW("RTMA_Module::GetLoggerPointer( void)");
+}
+
+std::string RTMA_Module::GetLogName(void)
+{
+	TRY{
+		return _logger->get_log_name();
+	} CATCH_and_THROW("RTMA_Module::GetLogName( void)");
+}
+
+void RTMA_Module::SetLogName(const char* log_name)
+{
+	TRY{
+		_logger->set_log_name(log_name);
+	} CATCH_and_THROW("RTMA_Module::SetLogName(const char* log_name)");
+}
+
+int RTMA_Module::GetLogLevel(void)
+{
+	TRY{
+		return _logger->level;
+	} CATCH_and_THROW("RTMA_Module::GetLogLevel(void)");
+}
+
+void RTMA_Module::SetLogLevel(int log_level)
+{
+	TRY{
+		_logger->level = log_level;
+	} CATCH_and_THROW("RTMA_Module::SetLogLevel(int log_level)");
+}
+
+std::string RTMA_Module::GetLogFilename(void)
+{
+	TRY{
+		return _logger->get_log_filename();
+	} CATCH_and_THROW("RTMA_Module::GetLogFilename(void)");
+}
+
+void RTMA_Module::SetLogFilename(const char* log_filename)
+{
+	TRY{
+		_logger->set_log_filename(log_filename);
+	} CATCH_and_THROW("RTMA_Module::SetLogFilename(const char* log_filename)");
+}
+
+void RTMA_Module::Debug(const char* message, const char* src_func, const char* src_file, int src_line)
+{
+	TRY{
+		_logger->debug(message, src_func, src_file, src_line);
+	} CATCH_and_THROW("RTMA_Module::Debug(const char* message, const char* src_func, const char* src_file, int src_line)");
+}
+
+void RTMA_Module::Info(const char* message, const char* src_func, const char* src_file, int src_line)
+{
+	TRY{
+		_logger->info(message, src_func, src_file, src_line);
+	} CATCH_and_THROW("RTMA_Module::Info(const char* message, const char* src_func, const char* src_file, int src_line)");
+}
+
+void RTMA_Module::Warning(const char* message, const char* src_func, const char* src_file, int src_line)
+{
+	TRY{
+		_logger->warning(message, src_func, src_file, src_line);
+	} CATCH_and_THROW("RTMA_Module::Warning(const char* message, const char* src_func, const char* src_file, int src_line)");
+}
+
+void RTMA_Module::Error(const char* message, const char* src_func, const char* src_file, int src_line)
+{
+	TRY{
+		_logger->error(message, src_func, src_file, src_line);
+	} CATCH_and_THROW("RTMA_Module::Error(const char* message, const char* src_func, const char* src_file, int src_line)");
+}
+
+void RTMA_Module::Critical(const char* message, const char* src_func, const char* src_file, int src_line)
+{
+	TRY{
+		_logger->critical(message, src_func, src_file, src_line);
+	} CATCH_and_THROW("RTMA_Module::Critical(const char* message, const char* src_func, const char* src_file, int src_line)");
+}
+
+void RTMA_Module::Log(const char* message, int level, const char* src_func, const char* src_file, int src_line)
+{
+	TRY{
+		_logger->log(message, level, src_func, src_file, src_line);
+	} CATCH_and_THROW("RTMA_Module::Log(const char* message, int level, const char* src_func, const char* src_file, int src_line)");
+}
+
 /*
  * Opens a handle to this process (specified by m_Pid), and sets the priority class accordingly
  * (Does not set priority for all threads - just for the main thread)
@@ -889,273 +977,6 @@ GetMyPriority()
 #endif
 	} CATCH_and_THROW( "GetMyPriority()");
 }
-
-//////////////////////////////////////////////////////////////////////////////
-//////////////////// Internal Timer //////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-/*
- *	The global variables referred in this section are defined in the GLOBALS section of the code
- */
-
-//The timer thread
-#ifdef _UNIX_C
-void *TimerThread(void* lpParam)
-#else
-DWORD WINAPI
-TimerThread( LPVOID lpParam)
-#endif
-{
-	TIMER_THREAD_INFO *info = (TIMER_THREAD_INFO*) lpParam;
-	RTMA_Module *module  = 	info->p;
-	TIMER_INFO  *timers  =  info->timers;
-	int timers_expiring_soon=0;
-	int have_expired_timers =0;
-	int expired_timers[MAX_INTERNAL_TIMERS];
-
-	for(int i=0; i< MAX_INTERNAL_TIMERS; i++)
-		expired_timers[i]=0;
-
-	while( info->keep_running )
-	{
-		//lock mutex
-		#ifdef _UNIX_C
-			pthread_mutex_lock(&info->tMutex);
-		#else
-			DWORD status = WaitForSingleObject( info->tMutex, INFINITE );
-			if(status == WAIT_ABANDONED) return 0; //RTMA module terminated while locking the mutex
-			if(status == WAIT_FAILED){ info->last_error = GetLastError(); return 0;}
-		#endif
-		
-		//look for expired timers
-		int slot=0;
-		timers_expiring_soon = 0;
-		while( (slot < MAX_INTERNAL_TIMERS) && info->keep_running )
-		{
-			if(timers[slot].timer_id > 0)
-			{
-				if(timers[slot].cancel_timer) // a canceled timer
-				{
-					timers[slot].cancel_timer = 0;
-					timers[slot].snooze_time  = 0;
-					timers[slot].start_time   = 0;
-					timers[slot].timer_id     = 0;
-				}
-				else //a valid timer
-				{
-					double snooze_time_sec = ((double)timers[slot].snooze_time)/1000;
-					if(timers[slot].start_time + snooze_time_sec < GetAbsTime() )
-					{
-						expired_timers[slot] = 1;//this timer expired!
-						have_expired_timers  = 1;
-					}else if(timers[slot].start_time + snooze_time_sec + 0.02 > GetAbsTime() ){
-						timers_expiring_soon = 1;//a timer will expire within the next 20ms
-					}
-				}
-			}
-			slot++;
-		}
-		#ifdef _UNIX_C
-			pthread_mutex_unlock(&info->tMutex);
-		#else
-			ReleaseMutex(info->tMutex);
-		#endif
-
-		//notify the RTMA Module of any expired timers. By releasing the mutex above- it can notify us of any canceled timers
-		if(have_expired_timers)
-		{
-		#ifdef _UNIX_C
-			pthread_mutex_lock(&info->tMutex);
-		#else
-			DWORD status = WaitForSingleObject( info->tMutex, INFINITE );
-			if(status == WAIT_ABANDONED) return 0; //RTMA module terminated while locking the mutex
-			if(status == WAIT_FAILED){ info->last_error = GetLastError(); return 0;}
-		#endif
-			for(int i=0; i < MAX_INTERNAL_TIMERS; i++)
-			{
-				if(expired_timers[i] == 1)
-				{
-					if(!timers[i].cancel_timer)//check if the module canceled the timer in the meanwhile
-						module->SelfNotifyExpiredTimer(timers[i].timer_id);
-					timers[i].cancel_timer = 0;
-					timers[i].snooze_time  = 0;
-					timers[i].start_time   = 0;
-					timers[i].timer_id     = 0;
-					expired_timers[i]      = 0;
-				}
-			}
-		#ifdef _UNIX_C
-			pthread_mutex_unlock(&info->tMutex);
-		#else
-			ReleaseMutex(info->tMutex);
-		#endif
-		}
-		have_expired_timers = 0;
-
-		//try to sleep in 10ms increments until the last 10ms of any timer
-		if(timers_expiring_soon || !info->keep_running)
-			Sleep(1);
-		else
-			Sleep(10);
-	}
-
-	return 0;
-}
-
-
-int
-RTMA_Module::SetTimer(unsigned int time_ms)
-//sets a local timer to expire within the stated time in ms. 
-//Returns: [timer_id] OR [-1: no available timers, -2: failed to spawn thread, -3: failed to create mutex]
-{
-	TRY {
-		int slot=0;
-		
-		if(Gm_TimerThreadInfo.thread_exists == 0)//m_TimerCount == 1)//we never spawned TimerThread!
-		{
-				//reset the global timers array
-				while(slot < MAX_INTERNAL_TIMERS)
-				{
-					Gm_Timers[slot].cancel_timer = 0;
-					Gm_Timers[slot].snooze_time  = 0;
-					Gm_Timers[slot].timer_id     = 0;
-					slot++;
-				}
-				//slot to be used for the first timer
-				slot=0;
-
-				//initialize mutex & thread info
-				Gm_TimerThreadInfo.keep_running  = 1;
-				Gm_TimerThreadInfo.last_error    = 0;
-				Gm_TimerThreadInfo.p             = this;
-				Gm_TimerThreadInfo.thread_handle = 0;
-				Gm_TimerThreadInfo.timers        = Gm_Timers;
-			#ifdef _UNIX_C
-				pthread_mutex_init(&Gm_TimerThreadInfo.tMutex, NULL);
-				//Gm_TimerThreadInfo.tMutex        = PTHREAD_MUTEX_INITIALIZER;
-			#else
-				Gm_TimerThreadInfo.tMutex        = CreateMutex(NULL, FALSE, NULL);//mutex with default security attr, not owned, unnamed
-				if(Gm_TimerThreadInfo.tMutex == NULL)
-					return -3;
-			#endif
-
-				//create timer info
-				Gm_Timers[slot].timer_id     = m_TimerCount;
-				Gm_Timers[slot].snooze_time  = time_ms;
-				Gm_Timers[slot].cancel_timer = 0;
-				Gm_Timers[slot].start_time   = GetAbsTime();
-				
-				//spawn TimerThread
-			#ifdef _UNIX_C
-				int status = pthread_create(&Gm_TimerThreadInfo.thread_handle, NULL, TimerThread, (void*) &Gm_TimerThreadInfo);
-				if(status)
-					return -2;
-			#else
-				Gm_TimerThreadInfo.thread_handle = CreateThread( NULL, 0, TimerThread, (LPVOID) &Gm_TimerThreadInfo, 0, NULL);
-				if(Gm_TimerThreadInfo.thread_handle == NULL)
-					return -2;
-                        #endif
-				Gm_TimerThreadInfo.thread_exists = 1;
-				
-
-		}
-		else
-		{//TimerThread was already spawned before
-			#ifdef _UNIX_C
-				pthread_mutex_lock( &Gm_TimerThreadInfo.tMutex);
-			#else
-				WaitForSingleObject( Gm_TimerThreadInfo.tMutex, INFINITE );
-			#endif
-				while(slot < MAX_INTERNAL_TIMERS)
-				{
-					//find the first available slot
-					if((Gm_Timers[slot].timer_id == 0) && (Gm_Timers[slot].cancel_timer == 0))
-						break;
-					else
-						slot++;
-				}
-
-				if(slot == MAX_INTERNAL_TIMERS)
-				{
-				#ifdef _UNIX_C
-					pthread_mutex_unlock(&Gm_TimerThreadInfo.tMutex);
-				#else
-					ReleaseMutex(Gm_TimerThreadInfo.tMutex);
-				#endif
-					return -1;
-				}else{
-					//create timer info
-					Gm_Timers[slot].timer_id     = m_TimerCount;
-					Gm_Timers[slot].snooze_time  = time_ms;
-					Gm_Timers[slot].cancel_timer = 0;
-					Gm_Timers[slot].start_time   = GetAbsTime();
-				#ifdef _UNIX_C
-					pthread_mutex_unlock(&Gm_TimerThreadInfo.tMutex);
-				#else
-					ReleaseMutex(Gm_TimerThreadInfo.tMutex);
-				#endif
-				}
-		}
-
-		m_TimerCount++;
-		return (m_TimerCount - 1);
-	} CATCH_and_THROW( "RTMA_Module::SetTimer(unsigned int time_ms)");
-}
-
-int
-RTMA_Module::CancelTimer(int timer_id)
-//cancels a timer- returns 1 on success, 0 on failure (return value does not gurantee that the timer was actually canceled!)
-{
-	TRY {
-		int slot=0;
-		int timer_canceled=0;
-		#ifdef _UNIX_C
-			pthread_mutex_lock( &Gm_TimerThreadInfo.tMutex);
-		#else
-			WaitForSingleObject( Gm_TimerThreadInfo.tMutex, INFINITE );
-		#endif
-		while(slot < MAX_INTERNAL_TIMERS)
-		{
-			//find the timer
-			if(Gm_Timers[slot].timer_id == timer_id)
-			{
-				if(Gm_Timers[slot].cancel_timer == 1)
-					timer_canceled = 1;
-				else
-					Gm_Timers[slot].cancel_timer = 1;
-				break;
-			}else{
-				slot++;
-			}
-		}
-		
-		#ifdef _UNIX_C
-			pthread_mutex_unlock(&Gm_TimerThreadInfo.tMutex);
-		#else
-			ReleaseMutex(Gm_TimerThreadInfo.tMutex);
-		#endif
-
-		return ((slot == MAX_INTERNAL_TIMERS)|| (timer_canceled == 1) ) ? 0 : 1;
-	} CATCH_and_THROW( "RTMA_Module::CancelTimer(int timer_id)");
-}
-
-int
-RTMA_Module::SelfNotifyExpiredTimer(int timer_id)
-//sends MT_TIMER_EXPIRED to this module itself
-{
-	TRY {
-		MDF_TIMER_EXPIRED data;
-		data.timer_id = timer_id;
-
-		CMessage M(MT_TIMER_EXPIRED, (void*)&data, sizeof(data));
-		return SendMessage( &M, m_ModuleID, m_HostID);
-	} CATCH_and_THROW( "RTMA_Module::SelfNotifyExpiredTimer(int timer_id)");
-}
-
-//////////////////////////////////////////////////////////////////////////////
-//////////////////// GLOBAL FUNCTIONS/////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-
-
 
 //} // namespace RTMA
 

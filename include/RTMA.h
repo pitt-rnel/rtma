@@ -13,14 +13,8 @@
 #include "RTMA_types.h"
 #include "internal/UPipe.h"
 
-/*#ifdef _UNIX_C
-	#include <sys/types.h> //for getpid()
-	#include <unistd.h>    //for getpid()
-	#include <sys/time.h>  //for gettimeofday()
-	#include <signal.h>
-#else
-	#include <windows.h>
-#endif */
+// Sized integer types (added with pyrtma v2.3 updates)
+#include <stdint.h>
 
 #include <stdio.h>
 #include <string>
@@ -36,14 +30,8 @@
 #define DEFAULT_PIPE_SERVER_NAME_FOR_MODULES "localhost:7111" // Modules connect locally by default
 #define DEFAULT_PIPE_SERVER_NAME_FOR_MM ":7111" // MessageManager accepts connections from any incoming interface by default
 
-/*#ifdef _UNIX_C
-	#define THIS_MODULE_BASE_PRIORITY  0
-	#define NORMAL_PRIORITY_CLASS      1
-#else
-	#define THIS_MODULE_BASE_PRIORITY  0x00008000//ABOVE_NORMAL_PRIORITY_CLASS
-	//#define THIS_MODULE_BASE_PRIORITY  ABOVE_NORMAL_PRIORITY_CLASS//ABOVE_NORMAL_PRIORITY_CLASS NORMAL_PRIORITY_CLASS
-#endif */
 
+class RTMA_Logger; // defined in ClientLogger.h (avoid circular import here)
 
 /* ----------------------------------------------------------------------------
    |                       CMessage class                                      |
@@ -60,17 +48,17 @@ public:
 	MODULE_ID	src_mod_id;
 	HOST_ID		dest_host_id;
 	MODULE_ID	dest_mod_id;
-	int			num_data_bytes;
-	int			remaining_bytes;
-	int			is_dynamic;
-	int			reserved;
+	int32_t		num_data_bytes;
+	int32_t		remaining_bytes;
+	int32_t		is_dynamic;
+	int32_t		reserved;
 	char data[MAX_CONTIGUOUS_MESSAGE_DATA];
 	char *large_data;
 
 	CMessage( );
 	CMessage( MSG_TYPE mt);
-	CMessage( MSG_TYPE mt, void *pData, int num_bytes);
-	~CMessage( );
+	CMessage( MSG_TYPE mt, void *pData, size_t num_bytes);
+	~CMessage( ) noexcept(false);
 
 	void *
 	GetDataPointer( void);
@@ -79,13 +67,13 @@ public:
 	GetData( void *pData);
 
 	int
-	SetData( void *pData, int num_bytes);
+	SetData( void *pData, size_t num_bytes);
 
 	int
-	AllocateData( int num_bytes);
+	AllocateData( size_t num_bytes);
 
 	int
-	Set( MSG_TYPE mt, void *pData = NULL, int num_bytes = 0);
+	Set( MSG_TYPE mt, void *pData = NULL, size_t num_bytes = 0);
 
 	int
 	Receive( UPipe *input_pipe);
@@ -131,11 +119,14 @@ private:
 	//Non block read: returns -1 if there was no message in the pipe, or the number of bytes read
 
 protected:
-
+	char        m_Name[MAX_NAME_LEN];
 	MSG_COUNT   m_MessageCount;
 	MSG_COUNT   m_SelfMessageCount;
 	int         m_Connected;
 	UPipe       *_pMMPipe; //pipe handle for communicating with the Message Manager
+
+	// logging
+	RTMA_Logger *_logger;
 
 	int
 	WaitForAcknowledgement(double timeout = -1, CMessage* rcvMsg = NULL); // Waits for MT_ACKNOWLEDGE for up to timeout seconds
@@ -156,22 +147,20 @@ protected:
 	//reports the profile data to a binary file if RTMA_PROFILE is defined in RTMA_profile.h
 public:
 
-	#ifdef USE_DYNAMIC_DATA
-	DD m_RTMA; //holds C equivalent to Matlab RTMA struct (all MTs, MDFs, MT names etc)
-	#endif
-
 	RTMA_Module( );
 
-	RTMA_Module( MODULE_ID ModuleID, HOST_ID HostID);
+	//RTMA_Module( MODULE_ID ModuleID, HOST_ID HostID);
 
-	~RTMA_Module( );
+	RTMA_Module(MODULE_ID ModuleID, HOST_ID HostID, char* ClientName=(char*)"");
+
+	~RTMA_Module( ) noexcept(false);
 
 	void
 	Cleanup( void);
 	//contains code executed by the dtor
 	
 	void
-	InitVariables( MODULE_ID ModuleID, HOST_ID HostID);
+	InitVariables( MODULE_ID ModuleID, HOST_ID HostID, char* name=(char*)"");
 
 	int
 	ConnectToMMM( int logger_status=0, int read_dd_file=0, int daemon_status=0);
@@ -181,6 +170,12 @@ public:
 	ConnectToMMM( char *server_name, int logger_status=0, int read_dd_file=0, int daemon_status=0);
 	// Opens a read and a write connection to the Message Management Module on the specified host and port
 	// specified in server_name, e.g. "somehost.com:1234" or "192.168.2.10:8888"
+
+	int
+	ConnectToMMM_V2(int logger_status = 0, int allow_multiple = 0, int daemon_status = 0);
+	
+	int
+	ConnectToMMM_V2( char* server_name, int logger_status = 0, int allow_multiple = 0, int daemon_status = 0);
 
 	int
 	DisconnectFromMMM( void);
@@ -220,11 +215,6 @@ public:
 	SendMessageRTMA( CMessage *M, MODULE_ID dest_mod_id = 0, HOST_ID dest_host_id = 0);
 	// A copy of SendMessage() for the purpose of compiling into a .NET library, because SendMessage() itself conflicts with the Win32 API SendMessage.
 
-	#ifdef USE_DYNAMIC_DATA
-	int 
-	SendMessage(MSG_TYPE mt, const DD& dynamic_data, MODULE_ID dest_mod_id = 0, HOST_ID dest_host_id = 0);
-	#endif
-
 	int
 	SendSignal( MSG_TYPE MessageType, MODULE_ID dest_mod_id = 0, HOST_ID dest_host_id = 0);
 	// Send message that only has the header (no data after the header).
@@ -252,17 +242,6 @@ public:
 	//if MsgType is specified- will not return until the requested msg type was received (and will discard all other messages received)
 	//if MsgType is not specified- will return the first message received (in this case just a wrapper for ReadMessage) 
 
-	int
-	SetTimer(unsigned int time_ms);
-	//sets a local timer to expire within the time stated (in ms). Returns timer_id or -1 on failure
-
-	int
-	CancelTimer(int timer_id);
-
-	int
-	SelfNotifyExpiredTimer(int timer_id);
-	//sends MT_TIMER_EXPIRED to m_WrtInputPipe (self input pipe). Returns 0 on failure, 1 on success
-
 	double UpTime( void);
 
 	int GetPid( void);
@@ -275,6 +254,24 @@ public:
 
 	MODULE_ID 
 	GetModuleID(){ return m_ModuleID;}
+
+	char* GetName() { return m_Name; }
+
+	// log functions
+	RTMA_Logger* GetLoggerPointer(void);
+	std::string GetLogName(void);
+	void SetLogName(const char* log_name);
+	int GetLogLevel(void);
+	void SetLogLevel(int log_level);
+	std::string GetLogFilename(void);
+	void SetLogFilename(const char* log_filename);
+	void Debug(const char* message, const char* src_func, const char* src_file, int src_line);
+	void Info(const char* message, const char* src_func, const char* src_file, int src_line);
+	void Warning(const char* message, const char* src_func, const char* src_file, int src_line);
+	void Error(const char* message, const char* src_func, const char* src_file, int src_line);
+	void Critical(const char* message, const char* src_func, const char* src_file, int src_line);
+	// main log function (accepts any level integer)
+	void Log(const char* message, int level, const char* src_func, const char* src_file, int src_line);
 };
 
 /* ----------------------------------------------------------------------------
@@ -286,9 +283,6 @@ SetMyPriority(int priority_class);
 
 int
 GetMyPriority();
-
-//double
-//GetAbsTime( void);
 
 //} // namespace RTMA
 

@@ -32,7 +32,6 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
-using namespace std;
 #define itoa _itoa		// use ISO name for itoa (deprecated) - also note, most 'c' string functions are also deprecated.
 
 #include <stdio.h>
@@ -72,7 +71,7 @@ class MyCString
 {
 private:
 	char* m_Content;
-	int   m_Len;
+	size_t m_Len;
 
 	//tokenizing members
 	char* m_Delims;      //char array of delimiters
@@ -95,8 +94,8 @@ public:
 	~MyCString();
 
 	//operator overloading
-	friend ostream& operator<<(ostream& out, const MyCString& str);
-	friend istream& operator>>(istream& in, MyCString& dest);
+	friend std::ostream& operator<<(std::ostream& out, const MyCString& str);
+	friend std::istream& operator>>(std::istream& in, MyCString& dest);
 	
 	char operator[](int itr) const;
 	
@@ -132,7 +131,7 @@ public:
 	//setting / getting content
 	void  Reset();
 	int   IsNull()const;
-	int   GetLen()const;
+	size_t   GetLen()const;
 	void  SetContent(const MyCString &str);
 	void  SetContent(const char* str);
 	char* GetContent () const;
