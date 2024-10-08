@@ -12,16 +12,16 @@ if( ~ispc && ~isunix)
 end
 
 % base_dir = '../..';
-base_dir = fullfile(getHstPath,'..','rtma'); %'git\rtma
-core_dir = [base_dir '/src/core'];
-pipelib_dir = [core_dir '/PipeLib'];
+base_dir = fullfile(fileparts(mfilename('fullpath')), '..', '..');
+core_dir = fullfile(base_dir, 'src', 'core');
+pipelib_dir = fullfile(core_dir, 'PipeLib');
 
-core_sources = [core_dir '/RTMA.cpp ' core_dir '/MyCException.cpp ' core_dir '/MyCString.cpp ' core_dir '/mex_hack.cpp '];
-pipelib_sources = [pipelib_dir '/UPipe.cpp ' pipelib_dir '/SocketPipe.cpp ' pipelib_dir '/Timing.cpp '];
+core_sources = [fullfile(core_dir,'RTMA.cpp'), ' ' fullfile(core_dir,'MyCException.cpp'), ' ', fullfile(core_dir,'MyCString.cpp'),' ', fullfile(core_dir,'mex_hack.cpp'), ' '];
+pipelib_sources = [fullfile(pipelib_dir,'UPipe.cpp'), ' ', fullfile(pipelib_dir,'SocketPipe.cpp'), ' ', fullfile(pipelib_dir,'Timing.cpp'), ' '];
 
-sources = [base_dir '/lang/matlab/' 'MatlabRTMA.cpp ' core_sources pipelib_sources];
+sources = [fullfile(base_dir,'lang','matlab','MatlabRTMA.cpp'),' ', core_sources, pipelib_sources];
 options = ['-v -D_MEX_FILE_ '];
-include_dirs = ['-I' base_dir '/include ' '-I' base_dir '/include/internal '];
+include_dirs = ['-I' fullfile(base_dir, 'include'),' -I', fullfile(base_dir,'include','internal'), ' '];
 libs = [''];
 
 if( ispc)
