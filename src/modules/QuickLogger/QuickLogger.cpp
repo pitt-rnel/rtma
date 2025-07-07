@@ -69,14 +69,20 @@ void CQuickLogger::MainFunction()
 			while( 1) {
 				ReadMessage( &M);
 				//Status( (MyCString) "Received Message (msg_type = " + M.msg_type + ")");
-				bool saved = _MessageBufrr.SaveMessage( &M);
-				if( !saved) {
+				int saved = _MessageBufrr.SaveMessage( &M);
+				if( saved != 0) {
 					//Status( "Message buffer was full, saving log to QuickLoggerDump.bin");
 					//_MessageBufrr.SaveDatafile( "QuickLoggerDump.bin");
 					// TODO: revert to the version that saves dump files, but update executive to pause logging during intertrial. Dump files should only save if buffer unexpectedly fills during trial.
 					//Status( (MyCString) "\nMessage buffer full, dumping to file");
 					//AutoDumpBuffer(); // Commented out to stop saving dump files between trials. There is a risk that data could be lost if buffer overflows during a trial.
-					Status( (MyCString) "\nMessage buffer full, resetting buffer. Data may be lost if not in intertrial!");
+					
+					if (saved == -1) { // msg count overflow
+						Status((MyCString)"\nMessage buffer count full, resetting buffer. Data may be lost if not in intertrial!");
+					}
+					else {// msg size overflow
+						Status((MyCString)"\nMessage buffer size full, resetting buffer. Data may be lost if not in intertrial!");
+					}
 					_MessageBufrr.ClearBuffer( );
 					//Status( "Log saved, message buffer has been reset");
 					Status( "Message buffer has been reset");

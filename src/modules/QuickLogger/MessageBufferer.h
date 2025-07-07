@@ -19,12 +19,12 @@ public:
 		TRY {
 		} CATCH_and_THROW( "CMessageBufferer::~CMessageBufferer( )");
 	}
-	bool SaveMessage( CMessage *M)
+	int SaveMessage( CMessage *M)
 	{
 		TRY {
 			// Check to make sure we have room in buffers
-			if( NumMessages >= NumPreallocMessages) return false;
-			if( TotalDataBytes + M->num_data_bytes > NumPreallocDataBytes) return false;
+			if( NumMessages >= NumPreallocMessages) return -1;
+			if( TotalDataBytes + M->num_data_bytes > NumPreallocDataBytes) return -2;
 			// Store header in buffer
 			RTMA_MSG_HEADER *header = (RTMA_MSG_HEADER*) M;
 			RTMA_MSG_HEADER *buffer_headers = (RTMA_MSG_HEADER*) Header;
@@ -37,7 +37,7 @@ public:
 			// Increment counters that keep track of how much data we have
 			NumMessages++;
 			TotalDataBytes += M->num_data_bytes;
-			return true;
+			return 0;
 		} CATCH_and_THROW( "CMessageBufferer::SaveMessage( CMessage *M)");
 	}
 };
