@@ -29,8 +29,8 @@ function OrganizedLog = OrganizeLogByMsgType(LinearLog, RTMA, ignorelist)
             continue
         end
         if ignore_logit && ismember(mt_name, ignorelist) % CMG 22/1/5 IgnoreList
-            OrganizedLog.Headers.(mt_name) = [];
-            OrganizedLog.Data.(mt_name) = [];
+            %OrganizedLog.Headers.(mt_name) = [];
+            %OrganizedLog.Data.(mt_name) = [];
             OrganizedLog.SequenceNo.(mt_name) = [];
         else
             mt_data_format = RTMA.MDF_by_MT{mt+1};

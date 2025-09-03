@@ -1,4 +1,4 @@
-function BigLog = LoadMessageLogs( DirName, FileNames, RTMA, get_full_log)
+function BigLog = LoadMessageLogs( DirName, FileNames, RTMA, get_full_log, load_10k)
 
 % BigLog = LoadMessageLogs( DirName, FileNames, RTMA)
 %
@@ -18,6 +18,9 @@ function BigLog = LoadMessageLogs( DirName, FileNames, RTMA, get_full_log)
 
 if ~exist('get_full_log','var')
     get_full_log = true;
+end
+if ~exist('load_10k', 'var')
+    load_10k = true;
 end
 
     % If there is a slash at the end of DirName, remove it, so that the
@@ -45,7 +48,7 @@ end
         % Load message log from the binary file
         input_file = FileNames{i};
         input_file_path = [DirName '/' input_file];
-        [Log, ignorelist] = LoadMessageLog(input_file_path, RTMA, get_full_log);
+        [Log, ignorelist] = LoadMessageLog(input_file_path, RTMA, get_full_log, load_10k);
         % Offset message sequence numbers so that they form one continuous
         % sequence in the concatenated log (instead of starting over from 1
         % for each file)

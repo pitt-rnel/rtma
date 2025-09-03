@@ -1,4 +1,4 @@
-function [Log, IgnoreList] = LoadMessageLog( Filename, RTMA, get_full_log)
+function [Log, IgnoreList] = LoadMessageLog( Filename, RTMA, get_full_log, load_10k)
 
 % [Log, IgnoreList] = LoadMessageLog( Filename, RTMA, [get_full_log])
 %
@@ -18,6 +18,9 @@ function [Log, IgnoreList] = LoadMessageLog( Filename, RTMA, get_full_log)
 if ~exist('get_full_log','var')
     get_full_log = true;
 end
+if ~exist('load_10k', 'var')
+    load_10k = true;
+end
 
-[RawLog, IgnoreList] = LoadRawMessageLog(Filename, RTMA, get_full_log);
+[RawLog, IgnoreList] = LoadRawMessageLog(Filename, RTMA, get_full_log, load_10k);
 Log = OrganizeLogByMsgType( RawLog, RTMA, IgnoreList);

@@ -1,4 +1,4 @@
-function [Log, IgnoreList] = LoadRawMessageLog( Filename, RTMA, get_full_log)
+function [Log, IgnoreList] = LoadRawMessageLog( Filename, RTMA, get_full_log, load_10k)
 
 % Log = LoadRawMessageLog( Filename, RTMA)
 %
@@ -21,15 +21,25 @@ READ_HEADERS        = 3;
 READ_DATA_BLOCK     = 4;
 GET_NUM_BYTES       = 5;
 
+if ~exist('load_10k', 'var')
+    load_10k = true;
+end
+
 if ~exist('get_full_log','var')
     get_full_log = true;
     IgnoreList = {};
 elseif iscell(get_full_log) % CMG 11/11/21 Allow custom ignore lists
     IgnoreList = get_full_log; % Custom list
+    if ~load_10k
+        IgnoreList{end+1} = 'SPM_CTSDATA_10K';
+    end
     get_full_log = false;
 elseif (islogical(get_full_log) || ismember(get_full_log, [1,0]))
     if ~get_full_log % The default list
-        IgnoreList = {'SPIKE_SNIPPET','REJECTED_SNIPPET','RAW_DIGITAL_EVENT','RAW_SPIKECOUNT','PLAYSOUND','TIMING_MESSAGE'};
+        IgnoreList = {'SPIKE_SNIPPET','REJECTED_SNIPPET','RAW_DIGITAL_EVENT','RAW_SPIKECOUNT','PLAYSOUND','TIMING_MESSAGE', 'RAW_CTSDATA_10K'};
+        if ~load_10k
+            IgnoreList{end+1} = 'SPM_CTSDATA_10K';
+        end
     else 
         IgnoreList = {};
     end
