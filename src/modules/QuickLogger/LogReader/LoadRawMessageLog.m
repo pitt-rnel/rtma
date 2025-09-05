@@ -26,7 +26,7 @@ if ~exist('get_full_log','var')
     IgnoreList = {};
 elseif iscell(get_full_log) % CMG 11/11/21 Allow custom ignore lists
     IgnoreList = get_full_log; % Custom list
-    get_full_log = false;
+    get_full_log = isempty(get_full_log);
 elseif (islogical(get_full_log) || ismember(get_full_log, [1,0]))
     if ~get_full_log % The default list
         IgnoreList = {'SPIKE_SNIPPET','REJECTED_SNIPPET','RAW_DIGITAL_EVENT','RAW_SPIKECOUNT','PLAYSOUND','TIMING_MESSAGE'};
