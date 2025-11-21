@@ -120,8 +120,9 @@ void CQuickLogger::MainFunction()
 						break;
 					case MT_LM_EXIT:
 						//_MessageBufrr.SaveDatafile( "QuickLoggerDump.bin");
-						Status( "Auto dumping and Exiting");
-						AutoDumpBuffer();
+						//Status( "Auto dumping and Exiting");
+						Status("Exiting");
+						//AutoDumpBuffer();
 						return;
 					default:
 						break;
