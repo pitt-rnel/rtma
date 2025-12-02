@@ -16,6 +16,7 @@
 		#define WINSOCK_H
 		#define FD_SETSIZE UPipeServer::MAX_CLIENTS
 		#include <winsock2.h>
+		#include <ws2tcpip.h>
 	#endif
 #else
 	//LINUX   only h files
@@ -71,6 +72,7 @@ public:
 	int GetCapacity( void);
 	int Read( void *data_buffer, int n_bytes, double timeout);
 	int Write( void *data_buffer, int n_bytes, double timeout);
+	void GetIpAddress(char *addr, uint16_t *port, int bufsz);
 
 private:
 	SocketHandle _hPipe; // Handle to underlying OS socket

@@ -151,6 +151,8 @@ public:
 	// bytes written.
 	virtual int Write( void *data_buffer, int n_bytes, double timeout) = 0;
 
+	void GetIpAddress(char *addr, uint16_t *port, int bufsz) {};
+
 };
 
 

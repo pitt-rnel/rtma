@@ -1,25 +1,29 @@
 #ifndef _RTMA_TYPES_H_ // this is commented out becuase make_config fails with it
 #define _RTMA_TYPES_H_
 
+#include <stdint.h>
 // Types used in the RTMA system
 
 typedef short MODULE_ID;
 typedef short HOST_ID;
 typedef int MSG_TYPE;
 typedef int MSG_COUNT;
+typedef int32_t UID;
 
 // Maximums for the entire RTMA system
-#define MAX_MODULES       200  //maximal number of modules in the system
-#define DYN_MOD_ID_START  100  //module ID where pool of dynamic IDs begin
+#define MAX_MODULES       256  //maximal number of modules in the system
+#define DYN_MOD_ID_START  10000 //module ID where pool of dynamic IDs begin (10000 - 32000)
 #define MAX_HOSTS         5    //maximal number of hosts in the system
 #define MAX_MESSAGE_TYPES 10000 //maximal number of message types in the system
 #define MIN_STREAM_TYPE    9000 //minimal number type for a data stream
 #define MAX_TIMERS        100  //maximal number of total timers TimerModule can handle
 #define MAX_INTERNAL_TIMERS 20 //maximal number of internal timers that can be set by an RTMA module
+#define MAX_NAME_LEN		32 // Module name length limit
 
 // Maximums for core modules
 #define MAX_RTMA_MSG_TYPE  99 // Message types below 100 are reserved for RTMA core
 #define MAX_RTMA_MODULE_ID  9 // Module ID-s below 10 are reserved for RTMA core
+#define MAX_MODULE_ID  32000
 
 // Header fields for all messages passed through RTMA
 // Following macro was commented out for compatibility with ctypesgen2 v2.2.2 python package (used for Python3 compatiblity) All references to this macro in this file and in RTMA.h were replaced with actual values
@@ -199,16 +203,16 @@ typedef STRING_DATA MDF_AM_CONFIG_FILE_DATA;
 typedef char MDF_AM_APP_NAME[];
 
 //sent by SLAVE AMs
-#define MT_SLAVE_ALL_MODULES_READY	69
-#define MT_SLAVE_FAIL_START_APP		70
-typedef STRING_DATA MDF_SLAVE_FAIL_START_APP;
-#define MT_SLAVE_FAIL_STOP_APP		71
-#define MT_SLAVE_FAIL_KILL_APP      72
-#define MT_SLAVE_APP_SHUTODWN_COMPLETE	74 
-#define MT_SLAVE_APP_RESTART_COMPLETE	75 
-#define MT_SLAVE_APP_KILL_COMPLETE		76
-#define MT_SLAVE_AM_ERROR               77
-typedef STRING_DATA MDF_SLAVE_AM_ERROR;
+// #define MT_SLAVE_ALL_MODULES_READY	69
+// #define MT_SLAVE_FAIL_START_APP		70
+// typedef STRING_DATA MDF_SLAVE_FAIL_START_APP;
+// #define MT_SLAVE_FAIL_STOP_APP		71
+// #define MT_SLAVE_FAIL_KILL_APP      72
+// #define MT_SLAVE_APP_SHUTODWN_COMPLETE	74 
+// #define MT_SLAVE_APP_RESTART_COMPLETE	75 
+// #define MT_SLAVE_APP_KILL_COMPLETE		76
+// #define MT_SLAVE_AM_ERROR               77
+// typedef STRING_DATA MDF_SLAVE_AM_ERROR;
 
 
 // Error in Module
@@ -270,5 +274,68 @@ typedef struct {
 	int ModulePID[MAX_MODULES]; //0 if not connected
 	double send_time;
 } MDF_TIMING_MESSAGE;
+
+#define MT_CONNECT_V2	4
+typedef struct {
+	int16_t logger_status;
+	int16_t daemon_status;
+	int16_t allow_multiple;
+	MODULE_ID mod_id;
+	int32_t pid;
+	char name[MAX_NAME_LEN];
+} MDF_CONNECT_V2;
+
+#define MT_SUBSCRIPTION_OPTION	70
+typedef struct {
+	MSG_TYPE msg_type;
+	int32_t option;
+	int32_t value;
+} MDF_SUBSCRIPTION_OPTION;
+
+#define MT_PING 29
+typedef struct {
+	int32_t uid;
+	MODULE_ID dest_id;
+} MDF_PING;
+
+#define MT_PONG 30
+typedef struct {
+	int32_t uid;
+	MODULE_ID src_id;
+} MDF_PONG;
+
+#define MT_INTRODUCE 31
+
+#define MT_HELLO	32
+typedef struct {
+	int32_t uid;
+	int32_t pid;
+	MODULE_ID mod_id;
+	uint16_t port;
+	char addr[32];
+	char name[MAX_NAME_LEN];
+} MDF_HELLO;
+
+#define MT_GOODBYE		33
+typedef struct {
+	int32_t uid;
+	int32_t pid;
+	MODULE_ID mod_id;
+	uint16_t port;
+	char addr[32];
+	char name[MAX_NAME_LEN];
+} MDF_GOODBYE;
+
+#define MT_CLIENT_SET_NAME		34
+typedef struct {
+	char name[MAX_NAME_LEN];
+} MDF_CLIENT_SET_NAME;
+
+#define MT_MESSAGE_TIMING		69
+typedef struct {
+	MSG_TYPE msg_type;
+	MODULE_ID src_id;
+	double send_time;
+} MDF_MESSAGE_TIMING;
 
 #endif //_RTMA_TYPES_H_
