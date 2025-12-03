@@ -323,9 +323,7 @@ void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID)
 		#else
 			m_Pid = _getpid();
 		#endif
-		m_TimerCount=1;
-		Gm_TimerThreadInfo.thread_exists = 0;
-
+	
 		InitializeAbsTime();
 
 	} CATCH_and_THROW( "void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID)");
@@ -341,21 +339,7 @@ RTMA_Module::~RTMA_Module( )
 void
 RTMA_Module::Cleanup( void)
 {
-	TRY {
-	  if(Gm_TimerThreadInfo.thread_exists == 1) // m_TimerCount > 1)
-		{
-		#ifdef _UNIX_C
-		  Gm_TimerThreadInfo.keep_running = 0;
-		  pthread_join(Gm_TimerThreadInfo.thread_handle, NULL);
-		  pthread_mutex_destroy(&Gm_TimerThreadInfo.tMutex);
-		#else
-		  TerminateThread(Gm_TimerThreadInfo.thread_handle, 0);
-		  CloseHandle(Gm_TimerThreadInfo.thread_handle);
-		  //The system closes the mutex handle automatically when the process terminates
-		#endif
-		  Gm_TimerThreadInfo.thread_exists = 0;
-		}
-		
+	TRY {	
 		if( m_Connected) {
 			DisconnectFromMMM( );
 		}
