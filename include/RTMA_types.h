@@ -197,7 +197,7 @@ typedef struct {
 	char name[MAX_NAME_LEN];
 } MDF_CONNECT_V2;
 
-#define MT_SUBSCRIPTION_OPTION	70
+#define MT_SUBSCRIPTION_OPTION	7
 typedef struct {
 	MSG_TYPE msg_type;
 	int32_t option;
@@ -243,10 +243,11 @@ typedef struct {
 	char name[MAX_NAME_LEN];
 } MDF_CLIENT_SET_NAME;
 
-#define MT_MESSAGE_TIMING		69
+#define MT_MESSAGE_TIMING		9
 typedef struct {
 	MSG_TYPE msg_type;
 	MODULE_ID src_id;
+	int16_t reserved;
 	double send_time;
 } MDF_MESSAGE_TIMING;
 
