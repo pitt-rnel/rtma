@@ -26,6 +26,7 @@ public:
 	char*    	name;
 	
 	CModuleRecord( ) {
+		name = NULL;
 		Reset();
 	}
 
@@ -418,34 +419,25 @@ private:
 	ShutdownLoggerModule(void);
 
 	void
-	AddSubscription(MODULE_ID mod_id, MSG_TYPE message_type);
-
-	void
 	AddSubscription(CModuleRecord *mod, MSG_TYPE message_type);
-
-	void
-	RemoveSubscription(MODULE_ID mod_id, MSG_TYPE message_type);
 
 	void
 	RemoveSubscription(CModuleRecord *mod, MSG_TYPE message_type);
 	
 	void
-	PauseSubscription(MODULE_ID mod_id, MSG_TYPE msg_type_to_pause);
+	PauseSubscription(CModuleRecord *mod, MSG_TYPE msg_type_to_pause);
 
 	void
-	ResumeSubscription(MODULE_ID mod_id, MSG_TYPE msg_type_to_resume);
+	ResumeSubscription(CModuleRecord *mod, MSG_TYPE msg_type_to_resume);
 
 	void
-	SubscriptionOption(MODULE_ID mod_id, MDF_SUBSCRIPTION_OPTION *sub_opt);
+	SubscriptionOption(UID uid, MDF_SUBSCRIPTION_OPTION *sub_opt);
 
 	CSubscriberList *
 	GetSubscriberList( MSG_TYPE message_type);
 
 	bool
 	IsModuleSubscribed(UID uid, MSG_TYPE message_type);
-
-	void
-	SendAcknowledge(MODULE_ID mod_id);
 
 	void 
 	SendAcknowledge(CModuleRecord* mod);
@@ -464,6 +456,39 @@ private:
 
 	void 
 	SendPing(MODULE_ID mod_id);
+
+	void 
+	HandleSetName(CMessage *m);
+
+	void 
+	HandleSubscriptionControl(CMessage *m);
+
+	void 
+	HandleForceDisconnect(CMessage *m);
+
+	void 
+	HandleModuleDisconnect(CMessage *m);
+
+	void 
+	HandleModuleReady(CMessage *m);
+
+	void 
+	HandleSubscribe(CMessage *m);
+
+	void 
+	HandleUnsubscribe(CMessage *m);
+
+	void 
+	HandlePauseSubscription(CMessage *m);
+
+	void 
+	HandleResumeSubscription(CMessage *m);
+
+	void 
+	HandleConnect(CMessage *m, UPipe* pSourcePipe);
+
+	void 
+	HandleConnectV2(CMessage *m, UPipe* PSourcePipe);
 
 	int
 	SendMessage( CMessage *m, CModuleRecord *dest_mod);
