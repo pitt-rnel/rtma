@@ -267,6 +267,7 @@ void CMessageManager::HandleSubscriptionControl(CMessage *M)
 void CMessageManager::DistributeMessage(CMessage *M)
 {
 	DEBUG_TEXT("Distributing Message...");
+	int timing_set = 0;
 
 	CSubscriberList *SL;
 	SL = GetSubscriberList(M->msg_type);
@@ -313,10 +314,13 @@ void CMessageManager::DistributeMessage(CMessage *M)
 					if (SL->TimingOnly())
 					{
 						MDF_MESSAGE_TIMING msg_time;
-						msg_time.msg_type = M->msg_type;
-						msg_time.src_id = M->src_mod_id;
-						msg_time.send_time = M->send_time;
-						m_OutMsg.Set(MT_MESSAGE_TIMING, &msg_time, sizeof(msg_time));
+						if (!timing_set) {
+							timing_set = 1;
+							msg_time.msg_type = M->msg_type;
+							msg_time.src_id = M->src_mod_id;
+							msg_time.send_time = M->send_time;
+							m_OutMsg.Set(MT_MESSAGE_TIMING, &msg_time, sizeof(msg_time));
+						}
 						status = SendMessage(&m_OutMsg, &mod);
 					}
 					else
