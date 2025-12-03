@@ -27,8 +27,8 @@ int main(int argc, char *argv[])
 // options = (char*) lpCmdLine;
 #endif
 
-		CMessageManager MM;
-		MM.MainLoop(options);
+		CMessageManager* MM = new CMessageManager();
+		MM->MainLoop(options);
 		return 0;
 	}
 	catch (MyCException &E)
@@ -649,20 +649,20 @@ void CMessageManager::ShutdownModule(MODULE_ID mod_id)
 
 void CMessageManager::ShutdownAllModules(int shutdown_RTMA, int shutdown_daemons)
 {
-	int mod_id;
-	int start_mod_id;
-
 	for (int uid = 0; uid < MAX_MODULES; uid++)
 	{
 		CModuleRecord mod = m_ConnectedModules[uid];
-		if (mod.DaemonStatus)
+		if (mod.uid >= 0 && mod.ModuleID > 0)
 		{
-			if (shutdown_daemons)
-				ShutdownModule(mod_id);
-		}
-		else
-		{
-			ShutdownModule(mod_id);
+			if (mod.DaemonStatus)
+			{
+				if (shutdown_daemons)
+					ShutdownModule(mod.ModuleID);
+			}
+			else
+			{
+				ShutdownModule(mod.ModuleID);
+			}
 		}
 	}
 }
@@ -776,7 +776,7 @@ void CMessageManager::HandleConnect(CMessage *M, UPipe *pSourcePipe)
 	M->GetData((void *)&data);
 	int prev_priority_class = GetMyPriority();
 	SetMyPriority(NORMAL_PRIORITY_CLASS);
-	MODULE_ID mod_id = ConnectModule(mod_id, pSourcePipe, data.logger_status, data.daemon_status);
+	MODULE_ID mod_id = ConnectModule(M->src_mod_id, pSourcePipe, data.logger_status, data.daemon_status);
 	if (mod_id > 0)
 	{
 		SetMyPriority(prev_priority_class);
@@ -789,7 +789,7 @@ void CMessageManager::HandleConnectV2(CMessage *M, UPipe *pSourcePipe)
 	M->GetData((void *)&connect_v2);
 	int prev_priority_class = GetMyPriority();
 	SetMyPriority(NORMAL_PRIORITY_CLASS);
-	MODULE_ID mod_id = ConnectModuleV2(mod_id, pSourcePipe, &connect_v2);
+	MODULE_ID mod_id = ConnectModuleV2(M->src_mod_id, pSourcePipe, &connect_v2);
 	if (mod_id > 0)
 	{
 		SetMyPriority(prev_priority_class);
