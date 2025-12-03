@@ -35,8 +35,10 @@ public:
 			free(name);
 		}
 		name = (char*) malloc(MAX_NAME_LEN);
-		memcpy(name, src_name, MAX_NAME_LEN);
-		name[MAX_NAME_LEN - 1] = '\0';
+		if (name != NULL) {
+			memcpy(name, src_name, MAX_NAME_LEN);
+			name[MAX_NAME_LEN - 1] = '\0';
+		}
 	}
 
 	void SetHello(MDF_HELLO *hello) {
