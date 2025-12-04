@@ -777,7 +777,7 @@ void CMessageManager::HandleConnect(CMessage *M, UPipe *pSourcePipe)
 	int prev_priority_class = GetMyPriority();
 	SetMyPriority(NORMAL_PRIORITY_CLASS);
 	MODULE_ID mod_id = ConnectModule(M->src_mod_id, pSourcePipe, data.logger_status, data.daemon_status);
-	printf("Connect: %d\n", mod_id);
+	//printf("Connect: %d\n", mod_id);
 	if (mod_id > 0)
 	{
 		SetMyPriority(prev_priority_class);
@@ -791,7 +791,7 @@ void CMessageManager::HandleConnectV2(CMessage *M, UPipe *pSourcePipe)
 	int prev_priority_class = GetMyPriority();
 	SetMyPriority(NORMAL_PRIORITY_CLASS);
 	MODULE_ID mod_id = ConnectModuleV2(M->src_mod_id, pSourcePipe, &connect_v2);
-	printf("ConnectV2: %d\n", mod_id);
+	//printf("ConnectV2: %d\n", mod_id);
 	if (mod_id > 0)
 	{
 		SetMyPriority(prev_priority_class);
