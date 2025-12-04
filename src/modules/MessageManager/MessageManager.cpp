@@ -13,7 +13,6 @@
 int main(int argc, char *argv[])
 #else
 int main(int argc, char *argv[])
-// int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 #endif
 {
 	try
@@ -112,17 +111,17 @@ void CMessageManager::HandleDisconnect(UPipe *pModulePipe)
 	// Find module ID
 	for (int uid = 0; uid < MAX_MODULES; uid++)
 	{
-		CModuleRecord mod = m_ConnectedModules[uid];
-		if (mod.pModulePipe == pModulePipe)
+		CModuleRecord *mod = &m_ConnectedModules[uid];
+		if (mod->pModulePipe == pModulePipe)
 		{
 			// Make sure not to send anything to disconnected client
-			RemoveSubscription(&mod, ALL_MESSAGE_TYPES);
+			RemoveSubscription(mod, ALL_MESSAGE_TYPES);
 
 			// Notify that the module has left
-			SendGoodbye(&mod);
+			SendGoodbye(mod);
 
 			// Delete module record
-			CleanUpModuleRecord(&mod);
+			CleanUpModuleRecord(mod);
 			DEBUG_TEXT_(", disconnected module " << mod_id);
 			break;
 		}
@@ -133,7 +132,6 @@ void CMessageManager::HandleDisconnect(UPipe *pModulePipe)
 void CMessageManager::ProcessMessage(CMessage *M, UPipe *pSourcePipe)
 {
 	DEBUG_TEXT_("Processing message... ");
-	int prev_priority_class;
 
 	switch (M->msg_type)
 	{
@@ -195,28 +193,23 @@ void CMessageManager::ProcessMessage(CMessage *M, UPipe *pSourcePipe)
 	DEBUG_TEXT("Processed!");
 }
 
-void CMessageManager::SendHello(MODULE_ID mod_id)
+void CMessageManager::SendHello(CModuleRecord *mod)
 {
 	MDF_HELLO hello;
-	CModuleRecord mod = m_ConnectedModules[mod_id];
-	mod.SetHello(&hello);
-	m_OutMsg.Set(MT_HELLO, &hello, sizeof(hello));
-	DispatchMessage(&m_OutMsg);
-}
-
-void CMessageManager::SendGoodbye(MODULE_ID mod_id)
-{
-	MDF_GOODBYE goodbye;
-	CModuleRecord *mod = GetRecord(mod_id);
-	SendGoodbye(mod);
+	if ((mod != NULL) && (mod->uid >= 0)){
+		mod->SetHello(&hello);
+		printf("Hello: %d\n", hello.mod_id);
+		m_OutMsg.Set(MT_HELLO, &hello, sizeof(hello));
+		DispatchMessage(&m_OutMsg);
+	}
 }
 
 void CMessageManager::SendGoodbye(CModuleRecord *mod)
 {
 	MDF_GOODBYE goodbye;
-	if (mod)
-	{
+	if ((mod != NULL) && (mod->uid >= 0)) {
 		mod->SetGoodbye(&goodbye);
+		printf("Goodbye: %d\n", goodbye.mod_id);
 		m_OutMsg.Set(MT_GOODBYE, &goodbye, sizeof(goodbye));
 		DispatchMessage(&m_OutMsg);
 	}
@@ -226,7 +219,7 @@ void CMessageManager::SendPing(MODULE_ID mod_id)
 {
 	MDF_PING ping;
 	CModuleRecord *mod = GetRecord(mod_id);
-	if (mod)
+	if ((mod != NULL) && (mod->uid >= 0))
 	{
 		ping.uid = 0;
 		m_OutMsg.Set(MT_PING, &ping, sizeof(ping));
@@ -239,9 +232,9 @@ void CMessageManager::HandleSetName(CMessage *M)
 	MDF_CLIENT_SET_NAME set_name;
 	M->GetData((void *)&set_name);
 	CModuleRecord *mod = GetRecord(M->src_mod_id);
-	if (mod)
+	if ((mod != NULL) && (mod->uid >= 0))
 	{
-		mod->SetName(set_name.name);
+		mod->SetName(&(set_name.name[0]));
 	}
 }
 
@@ -250,7 +243,7 @@ void CMessageManager::HandleSubscriptionControl(CMessage *M)
 	MDF_SUBSCRIPTION_OPTION sub_opt;
 	M->GetData((void *)&sub_opt);
 	CModuleRecord *mod = GetRecord(M->src_mod_id);
-	if (mod)
+	if ((mod != NULL) && (mod->uid >= 0))
 	{
 		SubscriptionOption(mod->uid, &sub_opt);
 	}
@@ -279,7 +272,7 @@ void CMessageManager::DistributeMessage(CMessage *M)
 			/* the order of the code in this while loop is important
 			   don't modify it unless you know what you're doing
 			 */
-			CModuleRecord mod = m_ConnectedModules[uid];
+			CModuleRecord *mod = &m_ConnectedModules[uid];
 
 			int send_it = 0;
 			int has_specific_dest = (M->dest_mod_id == 0) ? 0 : 1;
@@ -287,7 +280,7 @@ void CMessageManager::DistributeMessage(CMessage *M)
 			if (has_specific_dest)
 			{
 				// send only to the specific destination
-				if (mod.ModuleID == M->dest_mod_id)
+				if (mod->ModuleID == M->dest_mod_id)
 					send_it = 1;
 				else
 					send_it = 0;
@@ -299,7 +292,7 @@ void CMessageManager::DistributeMessage(CMessage *M)
 			}
 
 			// forward everything to logger modules
-			if (mod.LoggerStatus)
+			if (mod->LoggerStatus)
 				send_it = 1;
 
 			if (SL->SubscriptionPaused())
@@ -321,16 +314,16 @@ void CMessageManager::DistributeMessage(CMessage *M)
 							msg_time.send_time = M->send_time;
 							m_OutMsg.Set(MT_MESSAGE_TIMING, &msg_time, sizeof(msg_time));
 						}
-						status = SendMessage(&m_OutMsg, &mod);
+						status = SendMessage(&m_OutMsg, mod);
 					}
 					else
 					{
-						status = ForwardMessage(M, &mod);
+						status = ForwardMessage(M, mod);
 					}
 
 					if (status == 0)
 					{
-						LogFailedMessage(M, mod.ModuleID);
+						LogFailedMessage(M, mod->ModuleID);
 						DEBUG_TEXT("Failed to Forward Message!");
 					}
 					else
@@ -365,8 +358,8 @@ void CMessageManager::DispatchMessage(CMessage *M)
 		UID uid = SL->GetFirstSubscriber();
 		while (uid > 0)
 		{
-			CModuleRecord mod = m_ConnectedModules[uid];
-			SendMessage(M, &mod);
+			CModuleRecord *mod = &m_ConnectedModules[uid];
+			SendMessage(M, mod);
 			uid = SL->GetNextSubscriber();
 		}
 	}
@@ -393,10 +386,10 @@ void CMessageManager::DispatchMessage(CMessage *M, CModuleRecord *dest_mod)
 
 		while (uid >= 0)
 		{
-			CModuleRecord mod = m_ConnectedModules[uid];
-			if (mod.LoggerStatus)
-				if (mod.ModuleID != dest_mod->ModuleID) // don't send to destination module again
-					ForwardMessage(M, &mod);
+			CModuleRecord *mod = &m_ConnectedModules[uid];
+			if (mod->LoggerStatus)
+				if (mod->ModuleID != dest_mod->ModuleID) // don't send to destination module again
+					ForwardMessage(M, mod);
 
 			uid = SL->GetNextSubscriber();
 		}
@@ -423,10 +416,10 @@ void CMessageManager::DispatchMessageToAll(CMessage *M)
 {
 	for (int uid = 0; uid < MAX_MODULES; uid++)
 	{
-		CModuleRecord mod = m_ConnectedModules[uid];
-		if (uid >= 0 && mod.ModuleID > 0)
+		CModuleRecord *mod = &m_ConnectedModules[uid];
+		if (uid >= 0 && mod->ModuleID > 0)
 		{
-			DispatchMessage(M, &mod);
+			DispatchMessage(M, mod);
 		}
 	}
 }
@@ -492,12 +485,13 @@ CMessageManager::GetOpenRecord()
 {
 	for (int i = 0; i < MAX_MODULES; i++)
 	{
-		CModuleRecord mod = m_ConnectedModules[i];
-		if (mod.uid == -1)
+		CModuleRecord* mod = &m_ConnectedModules[i];
+		if (mod->uid == -1)
 		{
-			mod.Reset();
-			mod.uid = i;
-			return &mod;
+			mod->Reset();
+			mod->uid = i;
+			printf("CreateNewRecord(%d)\n", mod->uid);
+			return mod;
 		}
 	}
 	return NULL;
@@ -571,13 +565,14 @@ CMessageManager::ConnectModuleV2(MODULE_ID module_id, UPipe *pSourcePipe, MDF_CO
 				mod->DaemonStatus = data->daemon_status;
 				mod->AllowMultiple = data->allow_multiple;
 				mod->pid = data->pid;
-				mod->SetName(data->name);
+				mod->SetName(&(data->name[0]));
 
 				SendAcknowledge(mod);
+
+				// Notify that a V2 client has connected
+				SendHello(mod);
 			}
 		}
-		// Notify that a V2 client has connected
-		SendHello(module_id);
 	}
 	else
 		module_id = 0; // something went wrong, don't allow the new connection
@@ -589,10 +584,10 @@ CModuleRecord *CMessageManager::GetRecord(MODULE_ID module_id)
 {
 	for (int i = 0; i < MAX_MODULES; i++)
 	{
-		CModuleRecord mod = m_ConnectedModules[i];
-		if (mod.ModuleID == module_id)
+		CModuleRecord* mod = &m_ConnectedModules[i];
+		if ((mod->uid >= 0) && (mod->ModuleID == module_id))
 		{
-			return &mod;
+			return mod;
 		}
 	}
 	return NULL;
@@ -601,14 +596,11 @@ CModuleRecord *CMessageManager::GetRecord(MODULE_ID module_id)
 void CMessageManager::DisconnectModule(MODULE_ID module_id)
 {
 	CModuleRecord *mod = GetRecord(module_id);
-	if (mod == NULL)
+	if ((mod == NULL) || (mod->uid < 0))
 		return;
 
 	// Send ACK
 	SendAcknowledge(mod);
-
-	// Close module's pipe
-	UPipeAutoServer::_server->DisconnectClient(mod->pModulePipe);
 
 	// Make sure not to send anything to disconnected client
 	RemoveSubscription(mod, ALL_MESSAGE_TYPES);
@@ -616,12 +608,16 @@ void CMessageManager::DisconnectModule(MODULE_ID module_id)
 	// Notify that the module has left
 	SendGoodbye(mod);
 
+	// Close module's pipe
+	UPipeAutoServer::_server->DisconnectClient(mod->pModulePipe);
+
 	// Clean up module record
 	CleanUpModuleRecord(mod);
 }
 
 void CMessageManager::CleanUpModuleRecord(CModuleRecord *mod)
 {
+	printf("CleanUpModuleRecord(%d)\n", mod->ModuleID);
 	RemoveSubscription(mod, ALL_MESSAGE_TYPES);
 	mod->Reset();
 }
@@ -651,17 +647,17 @@ void CMessageManager::ShutdownAllModules(int shutdown_RTMA, int shutdown_daemons
 {
 	for (int uid = 0; uid < MAX_MODULES; uid++)
 	{
-		CModuleRecord mod = m_ConnectedModules[uid];
-		if (mod.uid >= 0 && mod.ModuleID > 0)
+		CModuleRecord *mod = &m_ConnectedModules[uid];
+		if (mod->uid >= 0 && mod->ModuleID > 0)
 		{
-			if (mod.DaemonStatus)
+			if (mod->DaemonStatus)
 			{
 				if (shutdown_daemons)
-					ShutdownModule(mod.ModuleID);
+					ShutdownModule(mod->ModuleID);
 			}
 			else
 			{
-				ShutdownModule(mod.ModuleID);
+				ShutdownModule(mod->ModuleID);
 			}
 		}
 	}
@@ -671,7 +667,7 @@ void CMessageManager::AddSubscription(CModuleRecord *mod, MSG_TYPE message_type)
 {
 	MSG_TYPE mt;
 
-	if (mod)
+	if ((mod != NULL) && (mod->uid >= 0))
 	{
 		if (((message_type < 0) || (message_type > MAX_MESSAGE_TYPES)) && (message_type != ALL_MESSAGE_TYPES))
 		{
@@ -705,7 +701,7 @@ void CMessageManager::RemoveSubscription(CModuleRecord *mod, MSG_TYPE message_ty
 	// Might wanna add checks here for valid module_id, connected module
 	MSG_TYPE mt;
 
-	if (mod)
+	if ((mod != NULL) && (mod->uid >= 0))
 	{
 		switch (message_type)
 		{
@@ -777,6 +773,7 @@ void CMessageManager::HandleConnect(CMessage *M, UPipe *pSourcePipe)
 	int prev_priority_class = GetMyPriority();
 	SetMyPriority(NORMAL_PRIORITY_CLASS);
 	MODULE_ID mod_id = ConnectModule(M->src_mod_id, pSourcePipe, data.logger_status, data.daemon_status);
+	printf("Connect: %d\n", mod_id);
 	if (mod_id > 0)
 	{
 		SetMyPriority(prev_priority_class);
@@ -790,6 +787,7 @@ void CMessageManager::HandleConnectV2(CMessage *M, UPipe *pSourcePipe)
 	int prev_priority_class = GetMyPriority();
 	SetMyPriority(NORMAL_PRIORITY_CLASS);
 	MODULE_ID mod_id = ConnectModuleV2(M->src_mod_id, pSourcePipe, &connect_v2);
+	printf("ConnectV2: %d\n", mod_id);
 	if (mod_id > 0)
 	{
 		SetMyPriority(prev_priority_class);
@@ -815,16 +813,15 @@ void CMessageManager::HandleModuleDisconnect(CMessage *M)
 void CMessageManager::HandleModuleReady(CMessage *M)
 {
 	MDF_MODULE_READY module_ready;
-	MDF_HELLO hello;
 	M->GetData(&module_ready);
 
 	CModuleRecord *mod = GetRecord(M->src_mod_id);
-	if (mod)
+	if ((mod != NULL) && (mod->uid >= 0))
 	{
 		mod->pid = module_ready.pid;
 
 		// Notify that the module has joined and ready
-		SendHello(M->src_mod_id);
+		SendHello(mod);
 	}
 }
 
@@ -834,7 +831,7 @@ void CMessageManager::HandleSubscribe(CMessage *M)
 	M->GetData(&msg_type_to_subscribe);
 
 	CModuleRecord *mod = GetRecord(M->src_mod_id);
-	if (mod)
+	if ((mod != NULL) && (mod->uid >= 0))
 	{
 		AddSubscription(mod, msg_type_to_subscribe);
 		DEBUG_TEXT_(" Added subscription to msg type " << msg_type_to_subscribe << " for module " << M->src_mod_id << "... ");
@@ -847,7 +844,7 @@ void CMessageManager::HandleUnsubscribe(CMessage *M)
 	MSG_TYPE msg_type_to_unsubscribe;
 	M->GetData(&msg_type_to_unsubscribe);
 	CModuleRecord *mod = GetRecord(M->src_mod_id);
-	if (mod)
+	if ((mod != NULL) && (mod->uid >= 0))
 	{
 		RemoveSubscription(mod, msg_type_to_unsubscribe);
 		SendAcknowledge(mod);
@@ -859,7 +856,7 @@ void CMessageManager::HandlePauseSubscription(CMessage *M)
 	MSG_TYPE msg_type_to_pause;
 	M->GetData(&msg_type_to_pause);
 	CModuleRecord *mod = GetRecord(M->src_mod_id);
-	if (mod)
+	if ((mod != NULL) && (mod->uid >= 0))
 	{
 		PauseSubscription(mod, msg_type_to_pause);
 		SendAcknowledge(mod);
@@ -872,7 +869,7 @@ void CMessageManager::HandleResumeSubscription(CMessage *M)
 	MSG_TYPE msg_type_to_resume;
 	M->GetData(&msg_type_to_resume);
 	CModuleRecord *mod = GetRecord(M->src_mod_id);
-	if (mod)
+	if ((mod != NULL) && (mod->uid >= 0))
 	{
 		ResumeSubscription(mod, msg_type_to_resume);
 		SendAcknowledge(mod);
@@ -898,7 +895,7 @@ bool CMessageManager::IsModuleSubscribed(UID uid, MSG_TYPE message_type)
 
 void CMessageManager::SendAcknowledge(CModuleRecord *mod)
 {
-	if (mod)
+	if ((mod != NULL) && (mod->uid >= 0))
 	{
 		DEBUG_TEXT_("Sending ACK to module " << mod_id << "... ");
 		DispatchSignal(MT_ACKNOWLEDGE, mod);
@@ -914,10 +911,11 @@ void CMessageManager::SendIntroductions(MODULE_ID mod_id)
 	{
 		for (int i = 0; i < MAX_MODULES; i++)
 		{
-			CModuleRecord mod = m_ConnectedModules[i];
-			if (mod.uid >= 0 && mod.ModuleID > 0)
-			{
-				mod.SetHello(&hello);
+			CModuleRecord *mod = &m_ConnectedModules[i];
+			if (mod->uid >= 0 && mod->ModuleID > 0)
+			{		
+				mod->SetHello(&hello);
+				printf("Hello: %d\n", hello.mod_id);
 				m_OutMsg.Set(MT_HELLO, &hello, sizeof(hello));
 				SendMessage(&m_OutMsg, dest_mod);
 			}
