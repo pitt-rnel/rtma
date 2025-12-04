@@ -150,7 +150,7 @@ public:
 	// never blocks (if no space in pipe, then returns with 0). Returns number of
 	// bytes written.
 	virtual int Write( void *data_buffer, int n_bytes, double timeout) = 0;
-
+	virtual int GetIpAddress(char* addr, uint16_t* port, int bufsz) = 0;
 };
 
 

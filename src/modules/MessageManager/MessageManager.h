@@ -20,18 +20,19 @@ public:
 	short       LoggerStatus;
 	short		DaemonStatus;
 	short		AllowMultiple;
+	uint16_t	port;
 	int32_t		uid;
 	int32_t		pid;
-
+	char*		addr;
 	char*    	name;
 	
 	CModuleRecord( ) {
 		name = NULL;
+		addr = NULL;
 		Reset();
 	}
 
 	void SetName(char* src_name) {
-		printf("SetName: %d\n", ModuleID);
 		if (name != NULL) {
 			myfree(name);
 		}
@@ -42,10 +43,36 @@ public:
 		}
 	}
 
+	void SetUPipe(UPipe* pipe) {
+		if (addr != NULL) {
+			myfree(addr);
+		}
+		if (pipe == NULL) {
+			return;
+		}
+
+		pModulePipe = pipe;
+
+		addr = (char*)malloc(MAX_NAME_LEN);
+		if (addr != NULL) {
+			pipe->GetIpAddress(addr, &port, MAX_NAME_LEN);
+		}
+
+	}
+
 	void SetHello(MDF_HELLO *hello) {
 		hello->uid = uid;
 		hello->mod_id = ModuleID;
 		hello->pid = pid;
+		hello->port = port;
+
+		if (addr != NULL) {
+			memcpy(hello->addr, addr, sizeof(hello->addr));
+		}
+		else {
+			hello->addr[0] = '\0';
+		}
+
 		if (name != NULL) {
 			memcpy(hello->name, name, sizeof(hello->name));
 		}
@@ -59,6 +86,15 @@ public:
 		goodbye->uid = uid;
 		goodbye->mod_id = ModuleID;
 		goodbye->pid = pid;
+		goodbye->port = port;
+
+		if (addr != NULL) {
+			memcpy(goodbye->addr, addr, sizeof(goodbye->addr));
+		}
+		else {
+			goodbye->addr[0] = '\0';
+		}
+
 		if (name != NULL) {
 			memcpy(goodbye->name, name, sizeof(goodbye->name));
 		}
@@ -77,6 +113,12 @@ public:
 			myfree(name);
 			name = NULL;
 		}
+
+		if (addr != NULL) {
+			myfree(addr);
+			addr = NULL;
+		}
+
 		ModuleID     = -1;
 		pModulePipe  = NULL;
 		LoggerStatus = 0;
@@ -185,7 +227,7 @@ public:
 };
 
 #define SUBSCRIBER_FLAG_PAUSE  			0x01
-#define SUBSCRIBER_FLAG_TIMING_ONLY		0x02
+
 
 class CSubscriberList : protected CList
 {

@@ -23,6 +23,7 @@ typedef int32_t UID;
 #define MAX_RTMA_MODULE_ID  9 // Module ID-s below 10 are reserved for RTMA core
 #define MAX_MODULE_ID  32000
 
+#define SUBSCRIBER_FLAG_TIMING_ONLY		0x02
 // Header fields for all messages passed through RTMA
 // Following macro was commented out for compatibility with ctypesgen2 v2.2.2 python package (used for Python3 compatiblity) All references to this macro in this file and in RTMA.h were replaced with actual values
 //#define RTMA_MSG_HEADER_FIELDS \
@@ -223,7 +224,8 @@ typedef struct {
 	int32_t uid;
 	int32_t pid;
 	MODULE_ID mod_id;
-	int16_t reserved;
+	uint16_t port;
+	char addr[MAX_NAME_LEN];
 	char name[MAX_NAME_LEN];
 } MDF_HELLO;
 
@@ -232,7 +234,8 @@ typedef struct {
 	int32_t uid;
 	int32_t pid;
 	MODULE_ID mod_id;
-	int16_t reserved;
+	uint16_t port;
+	char addr[MAX_NAME_LEN];
 	char name[MAX_NAME_LEN];
 } MDF_GOODBYE;
 

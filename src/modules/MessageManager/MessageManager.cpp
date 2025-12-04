@@ -198,7 +198,7 @@ void CMessageManager::SendHello(CModuleRecord *mod)
 	MDF_HELLO hello;
 	if ((mod != NULL) && (mod->uid >= 0)){
 		mod->SetHello(&hello);
-		printf("Hello: %d\n", hello.mod_id);
+		//printf("Hello: %d\n", hello.mod_id);
 		m_OutMsg.Set(MT_HELLO, &hello, sizeof(hello));
 		DispatchMessage(&m_OutMsg);
 	}
@@ -209,7 +209,7 @@ void CMessageManager::SendGoodbye(CModuleRecord *mod)
 	MDF_GOODBYE goodbye;
 	if ((mod != NULL) && (mod->uid >= 0)) {
 		mod->SetGoodbye(&goodbye);
-		printf("Goodbye: %d\n", goodbye.mod_id);
+		//printf("Goodbye: %d\n", goodbye.mod_id);
 		m_OutMsg.Set(MT_GOODBYE, &goodbye, sizeof(goodbye));
 		DispatchMessage(&m_OutMsg);
 	}
@@ -235,6 +235,8 @@ void CMessageManager::HandleSetName(CMessage *M)
 	if ((mod != NULL) && (mod->uid >= 0))
 	{
 		mod->SetName(&(set_name.name[0]));
+		//printf("SetName: %d -> %s\n", mod->ModuleID, mod->name);
+		SendHello(mod);
 	}
 }
 
@@ -356,7 +358,7 @@ void CMessageManager::DispatchMessage(CMessage *M)
 	{
 		// Send message to all subscribers
 		UID uid = SL->GetFirstSubscriber();
-		while (uid > 0)
+		while (uid >= 0)
 		{
 			CModuleRecord *mod = &m_ConnectedModules[uid];
 			SendMessage(M, mod);
@@ -490,7 +492,7 @@ CMessageManager::GetOpenRecord()
 		{
 			mod->Reset();
 			mod->uid = i;
-			printf("CreateNewRecord(%d)\n", mod->uid);
+			//printf("CreateNewRecord(%d)\n", mod->uid);
 			return mod;
 		}
 	}
@@ -522,7 +524,7 @@ CMessageManager::ConnectModule(MODULE_ID module_id, UPipe *pSourcePipe, short lo
 
 				// Create a module record
 				mod->ModuleID = module_id;
-				mod->pModulePipe = pSourcePipe;
+				mod->SetUPipe(pSourcePipe);
 				mod->LoggerStatus = logger_status;
 				mod->DaemonStatus = daemon_status;
 
@@ -560,7 +562,7 @@ CMessageManager::ConnectModuleV2(MODULE_ID module_id, UPipe *pSourcePipe, MDF_CO
 				DEBUG_TEXT("Connecting module " << module_id << " on pipe " << pSourcePipe);
 
 				mod->ModuleID = module_id;
-				mod->pModulePipe = pSourcePipe;
+				mod->SetUPipe(pSourcePipe);
 				mod->LoggerStatus = data->logger_status;
 				mod->DaemonStatus = data->daemon_status;
 				mod->AllowMultiple = data->allow_multiple;
@@ -617,7 +619,7 @@ void CMessageManager::DisconnectModule(MODULE_ID module_id)
 
 void CMessageManager::CleanUpModuleRecord(CModuleRecord *mod)
 {
-	printf("CleanUpModuleRecord(%d)\n", mod->ModuleID);
+	//printf("CleanUpModuleRecord(%d)\n", mod->ModuleID);
 	RemoveSubscription(mod, ALL_MESSAGE_TYPES);
 	mod->Reset();
 }
@@ -758,10 +760,12 @@ void CMessageManager::SubscriptionOption(UID uid, MDF_SUBSCRIPTION_OPTION *sub_o
 	if (sub_opt->value)
 	{
 		GetSubscriberList(sub_opt->msg_type)->SetSubscriberOption(uid, sub_opt->option);
+		printf("Enabling subscription option: %d\n", sub_opt->option);
 	}
 	else
 	{
 		GetSubscriberList(sub_opt->msg_type)->ClearSubscriberOption(uid, sub_opt->option);
+		printf("Disabling subscription option: %d\n", sub_opt->option);
 	}
 }
 
@@ -915,7 +919,7 @@ void CMessageManager::SendIntroductions(MODULE_ID mod_id)
 			if (mod->uid >= 0 && mod->ModuleID > 0)
 			{		
 				mod->SetHello(&hello);
-				printf("Hello: %d\n", hello.mod_id);
+				//printf("Hello: %d\n", hello.mod_id);
 				m_OutMsg.Set(MT_HELLO, &hello, sizeof(hello));
 				SendMessage(&m_OutMsg, dest_mod);
 			}
