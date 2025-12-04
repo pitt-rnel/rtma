@@ -337,20 +337,6 @@ SocketPipe::GetCapacity( void)
 	} CATCH_and_THROW( "SocketPipe::GetCapacity");
 }
 
-void
-SocketPipe::GetIpAddress(char* addr, uint16_t *port, int bufsz) {
-	// windows: https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-getsockname
-	// linux: https://man7.org/linux/man-pages/man2/getsockname.2.html
-	struct sockaddr_in name = { 0 };
-	int namelen = sizeof(name);
-	if (getsockname(_hPipe.id, (struct sockaddr*)&name,  &namelen) == SOCKET_ERROR) {
-		return;
-	}
-
-	*port = ntohs(name.sin_port);
-	inet_ntop(AF_INET, &(name.sin_addr), &(addr[0]), bufsz);
-}
-
 int
 SocketPipe::Read( void *data_buffer, int nbytes_to_read, double timeout)
 {

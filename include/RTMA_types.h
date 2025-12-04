@@ -223,8 +223,7 @@ typedef struct {
 	int32_t uid;
 	int32_t pid;
 	MODULE_ID mod_id;
-	uint16_t port;
-	char addr[32];
+	int16_t reserved;
 	char name[MAX_NAME_LEN];
 } MDF_HELLO;
 
@@ -233,8 +232,7 @@ typedef struct {
 	int32_t uid;
 	int32_t pid;
 	MODULE_ID mod_id;
-	uint16_t port;
-	char addr[32];
+	int16_t reserved;
 	char name[MAX_NAME_LEN];
 } MDF_GOODBYE;
 
