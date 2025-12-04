@@ -31,8 +31,9 @@ public:
 	}
 
 	void SetName(char* src_name) {
+		printf("SetName: %d\n", ModuleID);
 		if (name != NULL) {
-			free(name);
+			myfree(name);
 		}
 		name = (char*) malloc(MAX_NAME_LEN);
 		if (name != NULL) {
@@ -45,20 +46,37 @@ public:
 		hello->uid = uid;
 		hello->mod_id = ModuleID;
 		hello->pid = pid;
-		pModulePipe->GetIpAddress(&(hello->addr[0]), &(hello->port), sizeof(hello->addr));
-		memcpy(hello->name, name, sizeof(hello->name));
+		if (name != NULL) {
+			memcpy(hello->name, name, sizeof(hello->name));
+		}
+		else {
+			hello->name[0] = '\0';
+		}
+		
 	}
 
 	void SetGoodbye(MDF_GOODBYE *goodbye) {
 		goodbye->uid = uid;
 		goodbye->mod_id = ModuleID;
 		goodbye->pid = pid;
-		pModulePipe->GetIpAddress(&(goodbye->addr[0]), &(goodbye->port), sizeof(goodbye->addr));
-		memcpy(goodbye->name, name, sizeof(goodbye->name));
+		if (name != NULL) {
+			memcpy(goodbye->name, name, sizeof(goodbye->name));
+		}
+		else {
+			goodbye->name[0] = '\0';
+		}
+	}
+
+	void myfree(char* p) {
+		free(p);
 	}
 
 	void
 	Reset( void) {
+		if (name != NULL) {
+			myfree(name);
+			name = NULL;
+		}
 		ModuleID     = -1;
 		pModulePipe  = NULL;
 		LoggerStatus = 0;
@@ -66,13 +84,11 @@ public:
 		AllowMultiple = 0;
 		pid = 0;
 		uid = -1;
-		if (name != NULL) {
-			free(name);
-			name = NULL;
-		}
+
 	}
 
 	~CModuleRecord(){
+		printf("~CModuleRecord(%d)\n", ModuleID);
 		Reset();
 	}
 };
@@ -377,10 +393,6 @@ private:
 	//Sends the message only to the specified mod_id and Logger modules, headers specifying the message came from MM
 
 	void
-	DispatchSignal( MSG_TYPE sig);
-	//Sends the signal to all subscribers and Logger modules, headers specifying the signal came from MM
-
-	void
 	DispatchSignal( MSG_TYPE sig, CModuleRecord *dest_mod);
 	//Sends the signal only to the specified mod_id and Logger modules, headers specifying the message came from MM
 
@@ -415,12 +427,6 @@ private:
 	ShutdownAllModules(int shutdown_RTMA=1, int shutdown_daemons=1);
 
 	void
-	ShutdownStatusModule(void);
-
-	void 
-	ShutdownLoggerModule(void);
-
-	void
 	AddSubscription(CModuleRecord *mod, MSG_TYPE message_type);
 
 	void
@@ -448,10 +454,7 @@ private:
 	SendIntroductions(MODULE_ID mod_id);
 
 	void 
-	SendHello(MODULE_ID mod_id);
-
-	void 
-	SendGoodbye(MODULE_ID mod_id);
+	SendHello(CModuleRecord *mod);
 
 	void 
 	SendGoodbye(CModuleRecord* mod);
@@ -504,24 +507,6 @@ private:
 
 	int
 	ModuleIsConnected(MODULE_ID mod_id);
-
-	UPipe*
-	GetModPipe(UID uid);
-
-	int
-	IsDaemon(UID uid);
-
-	void
-	ReportLoad( void);
-	//sends an MT_MM_LOAD_REPORT message with the load data of all connected modules
-
-	void
-	AskUsageReport( void);
-	//sends MT_MOD_REPORT_USAGE to all connected modules
-
-	void
-	ReportMMStatus( void);
-	//sends MT_MM_STATUS_REPORT message
 
 	void
 	LogFailedMessage( CMessage *m, MODULE_ID mod_id);
