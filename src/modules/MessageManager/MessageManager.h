@@ -283,50 +283,6 @@ public:
 		}
 	}
 
-	void
-	SetSubscriberOption(UID uid, int option) {
-		// Only act on valid options
-		switch(option) {
-			case SUBSCRIBER_FLAG_PAUSE:
-				break;
-			case SUBSCRIBER_FLAG_TIMING_ONLY:
-				break;
-			default:
-				return;
-		}
-
-		CListItem *current_item = GetFirstItem();
-		while( current_item != NULL) {
-			if( current_item->data == uid) {
-				set_flag_bits( current_item->flags, option);
-				break;
-			}
-			current_item = GetNextItem( current_item);
-		}
-	}
-
-	void
-	ClearSubscriberOption(UID uid, int option) {
-		// Only act on valid options
-		switch(option) {
-			case SUBSCRIBER_FLAG_PAUSE:
-				break;
-			case SUBSCRIBER_FLAG_TIMING_ONLY:
-				break;
-			default:
-				return;
-		}
-
-		CListItem *current_item = GetFirstItem();
-		while( current_item != NULL) {
-			if( current_item->data == uid) {
-				clear_flag_bits( current_item->flags, option);
-				break;
-			}
-			current_item = GetNextItem( current_item);
-		}
-	}
-
 	int
 	SubscriptionPaused(void) {
 		int is_paused = 0;
@@ -336,17 +292,6 @@ public:
 			}
 		}
 		return is_paused;
-	}
-
-	int
-	TimingOnly(void) {
-		int is_timing_only = 0;
-		if( m_CurrentItem != NULL) {
-			if( check_flag_bits( m_CurrentItem->flags, SUBSCRIBER_FLAG_TIMING_ONLY)) {
-				is_timing_only = 1;
-			}
-		}
-		return is_timing_only;
 	}
 
 	UID
@@ -480,9 +425,6 @@ private:
 	void
 	ResumeSubscription(CModuleRecord *mod, MSG_TYPE msg_type_to_resume);
 
-	void
-	SubscriptionOption(UID uid, MDF_SUBSCRIPTION_OPTION *sub_opt);
-
 	CSubscriberList *
 	GetSubscriberList( MSG_TYPE message_type);
 
@@ -506,9 +448,6 @@ private:
 
 	void 
 	HandleSetName(CMessage *m);
-
-	void 
-	HandleSubscriptionControl(CMessage *m);
 
 	void 
 	HandleForceDisconnect(CMessage *m);

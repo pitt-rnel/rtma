@@ -147,10 +147,6 @@ void CMessageManager::ProcessMessage(CMessage *M, UPipe *pSourcePipe)
 		HandleSetName(M);
 		break;
 
-	case MT_SUBSCRIPTION_OPTION:
-		HandleSubscriptionControl(M);
-		break;
-
 	case MT_PONG:
 		break;
 
@@ -240,17 +236,6 @@ void CMessageManager::HandleSetName(CMessage *M)
 	}
 }
 
-void CMessageManager::HandleSubscriptionControl(CMessage *M)
-{
-	MDF_SUBSCRIPTION_OPTION sub_opt;
-	M->GetData((void *)&sub_opt);
-	CModuleRecord *mod = GetRecord(M->src_mod_id);
-	if ((mod != NULL) && (mod->uid >= 0))
-	{
-		SubscriptionOption(mod->uid, &sub_opt);
-	}
-}
-
 /*
  * Should be called when forwarding a message from other modules
  * The given message will be forwarded to:
@@ -305,41 +290,21 @@ void CMessageManager::DistributeMessage(CMessage *M)
 				DEBUG_TEXT_("Forwarding message to module " << mod_id << "... ");
 				try
 				{
-					int status = 0;
-					if (SL->TimingOnly())
-					{
-						MDF_MESSAGE_TIMING msg_time;
-						if (!timing_set) {
-							timing_set = 1;
-							msg_time.msg_type = M->msg_type;
-							msg_time.src_id = M->src_mod_id;
-							msg_time.send_time = M->send_time;
-							m_OutMsg.Set(MT_MESSAGE_TIMING, &msg_time, sizeof(msg_time));
-						}
-						status = SendMessage(&m_OutMsg, mod);
-					}
-					else
-					{
-						status = ForwardMessage(M, mod);
-					}
-
-					if (status == 0)
-					{
+					int status = ForwardMessage(M, mod);
+					if (status == 0) {
 						LogFailedMessage(M, mod->ModuleID);
 						DEBUG_TEXT("Failed to Forward Message!");
 					}
-					else
-					{
+					else {
 						DEBUG_TEXT("Forwarded!");
 					}
 				}
-				catch (UPipeClosedException &E)
-				{
+				catch (UPipeClosedException& E) {
 					DEBUG_TEXT("Failed to Forward Message, destination module socket is closed/dead");
 				}
 			}
 
-			uid = SL->GetNextSubscriber();
+		uid = SL->GetNextSubscriber();
 		}
 	}
 	DEBUG_TEXT("Done distributing!");
@@ -529,6 +494,12 @@ CMessageManager::ConnectModule(MODULE_ID module_id, UPipe *pSourcePipe, short lo
 				mod->DaemonStatus = daemon_status;
 
 				SendAcknowledge(mod);
+
+				// Notify that a client has connected
+				// Note: PID and Name will not be filled in
+				// Additional HELLO msgs will be sent with
+				// CLIENT_SET_NAME and MODULE_READY 
+				SendHello(mod);
 			}
 		}
 	}
@@ -752,20 +723,6 @@ void CMessageManager::ResumeSubscription(CModuleRecord *mod, MSG_TYPE message_ty
 		break;
 	default:
 		GetSubscriberList(message_type)->ResumeSubscriber(mod->uid);
-	}
-}
-
-void CMessageManager::SubscriptionOption(UID uid, MDF_SUBSCRIPTION_OPTION *sub_opt)
-{
-	if (sub_opt->value)
-	{
-		GetSubscriberList(sub_opt->msg_type)->SetSubscriberOption(uid, sub_opt->option);
-		printf("Enabling subscription option: %d\n", sub_opt->option);
-	}
-	else
-	{
-		GetSubscriberList(sub_opt->msg_type)->ClearSubscriberOption(uid, sub_opt->option);
-		printf("Disabling subscription option: %d\n", sub_opt->option);
 	}
 }
 
