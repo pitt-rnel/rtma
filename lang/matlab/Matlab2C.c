@@ -146,11 +146,13 @@ void* ExtractData( const mxArray *Data, void *pExtractedData)
         return (void *) ((char *) pExtractedData + NumDataBytes);
         
     } else if( mxIsStruct( Data)) {
-
-        NumFields = mxGetNumberOfFields( Data);
-        for( i = 0; i < NumFields; i++) {
-            Field = mxGetFieldByNumber( Data, 0, i);
-            pExtractedData = ExtractData( Field, pExtractedData);
+        NumElements = mxGetNumberOfElements(Data);
+        NumFields = mxGetNumberOfFields(Data);
+        for (mwSize idx = 0; idx < NumElements; idx++) {
+            for (mwSize fnum = 0; fnum < NumFields; fnum++) {
+                Field = mxGetFieldByNumber(Data, idx, fnum);
+                pExtractedData = ExtractData(Field, pExtractedData);
+            }
         }
         return pExtractedData;
 
