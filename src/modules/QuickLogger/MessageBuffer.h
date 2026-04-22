@@ -31,9 +31,18 @@ protected:
 	unsigned int TotalDataBytes;
 
 	void DeallocateBuffer( void) {
-		if( Header != NULL)           delete [] Header;
-		if( DataBlockOffsets != NULL) delete [] DataBlockOffsets;
-		if( Data != NULL)             delete [] Data;
+		if( Header != NULL) {
+			delete [] Header;
+			Header = NULL;
+		}
+		if( DataBlockOffsets != NULL) {
+			delete [] DataBlockOffsets;
+			DataBlockOffsets = NULL;
+		}
+		if( Data != NULL) {
+			delete [] Data;
+			Data = NULL;
+		}
 	}
 public:
 	CMessageBuffer( ) {

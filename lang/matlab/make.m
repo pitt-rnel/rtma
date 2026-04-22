@@ -20,7 +20,7 @@ core_sources = [fullfile(core_dir,'RTMA.cpp'), ' ' fullfile(core_dir,'MyCExcepti
 pipelib_sources = [fullfile(pipelib_dir,'UPipe.cpp'), ' ', fullfile(pipelib_dir,'SocketPipe.cpp'), ' ', fullfile(pipelib_dir,'Timing.cpp'), ' '];
 
 sources = [fullfile(base_dir,'lang','matlab','MatlabRTMA.cpp'),' ', core_sources, pipelib_sources];
-options = ['-v -D_MEX_FILE_ '];
+options = ['-v -D_MEX_FILE_ CXXFLAGS=''$CXXFLAGS -std=c++03'' '];
 include_dirs = ['-I' fullfile(base_dir, 'include'),' -I', fullfile(base_dir,'include','internal'), ' '];
 libs = [''];
 
