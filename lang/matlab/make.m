@@ -20,14 +20,15 @@ core_sources = [fullfile(core_dir,'RTMA.cpp'), ' ' fullfile(core_dir,'MyCExcepti
 pipelib_sources = [fullfile(pipelib_dir,'UPipe.cpp'), ' ', fullfile(pipelib_dir,'SocketPipe.cpp'), ' ', fullfile(pipelib_dir,'Timing.cpp'), ' '];
 
 sources = [fullfile(base_dir,'lang','matlab','MatlabRTMA.cpp'),' ', core_sources, pipelib_sources];
-options = ['-v -D_MEX_FILE_ CXXFLAGS=''$CXXFLAGS -std=c++03'' '];
+options = ['-v -D_MEX_FILE_ '];
 include_dirs = ['-I' fullfile(base_dir, 'include'),' -I', fullfile(base_dir,'include','internal'), ' '];
 libs = [''];
 
 if( ispc)
     libs = [libs 'ws2_32.lib '];
+    options = [options];
 elseif( isunix)
-    options = [options '-DUSE_LINUX '];
+    options = [options ' -DUSE_LINUX CXXFLAGS=''$CXXFLAGS -std=c++03'' '];
 end
 
 cmd = ['mex ' options include_dirs sources libs]
