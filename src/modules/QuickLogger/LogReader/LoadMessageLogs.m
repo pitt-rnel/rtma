@@ -27,12 +27,10 @@ end
     end
 
     %BW: Arrange in chronological order first:
-    timestamp = zeros(1,length(FileNames));
-    for a = 1:length(FileNames)
-        f = dir(fullfile(DirName,FileNames{a}));
-        timestamp(a) = f.datenum;
-    end
+    saveTimeStr = extract_savetime(FileNames); 
+    timestamp = datetime(saveTimeStr,InputFormat='dd-MMM-yyyy_HH_mm_ss'); 
     [~, idx] = sort(timestamp);
+
     FileNames = FileNames(idx);
     
     % Process all input files and gather individual message logs
@@ -122,5 +120,10 @@ function [SeqNos, MinSeqNo, LastSeqNo] = OffsetSequenceNos( SeqNos, LastSeqNo)
     % the next log may continue where this one left off
     MinSeqNo = LastSeqNo + min_seq_no;
     LastSeqNo = LastSeqNo + last_seq_no;
-    
-    
+
+function [saveTimeStr] = extract_savetime(FileNames)
+    saveTimeStr = cell(size(FileNames)); 
+    for a = 1:length(FileNames)
+        dotlocs = strfind(FileNames{a},'.'); 
+        saveTimeStr{a} = FileNames{a}((dotlocs(end-1)+1):(dotlocs(end)-1));
+    end
