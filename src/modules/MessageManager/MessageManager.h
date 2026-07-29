@@ -46,22 +46,31 @@ public:
 	void SetUPipe(UPipe* pipe) {
 		if (addr != NULL) {
 			myfree(addr);
-			addr = NULL;
+			addr = NULL;
+
 		}
-
-		pModulePipe = pipe;
-		port = 0;
+
+
+		pModulePipe = pipe;
+
+		port = 0;
+
 		if (pipe == NULL) {
 			return;
 		}
 
 		addr = (char*)malloc(MAX_NAME_LEN);
 		if (addr != NULL) {
-			memset(addr, 0, MAX_NAME_LEN);
-			if (!pipe->GetIpAddress(addr, &port, MAX_NAME_LEN)) {
-				addr[0] = '\0';
-				port = 0;
-			}
+			memset(addr, 0, MAX_NAME_LEN);
+
+			if (!pipe->GetIpAddress(addr, &port, MAX_NAME_LEN)) {
+
+				addr[0] = '\0';
+
+				port = 0;
+
+			}
+
 		}
 	}
 
@@ -125,9 +134,9 @@ public:
 		}
 
 		if (addr != NULL) {
+		port = 0;
 			myfree(addr);
 			addr = NULL;
-		}
 
 		ModuleID     = -1;
 		pModulePipe  = NULL;
