@@ -2,8 +2,6 @@
 // Copyright (c) 2009 by Meel Velliste, University of Pittsburgh
 
 #include "UPipe.h"
-//#include "WinNamedPipe.h"
-//#include "UnixNamedPipe.h"
 #include "SocketPipe.h"
 
 #ifdef _UNIX_C
