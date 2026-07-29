@@ -447,19 +447,29 @@ SocketPipe::Write( void *data_buffer, int n_bytes, double timeout)
 
 int SocketPipe::GetIpAddress(char* addr, uint16_t* port, int bufsz)
 {
-	// windows: https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-getsockname
-	// linux: https://man7.org/linux/man-pages/man2/getsockname.2.html
-	struct sockaddr_in name = { 0 };
-	int namelen = sizeof(name);
-	if (getpeername(_hPipe.id, (struct sockaddr*)&name, &namelen) == SOCKET_ERROR) {
+	if (addr == NULL || port == NULL || bufsz <= 0) {
 		return 0;
 	}
 
-	*port = ntohs(name.sin_port);
-	inet_ntop(AF_INET, &(name.sin_addr), addr, bufsz);
-	//printf("%s:%u\n", addr, *port);
+	struct sockaddr_in peer = { 0 };
+#ifdef _WINDOWS_C
+	int namelen = sizeof(peer);
+#else
+	socklen_t namelen = sizeof(peer);
+#endif
+	if (getpeername(_hPipe.id, (struct sockaddr*)&peer, &namelen) == SOCKET_ERROR) {
+		addr[0] = '\0';
+		*port = 0;
+		return 0;
+	}
 
-	return 0;
+	*port = ntohs(peer.sin_port);
+	if (inet_ntop(AF_INET, &(peer.sin_addr), addr, bufsz) == NULL) {
+		addr[0] = '\0';
+		return 0;
+	}
+
+	return 1;
 }
 //
 //////////////////////////////////////////////////////////////////////
