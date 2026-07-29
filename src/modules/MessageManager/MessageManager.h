@@ -61,25 +61,23 @@ public:
 	}
 
 	void SetHello(MDF_HELLO *hello) {
+		if (hello == NULL) {
+			return;
+		}
+		memset(hello, 0, sizeof(*hello));
+
 		hello->uid = uid;
 		hello->mod_id = ModuleID;
 		hello->pid = pid;
 		hello->port = port;
 
 		if (addr != NULL) {
-			memcpy(hello->addr, addr, sizeof(hello->addr));
-		}
-		else {
-			hello->addr[0] = '\0';
+			strncpy(hello->addr, addr, sizeof(hello->addr) - 1);
 		}
 
 		if (name != NULL) {
-			memcpy(hello->name, name, sizeof(hello->name));
+			strncpy(hello->name, name, sizeof(hello->name) - 1);
 		}
-		else {
-			hello->name[0] = '\0';
-		}
-		
 	}
 
 	void SetGoodbye(MDF_GOODBYE *goodbye) {
