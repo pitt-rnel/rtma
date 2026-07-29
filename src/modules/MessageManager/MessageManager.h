@@ -46,37 +46,49 @@ public:
 	void SetUPipe(UPipe* pipe) {
 		if (addr != NULL) {
 			myfree(addr);
+			addr = NULL;
 		}
+
+		pModulePipe = pipe;
+		port = 0;
 		if (pipe == NULL) {
 			return;
 		}
 
-		pModulePipe = pipe;
-
 		addr = (char*)malloc(MAX_NAME_LEN);
 		if (addr != NULL) {
-			pipe->GetIpAddress(addr, &port, MAX_NAME_LEN);
+			memset(addr, 0, MAX_NAME_LEN);
+			if (!pipe->GetIpAddress(addr, &port, MAX_NAME_LEN)) {
+				addr[0] = '\0';
+				port = 0;
+			}
 		}
-
 	}
 
 	void SetHello(MDF_HELLO *hello) {
-		if (hello == NULL) {
-			return;
-		}
-		memset(hello, 0, sizeof(*hello));
-
+		if (hello == NULL) {
+
+			return;
+
+		}
+
+		memset(hello, 0, sizeof(*hello));
+
+
+
 		hello->uid = uid;
 		hello->mod_id = ModuleID;
 		hello->pid = pid;
 		hello->port = port;
 
 		if (addr != NULL) {
-			strncpy(hello->addr, addr, sizeof(hello->addr) - 1);
+			strncpy(hello->addr, addr, sizeof(hello->addr) - 1);
+
 		}
 
 		if (name != NULL) {
-			strncpy(hello->name, name, sizeof(hello->name) - 1);
+			strncpy(hello->name, name, sizeof(hello->name) - 1);
+
 		}
 	}
 
