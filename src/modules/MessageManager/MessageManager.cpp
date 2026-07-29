@@ -214,16 +214,14 @@ void CMessageManager::SendGoodbye(CModuleRecord *mod)
 
 void CMessageManager::SendPing(MODULE_ID mod_id)
 {
-	memset(&ping, 0, sizeof(ping));
-
 	MDF_PING ping;
+	memset(&ping, 0, sizeof(ping));
 	CModuleRecord *mod = GetRecord(mod_id);
 	if ((mod != NULL) && (mod->uid >= 0))
 	{
-		ping.dest_id = mod->ModuleID;
-		ping.uid = 0;
-		DispatchMessage(&m_OutMsg, mod);
-		DispatchMessage(&m_OutMsg);
+		ping.uid = mod->uid;
+		ping.dest_id = mod->ModuleID;
+		DispatchMessage(&m_OutMsg, mod);
 	}
 }
 
