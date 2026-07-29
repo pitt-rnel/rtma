@@ -134,7 +134,8 @@ public:
 		}
 
 		if (addr != NULL) {
-		port = 0;
+		port = 0;
+
 			myfree(addr);
 			addr = NULL;
 
@@ -148,7 +149,6 @@ public:
 
 	}
 
-	~CModuleRecord(){
 		printf("~CModuleRecord(%d)\n", ModuleID);
 		Reset();
 	}
