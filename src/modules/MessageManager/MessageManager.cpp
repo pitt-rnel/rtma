@@ -122,7 +122,7 @@ void CMessageManager::HandleDisconnect(UPipe *pModulePipe)
 
 			// Delete module record
 			CleanUpModuleRecord(mod);
-			DEBUG_TEXT_(", disconnected module " << mod_id);
+			DEBUG_TEXT_(", disconnected module " << mod->ModuleID);
 			break;
 		}
 	}
