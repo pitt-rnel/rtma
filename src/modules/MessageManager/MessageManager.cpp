@@ -122,7 +122,8 @@ void CMessageManager::HandleDisconnect(UPipe *pModulePipe)
 
 			// Delete module record
 			CleanUpModuleRecord(mod);
-			DEBUG_TEXT_(", disconnected module " << mod->ModuleID);
+			DEBUG_TEXT_(", disconnected module " << mod->ModuleID);
+
 			break;
 		}
 	}
@@ -213,12 +214,15 @@ void CMessageManager::SendGoodbye(CModuleRecord *mod)
 
 void CMessageManager::SendPing(MODULE_ID mod_id)
 {
+	memset(&ping, 0, sizeof(ping));
+
 	MDF_PING ping;
 	CModuleRecord *mod = GetRecord(mod_id);
 	if ((mod != NULL) && (mod->uid >= 0))
 	{
+		ping.dest_id = mod->ModuleID;
 		ping.uid = 0;
-		m_OutMsg.Set(MT_PING, &ping, sizeof(ping));
+		DispatchMessage(&m_OutMsg, mod);
 		DispatchMessage(&m_OutMsg);
 	}
 }
