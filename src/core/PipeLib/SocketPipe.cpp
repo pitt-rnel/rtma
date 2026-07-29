@@ -447,6 +447,10 @@ SocketPipe::Write( void *data_buffer, int n_bytes, double timeout)
 
 int SocketPipe::GetIpAddress(char* addr, uint16_t* port, int bufsz)
 {
+	// References:
+	// windows: https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-getsockname
+ 	// linux: https://man7.org/linux/man-pages/man2/getsockname.2.html
+
 	if (addr == NULL || port == NULL || bufsz <= 0) {
 		return 0;
 	}
