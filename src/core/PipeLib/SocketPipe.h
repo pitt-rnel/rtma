@@ -44,6 +44,8 @@
     # endif
     #endif
 
+	#define SOCKET_ERROR (-1)
+
 #endif
 
 typedef struct {
