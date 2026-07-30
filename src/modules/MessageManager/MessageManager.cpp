@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
 
 		CMessageManager* MM = new CMessageManager();
 		MM->MainLoop(options);
+		delete MM;
 		return 0;
 	}
 	catch (MyCException &E)
