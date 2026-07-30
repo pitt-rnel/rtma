@@ -260,6 +260,13 @@ void CMessageManager::DistributeMessage(CMessage *M)
 		UID uid = SL->GetFirstSubscriber();
 		while (uid >= 0)
 		{
+			if (uid >= MAX_MODULES)
+			{
+				DEBUG_TEXT("Skipping invalid subscriber UID " << uid);
+				uid = SL->GetNextSubscriber();
+				continue;
+			}
+
 			/* the order of the code in this while loop is important
 			   don't modify it unless you know what you're doing
 			 */
@@ -329,6 +336,13 @@ void CMessageManager::DispatchMessage(CMessage *M)
 		UID uid = SL->GetFirstSubscriber();
 		while (uid >= 0)
 		{
+			if (uid >= MAX_MODULES)
+			{
+				DEBUG_TEXT("Skipping invalid subscriber UID " << uid);
+				uid = SL->GetNextSubscriber();
+				continue;
+			}
+
 			CModuleRecord *mod = &m_ConnectedModules[uid];
 			SendMessage(M, mod);
 			uid = SL->GetNextSubscriber();
@@ -357,6 +371,13 @@ void CMessageManager::DispatchMessage(CMessage *M, CModuleRecord *dest_mod)
 
 		while (uid >= 0)
 		{
+			if (uid >= MAX_MODULES)
+			{
+				DEBUG_TEXT("Skipping invalid subscriber UID " << uid);
+				uid = SL->GetNextSubscriber();
+				continue;
+			}
+
 			CModuleRecord *mod = &m_ConnectedModules[uid];
 			if (mod->LoggerStatus)
 				if (mod->ModuleID != dest_mod->ModuleID) // don't send to destination module again
@@ -897,7 +918,7 @@ int CMessageManager::ModuleIsConnected(MODULE_ID mod_id)
 
 	for (int i = 0; i < MAX_MODULES; i++)
 	{
-		if (m_ConnectedModules[i].ModuleID == mod_id)
+		if ((m_ConnectedModules[i].uid >= 0) && (m_ConnectedModules[i].ModuleID == mod_id))
 		{
 			return 1;
 		}
