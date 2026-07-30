@@ -127,29 +127,28 @@ public:
 	}
 
 	void
-	Reset( void) {
+	Reset(void) {
 		if (name != NULL) {
 			myfree(name);
 			name = NULL;
 		}
 
 		if (addr != NULL) {
-		port = 0;
-
 			myfree(addr);
 			addr = NULL;
+		}
 
-		ModuleID     = -1;
-		pModulePipe  = NULL;
+		ModuleID = -1;
+		pModulePipe = NULL;
 		LoggerStatus = 0;
 		DaemonStatus = 0;
 		AllowMultiple = 0;
+		port = 0;
 		pid = 0;
 		uid = -1;
-
 	}
 
-		printf("~CModuleRecord(%d)\n", ModuleID);
+	~CModuleRecord() {
 		Reset();
 	}
 };
