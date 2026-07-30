@@ -862,7 +862,7 @@ void CMessageManager::SendAcknowledge(CModuleRecord *mod)
 {
 	if ((mod != NULL) && (mod->uid >= 0))
 	{
-		DEBUG_TEXT_("Sending ACK to module " << mod_id << "... ");
+		DEBUG_TEXT_("Sending ACK to module " << mod->ModuleID << "... ");
 		DispatchSignal(MT_ACKNOWLEDGE, mod);
 		DEBUG_TEXT("Sent!");
 	}
