@@ -472,7 +472,7 @@ MODULE_ID
 CMessageManager::ConnectModule(MODULE_ID module_id, UPipe *pSourcePipe, short logger_status, short daemon_status)
 {
 
-	if ((module_id < MAX_MODULE_ID) && (module_id >= 0) && !ModuleIsConnected(module_id))
+	if ((module_id <= MAX_MODULE_ID) && (module_id >= 0) && !ModuleIsConnected(module_id))
 	{
 		if (pSourcePipe != NULL)
 		{
@@ -517,7 +517,7 @@ MODULE_ID
 CMessageManager::ConnectModuleV2(MODULE_ID module_id, UPipe *pSourcePipe, MDF_CONNECT_V2 *data)
 {
 
-	if ((module_id < MAX_MODULE_ID) && (module_id >= 0) && !ModuleIsConnected(module_id))
+	if ((module_id <= MAX_MODULE_ID) && (module_id >= 0) && !ModuleIsConnected(module_id))
 	{
 		if (pSourcePipe != NULL)
 		{
@@ -662,7 +662,9 @@ void CMessageManager::AddSubscription(CModuleRecord *mod, MSG_TYPE message_type)
 		case ALL_MESSAGE_TYPES:
 			for (mt = 0; mt < MAX_MESSAGE_TYPES; mt++)
 			{
-				GetSubscriberList(mt)->AddSubscriber(mod->uid);
+				CSubscriberList *list = GetSubscriberList(mt);
+				if (!list->IsSubscribed(mod->uid))
+					list->AddSubscriber(mod->uid);
 			}
 			break;
 		default:

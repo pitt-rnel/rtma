@@ -127,7 +127,8 @@ public:
 	}
 
 	void
-	Reset(void) {
+	Reset(void) {
+
 		if (name != NULL) {
 			myfree(name);
 			name = NULL;
@@ -136,19 +137,24 @@ public:
 		if (addr != NULL) {
 			myfree(addr);
 			addr = NULL;
-		}
+		}
 
-		ModuleID = -1;
-		pModulePipe = NULL;
+
+		ModuleID = -1;
+
+		pModulePipe = NULL;
+
 		LoggerStatus = 0;
 		DaemonStatus = 0;
 		AllowMultiple = 0;
-		port = 0;
+		port = 0;
+
 		pid = 0;
 		uid = -1;
 	}
 
-	~CModuleRecord() {
+	~CModuleRecord() {
+
 		Reset();
 	}
 };
@@ -269,11 +275,11 @@ public:
 	RemoveSubscriber(UID uid) {
 		CListItem *current_item = GetFirstItem();
 		while( current_item != NULL) {
+			CListItem *next_item = GetNextItem(current_item);
 			if( current_item->data == uid) {
 				RemoveItem(current_item);
-				break;
 			}
-			current_item = GetNextItem(current_item);
+			current_item = next_item;
 		}
 	}
 
