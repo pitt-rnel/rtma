@@ -418,7 +418,7 @@ void MyCString::AppendContent(const MyCString &str)
 		strncpy(new_str       , m_Content, m_Len);    //copy current string to new allocated string
 		strncpy(new_str+m_Len, str.GetContent() , str_len+1);//append the new string & terminating NULL
 	
-		delete(m_Content);
+		delete[] m_Content;
 		m_Content = new_str; 
 		m_Len    += str_len;
 	}	
@@ -446,7 +446,7 @@ void MyCString::AppendContent(const char* str, int len)
 	strncpy(new_str+m_Len, str       , str_len);//append the new string & terminating NULL
 	new_str[m_Len + str_len] = 0;
 	
-	delete(m_Content);
+	delete[] m_Content;
 	m_Content = new_str; 
 	m_Len    += str_len;
 }
@@ -486,7 +486,7 @@ char* MyCString::GetContent() const
 void MyCString::Reset()
 {
 	if(!this->IsNull() ){
-		delete m_Content;
+		delete[] m_Content;
 		m_Len = 0;
 	}
 	ResetTokenizer();
@@ -531,7 +531,7 @@ void MyCString::DeletePrefix(const MyCString& delims)
 	strncpy(new_content, &m_Content[itr], m_Len - itr);
 	new_content[m_Len- itr] = 0;
 
-	delete(m_Content);
+	delete[] m_Content;
 	m_Content = new_content;
 	m_Len     = m_Len- itr;
 }
@@ -570,9 +570,9 @@ void MyCString::InitTokenizer()
 void MyCString::ResetTokenizer()
 {
 	if(m_NumDelims != 0)
-		delete(m_Delims);
+		delete[] m_Delims;
 	if(m_LastToken != 0)
-		delete(m_LastToken);
+		delete[] m_LastToken;
 
 	m_Delims       = 0;
 	m_NumDelims    = 0;   
@@ -634,7 +634,7 @@ char* MyCString::GetNextToken()
 		token_len = (end_index-1) - start_index;
 	m_NextTokenIdx = end_index;
 	if(m_LastToken != NULL) 
-		delete(m_LastToken);
+		delete[] m_LastToken;
 	m_LastToken = new char[token_len+1];
 	strncpy(m_LastToken, &m_Content[start_index], token_len);
 	m_LastToken[token_len] = 0;
