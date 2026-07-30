@@ -289,7 +289,7 @@ void CMessageManager::DistributeMessage(CMessage *M)
 
 			if (send_it)
 			{
-				DEBUG_TEXT_("Forwarding message to module " << mod_id << "... ");
+				DEBUG_TEXT_("Forwarding message to module " << mod->ModuleID << "... ");
 				try
 				{
 					int status = ForwardMessage(M, mod);
