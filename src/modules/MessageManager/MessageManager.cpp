@@ -221,6 +221,7 @@ void CMessageManager::SendPing(MODULE_ID mod_id)
 	{
 		ping.uid = mod->uid;
 		ping.dest_id = mod->ModuleID;
+		m_OutMsg.Set(MT_PING, &ping, sizeof(ping));
 		DispatchMessage(&m_OutMsg, mod);
 	}
 }
