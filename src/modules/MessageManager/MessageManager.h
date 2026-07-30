@@ -171,7 +171,10 @@ public:
 	int flags;
 
 	CListItem( ) {
-		CListItem( 0);
+		data = 0;
+		flags = 0;
+		next = NULL;
+		prev = NULL;
 	}
 	CListItem( int i) {
 		data = i;

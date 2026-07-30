@@ -667,7 +667,7 @@ void CMessageManager::AddSubscription(CModuleRecord *mod, MSG_TYPE message_type)
 
 	if ((mod != NULL) && (mod->uid >= 0))
 	{
-		if (((message_type < 0) || (message_type > MAX_MESSAGE_TYPES)) && (message_type != ALL_MESSAGE_TYPES))
+		if (((message_type < 0) || (message_type >= MAX_MESSAGE_TYPES)) && (message_type != ALL_MESSAGE_TYPES))
 		{
 			// send MDF_FAIL_SUBSCRIBE instead of ACK so the module's subscribe function will fail
 			MDF_FAIL_SUBSCRIBE data;
