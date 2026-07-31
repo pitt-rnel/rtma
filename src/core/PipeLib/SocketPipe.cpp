@@ -455,7 +455,8 @@ int SocketPipe::GetIpAddress(char* addr, uint16_t* port, int bufsz)
 		return 0;
 	}
 
-	struct sockaddr_in peer = { 0 };
+	struct sockaddr_in peer;
+	memset(&peer, 0, sizeof(peer));
 #ifdef _WINDOWS_C
 	int namelen = sizeof(peer);
 #else
