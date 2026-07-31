@@ -376,12 +376,28 @@ SocketPipe::Read( void *data_buffer, int nbytes_to_read, double timeout)
 			if( e == EINTR) throw UPipeSignalException("A signal was caught while waiting for incoming data in select()");
 			// Any other error codes are real errors, so throw a general exception
 			char errmsg[1024];
-			sprintf( errmsg, "error in select() call: errno = %i", e);
+			snprintf( errmsg, sizeof(errmsg), "error in select() call: errno = %i", e);
 			switch( e) {
-			case EBADF: sprintf( errmsg, "%s (EBADF, bad file descriptor in select set)", errmsg); break;
-			//case EINTR: sprintf( errmsg, "%s (EINTR, select was interrupted by a signal)", errmsg); break;
-			case EINVAL: sprintf( errmsg, "%s (EINVAL, nfds is negative or invalid timeout value)", errmsg); break;
-			case ENOMEM: sprintf( errmsg, "%s (ENOMEM, unable to allocate memory for internal tables)", errmsg); break;
+			case EBADF: {
+				size_t used = strlen(errmsg);
+				if( used < sizeof(errmsg)) snprintf( errmsg + used, sizeof(errmsg) - used, " (EBADF, bad file descriptor in select set)");
+				break;
+			}
+			//case EINTR: {
+			//	size_t used = strlen(errmsg);
+			//	if( used < sizeof(errmsg)) snprintf( errmsg + used, sizeof(errmsg) - used, " (EINTR, select was interrupted by a signal)");
+			//	break;
+			//}
+			case EINVAL: {
+				size_t used = strlen(errmsg);
+				if( used < sizeof(errmsg)) snprintf( errmsg + used, sizeof(errmsg) - used, " (EINVAL, nfds is negative or invalid timeout value)");
+				break;
+			}
+			case ENOMEM: {
+				size_t used = strlen(errmsg);
+				if( used < sizeof(errmsg)) snprintf( errmsg + used, sizeof(errmsg) - used, " (ENOMEM, unable to allocate memory for internal tables)");
+				break;
+			}
 			}
 		    throw UPipeException( errmsg);
 		}
