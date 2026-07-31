@@ -47,12 +47,10 @@ CMessage::CMessage( MSG_TYPE mt, void *pData, int num_bytes)
 
 CMessage::~CMessage( )
 {
-	TRY {
-		if( large_data != NULL) {
-			free( large_data);
-			large_data = NULL;
-		}
-	} CATCH_and_THROW( "CMessage::~CMessage( )");
+	if( large_data != NULL) {
+		free( large_data);
+		large_data = NULL;
+	}
 }
 
 void *
@@ -339,9 +337,10 @@ void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID)
 
 RTMA_Module::~RTMA_Module( )
 {
-	TRY {
+	try {
 		Cleanup();
-	} CATCH_and_THROW( "RTMA_Module::~RTMA_Module( )");
+	} catch(...) {
+	}
 }
 
 void

@@ -591,13 +591,14 @@ SocketPipeServer::SocketPipeServer( char *host_addr, short port_no)
 
 SocketPipeServer::~SocketPipeServer()
 {
-	TRY {
+	try {
 		DisconnectAllClients();
 		CloseSocket( _hListeningSocket);
 		#ifdef _WINDOWS_C
 		CleanupWinSock();
 		#endif
-	} CATCH_and_THROW( "SocketPipeServer::~SocketPipeServer");
+	} catch(...) {
+	}
 }
 //
 ///////////////////////////////////////////////////////////////////////
@@ -732,12 +733,13 @@ SocketPipeClient::SocketPipeClient( char *host_addr, short port_no)
 
 SocketPipeClient::~SocketPipeClient()
 {
-	TRY {
+	try {
 		Disconnect();
 		#ifdef _WINDOWS_C
 		CleanupWinSock();
 		#endif
-	} CATCH_and_THROW( "SocketPipeClient::~SocketPipeClient");
+	} catch(...) {
+	}
 }
 //
 //////////////////////////////////////////////////////////////////////
