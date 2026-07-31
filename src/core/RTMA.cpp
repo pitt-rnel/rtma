@@ -85,6 +85,9 @@ int
 CMessage::SetData( void *pData, int num_bytes)
 {
 	TRY {
+		if( num_bytes < 0) return 0;
+		if( num_bytes > 0 && pData == NULL) return 0;
+
 		if( !AllocateData( num_bytes)) return 0;
 
 		if( num_bytes > MAX_CONTIGUOUS_MESSAGE_DATA) {
@@ -104,6 +107,8 @@ int
 CMessage::AllocateData( int num_bytes)
 {
 	TRY {
+		if( num_bytes < 0) return 0;
+
 		if( large_data != NULL) {
 			free( large_data);
 			large_data = NULL;
@@ -198,10 +203,11 @@ CMessage::Receive( UPipe *input_pipe, double timeout)
 		}
 		if( nbytes_read < nbytes_to_read) return -2;
 		total_bytes_read = nbytes_read;
+		if( num_data_bytes < 0) return -3;
 		if( num_data_bytes > 0) {
 			void *pData = (void*) &data[0];
 			if( num_data_bytes > MAX_CONTIGUOUS_MESSAGE_DATA) {
-				AllocateData( num_data_bytes);
+				if( !AllocateData( num_data_bytes)) return -3;
 				pData = large_data;
 			}
 			input_pipe->Read( pData, num_data_bytes);
@@ -246,9 +252,11 @@ CMessage::Send( UPipe *output_pipe, double timeout)
 
 			// Send data
 			if( success) {
-			        nbytes_to_send = num_data_bytes;
-			        nbytes_written += output_pipe->Write( large_data, nbytes_to_send, timeout);
-				if( nbytes_written < nbytes_to_send) success = 0;
+				int payload_bytes_written;
+				nbytes_to_send = num_data_bytes;
+				payload_bytes_written = output_pipe->Write( large_data, nbytes_to_send, timeout);
+				nbytes_written += payload_bytes_written;
+				if( payload_bytes_written < nbytes_to_send) success = 0;
 			}
 		}
 
@@ -360,6 +368,13 @@ RTMA_Module::ConnectToMMM( char *server_name, int logger_status, int read_dd_fil
 // Opens a read and a write connection to the Message Management Module
 {
 	TRY {
+		if( m_Connected || _pipeClient != NULL) {
+			DisconnectFromMMM();
+		}
+
+		int status = 0;
+		bool connect_complete = false;
+
 		// Connect to server
 		_pipeClient = UPipeFactory::CreateClient( server_name);
 		_MMpipe = _pipeClient->Connect();
@@ -381,35 +396,57 @@ RTMA_Module::ConnectToMMM( char *server_name, int logger_status, int read_dd_fil
 		m_MessageCount = 1;
 		m_SelfMessageCount = 1;
 		CMessage M(MT_CONNECT, (void*) &data, sizeof(MDF_CONNECT) );
-		SendMessage( &M);
+
+		try {
+			SendMessage( &M);
 		
-		CMessage ackMsg;
-		int status = WaitForAcknowledgement( 1, &ackMsg); // Wait for up to 3 seconds
-		if( status == 0){
-		    throw MyCException( "Did not receive ACK from MessageManager upon CONNECT");
-		}
-
-		// save own module ID from ACK if asked to be assigned dynamic ID
-		if (m_ModuleID == 0)
-			m_ModuleID = ackMsg.dest_mod_id;
-
-		m_Connected = 1;
-
-		#ifdef USE_DYNAMIC_DATA
-		if(read_dd_file)
-		{
-			//Read RTMA data from RTMA_config_dump.txt TextData file, if exists
-			try
-			{
-				m_RTMA.Load(RTMA_DD_FILENAME, true);//will throw an exception if the file does not exist
-			}catch(MyCException &E){
-				MyCString err;
-				E.AppendTraceToString(err);
-				CMessage R(MT_DYNAMIC_DD_READ_ERR, (void*)err.GetContent(), err.GetLen());
-				SendMessage(&R);
+			CMessage ackMsg;
+			status = WaitForAcknowledgement( 1, &ackMsg); // Wait for up to 3 seconds
+			if( status == 0){
+				throw MyCException( "Did not receive ACK from MessageManager upon CONNECT");
 			}
+
+			// save own module ID from ACK if asked to be assigned dynamic ID
+			if (m_ModuleID == 0)
+				m_ModuleID = ackMsg.dest_mod_id;
+
+			m_Connected = 1;
+
+			#ifdef USE_DYNAMIC_DATA
+			if(read_dd_file)
+			{
+				//Read RTMA data from RTMA_config_dump.txt TextData file, if exists
+				try
+				{
+					m_RTMA.Load(RTMA_DD_FILENAME, true);//will throw an exception if the file does not exist
+				}catch(MyCException &E){
+					MyCString err;
+					E.AppendTraceToString(err);
+					CMessage R(MT_DYNAMIC_DD_READ_ERR, (void*)err.GetContent(), err.GetLen());
+					SendMessage(&R);
+				}
+			}
+			#endif
+
+			connect_complete = true;
+		} catch(...) {
+			if( _pipeClient != NULL) {
+				try {
+					_pipeClient->Disconnect();
+				} catch(...) {
+				}
+				try {
+					delete _pipeClient;
+				} catch(...) {
+				}
+			}
+			_pipeClient = NULL;
+			_MMpipe = NULL;
+			m_Connected = 0;
+			throw;
 		}
-		#endif
+
+		if( !connect_complete) return 0;
 
 		return status;
 
@@ -420,7 +457,6 @@ int
 RTMA_Module::DisconnectFromMMM( void)
 {
 	TRY {
-		int status;
 		DEBUG_TEXT_("DisconnectFromMMM():");
 		if(m_Connected)
 		{
@@ -436,15 +472,21 @@ RTMA_Module::DisconnectFromMMM( void)
 			try {
 				// Try to disconnect cleanly at Pipe level
 				_pipeClient->Disconnect();
+			} catch(...) {
+				// If clean disconnect fails then we still need to release the client object
+			}
+
+			try {
 				delete _pipeClient;
 			} catch(...) {
-				// If clean disconnect fails then we must be already disconnected
+				// If object deletion fails, continue teardown state reset
 			}
 		}
 		m_MessageCount = 0;
 		m_SelfMessageCount = 0;
 		m_Connected = 0;
 		_pipeClient = NULL;
+		_MMpipe = NULL;
 		return 1;
 	} CATCH_and_THROW( "RTMA_Module::DisconnectFromMMM( void)");
 }
