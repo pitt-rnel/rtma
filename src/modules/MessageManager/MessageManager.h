@@ -32,14 +32,17 @@ public:
 		Reset();
 	}
 
-	void SetName(char* src_name) {
+	void SetName(const char* src_name) {
 		if (name != NULL) {
 			myfree(name);
+			name = NULL;
 		}
-		name = (char*) malloc(MAX_NAME_LEN);
+		name = (char*)malloc(MAX_NAME_LEN);
 		if (name != NULL) {
-			memcpy(name, src_name, MAX_NAME_LEN);
-			name[MAX_NAME_LEN - 1] = '\0';
+			memset(name, 0, MAX_NAME_LEN);
+			if (src_name != NULL) {
+				strncpy(name, src_name, MAX_NAME_LEN - 1);
+			}
 		}
 	}
 
