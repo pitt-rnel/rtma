@@ -105,23 +105,21 @@ public:
 	}
 
 	void SetGoodbye(MDF_GOODBYE *goodbye) {
+		if (goodbye == NULL) {
+			return;
+		}
+		memset(goodbye, 0, sizeof(*goodbye));
 		goodbye->uid = uid;
 		goodbye->mod_id = ModuleID;
 		goodbye->pid = pid;
 		goodbye->port = port;
 
 		if (addr != NULL) {
-			memcpy(goodbye->addr, addr, sizeof(goodbye->addr));
-		}
-		else {
-			goodbye->addr[0] = '\0';
+			strncpy(goodbye->addr, addr, sizeof(goodbye->addr) - 1);
 		}
 
 		if (name != NULL) {
-			memcpy(goodbye->name, name, sizeof(goodbye->name));
-		}
-		else {
-			goodbye->name[0] = '\0';
+			strncpy(goodbye->name, name, sizeof(goodbye->name) - 1);
 		}
 	}
 
