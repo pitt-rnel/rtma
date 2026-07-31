@@ -292,7 +292,6 @@ public:
 	// Destructor
 	virtual ~UPipeServer() {
 	}
-	}
 
 	static const int MAX_CLIENTS = 1024;
 
