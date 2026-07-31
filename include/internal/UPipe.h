@@ -291,8 +291,7 @@ public:
 
 	// Destructor
 	virtual ~UPipeServer() {
-		TRY {
-		} CATCH_and_THROW( "UPipeServer::~UPipeServer");
+	}
 	}
 
 	static const int MAX_CLIENTS = 1024;
@@ -376,9 +375,7 @@ public:
 
 	// Destructor makes sure we disconnect cleanly
 	virtual ~UPipeClient() {
-		TRY {
-			if( _pServerPipe != NULL) delete _pServerPipe;
-		} CATCH_and_THROW( "UPipeClient::~UPipeClient");
+		if( _pServerPipe != NULL) delete _pServerPipe;
 	}
 protected:
 	UPipe *_pServerPipe;
