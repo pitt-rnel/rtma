@@ -116,6 +116,8 @@ public:
 class UPipe
 {
 public:
+	virtual ~UPipe() { }
+
 	// Obtains the capacity of the pipe, i.e. how many bytes can be written
 	// to the pipe without being read out the other end.
 	virtual int GetCapacity( void) = 0;
