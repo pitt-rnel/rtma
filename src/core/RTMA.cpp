@@ -65,7 +65,7 @@ CMessage::GetDataPointer( void)
 }
 
 int
-CMessage::GetData( void *pData)
+CMessage::GetData( void *pData) const
 {
 	TRY {
 		if( num_data_bytes > 0) {
@@ -265,7 +265,7 @@ CMessage::Send( UPipe *output_pipe, double timeout)
 }
 
 bool
-CMessage::IsDynamic()
+CMessage::IsDynamic() const
 {
 	TRY {
 		if (is_dynamic) return true;
@@ -274,7 +274,7 @@ CMessage::IsDynamic()
 }
 
 RTMA_MSG_HEADER
-CMessage::GetHeader(void)
+CMessage::GetHeader(void) const
 {
 	TRY {
 		RTMA_MSG_HEADER header;
@@ -380,7 +380,7 @@ RTMA_Module::ConnectToMMM( char *server_name, int logger_status, int read_dd_fil
 		_pipeClient = UPipeFactory::CreateClient( server_name);
 		_MMpipe = _pipeClient->Connect();
 
-		MDF_CONNECT data;
+		MDF_CONNECT data{};
 		
 		if(logger_status) {
 			data.logger_status = 1;
@@ -520,7 +520,7 @@ int
 RTMA_Module::SendModuleReady( void)
 {
 	TRY {
-		MDF_MODULE_READY data;
+		MDF_MODULE_READY data{};
 		data.pid = GetPid();
 		CMessage M(MT_MODULE_READY, (void*) &data, sizeof(data));//send pid
 		int status = SendMessage( &M);
@@ -820,7 +820,7 @@ RTMA_Module::IncrementMessageCount()
 
 
 double
-RTMA_Module::UpTime( void)
+RTMA_Module::UpTime( void) const
 {
 	TRY {
 		return GetAbsTime() - m_StartTime;
@@ -828,7 +828,7 @@ RTMA_Module::UpTime( void)
 }
 
 int 
-RTMA_Module::GetPid( void)
+RTMA_Module::GetPid( void) const
 {
 	TRY {
 		return m_Pid;

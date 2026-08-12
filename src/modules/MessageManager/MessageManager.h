@@ -77,7 +77,7 @@ public:
 		}
 	}
 
-	void SetHello(MDF_HELLO *hello) {
+	void SetHello(MDF_HELLO* hello) const {
 		if (hello == NULL) {
 
 			return;
@@ -104,7 +104,7 @@ public:
 		}
 	}
 
-	void SetGoodbye(MDF_GOODBYE *goodbye) {
+	void SetGoodbye(MDF_GOODBYE* goodbye) const {
 		if (goodbye == NULL) {
 			return;
 		}
@@ -254,7 +254,7 @@ public:
 	}
 };
 
-#define SUBSCRIBER_FLAG_PAUSE  			0x01
+constexpr auto SUBSCRIBER_FLAG_PAUSE = 0x01;
 
 
 class CSubscriberList : protected CList
@@ -515,7 +515,7 @@ private:
 	ForwardMessage(CMessage *m, CModuleRecord* mod);
 
 	int
-	ModuleIsConnected(MODULE_ID mod_id);
+	ModuleIsConnected(MODULE_ID mod_id) const;
 
 	void
 	LogFailedMessage( CMessage *m, MODULE_ID mod_id);

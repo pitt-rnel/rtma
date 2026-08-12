@@ -12,7 +12,7 @@
 // winsock initialization/cleanup
 //
 #ifdef _WINDOWS_C
-bool InitializeWinSock() // returns false if failed
+static bool InitializeWinSock() // returns false if failed
 {
 	TRY {
 		WORD wVersionRequested = MAKEWORD(2,0);
@@ -24,7 +24,7 @@ bool InitializeWinSock() // returns false if failed
 	} CATCH_and_THROW( "::InitializeWinSock");
 }
 
-void CleanupWinSock()
+static void CleanupWinSock()
 {
 	TRY {
 		WSACleanup();
@@ -43,10 +43,10 @@ void CleanupWinSock()
  * that can accept a connection on any incoming interface.
  * Return: socket identifier
  */
-SocketHandle CreateSocket( char *host_addr, short port_no)
+static SocketHandle CreateSocket( char *host_addr, short port_no)
 {
 	TRY {
-		SocketHandle theSocket;
+		SocketHandle theSocket{};
 		#ifdef _WINDOWS_C
 			SOCKADDR_IN* saServer;
 		#else
@@ -106,7 +106,7 @@ SocketHandle CreateSocket( char *host_addr, short port_no)
  * Closes the given socket.
  * Returns 0 on success, -1 on error
  */
-int CloseSocket(SocketHandle socket_handle)
+static int CloseSocket(SocketHandle socket_handle)
 {
 	TRY {
 		#ifdef _WINDOWS_C
@@ -134,7 +134,7 @@ int CloseSocket(SocketHandle socket_handle)
  * Return: on success - the number of bytes received
  * throws exceptions on failure
  */
-int RecvData( SocketHandle socket, char* buffer, int buffer_size)
+static int RecvData( SocketHandle socket, char* buffer, int buffer_size)
 {
 	TRY {
 		int res=0;
@@ -170,7 +170,7 @@ int RecvData( SocketHandle socket, char* buffer, int buffer_size)
  * - buffer_size is the length of the data in buffer, in bytes
  * - Return: on success- total number of bytes sent; 
  */
-int SendData( SocketHandle socket, char* buffer, int buffer_size)
+static int SendData( SocketHandle socket, char* buffer, int buffer_size)
 {
 	TRY {
 	        //std::flush(std::cout);
@@ -204,7 +204,7 @@ int SendData( SocketHandle socket, char* buffer, int buffer_size)
  * Disables the Nagle algorithm on the given socket to get rid of the 200 msec delay
  * in sending the packets
  */
-void DisableNagleAlgorithm( SocketHandle socket)
+static void DisableNagleAlgorithm( SocketHandle socket)
 {
 	TRY {
 		struct protoent *p;
@@ -228,7 +228,7 @@ void DisableNagleAlgorithm( SocketHandle socket)
  * Receives a listening socket and block waits for client connection on it
  * Should get the same sockaddr_in *ServerAddr  that was used when creating the listening socket
  */
-SocketHandle AcceptSocketClient( SocketHandle listening_socket)
+static SocketHandle AcceptSocketClient( SocketHandle listening_socket)
 {
 	TRY {
 		#ifdef _WINDOWS_C
@@ -236,7 +236,7 @@ SocketHandle AcceptSocketClient( SocketHandle listening_socket)
 		#else
 		socklen_t len;
 		#endif
-		SocketHandle accepted_socket;
+	SocketHandle accepted_socket{};
 
 		// Wait for a client to connect: the accept call blocks until someone tries to connect
 		len = sizeof (struct sockaddr_in);
@@ -252,7 +252,7 @@ SocketHandle AcceptSocketClient( SocketHandle listening_socket)
 /* 
  * Opens a connection to a server using the "socket" object
  */
-void ConnectSocket(SocketHandle socket)
+static void ConnectSocket(SocketHandle socket)
 {
 	TRY {
 		#ifdef _WINDOWS_C
@@ -285,7 +285,7 @@ void ConnectSocket(SocketHandle socket)
  * Creates a TCP connection to the given [server:port] using global variable theSocket
  * Return: SOCKET_HANDLE on success, else throws UPipeException
  */
-SocketHandle OpenTCPConnection(char *ServerName, short nPort)
+static SocketHandle OpenTCPConnection(char *ServerName, short nPort)
 {
 	TRY {
 		if( strlen( ServerName) == 0) throw UPipeException( "ServerName is not allowed to be an empty string");
@@ -343,7 +343,7 @@ SocketPipe::Read( void *data_buffer, int nbytes_to_read, double timeout)
 {
 	TRY {
 		// Set up wait struct
-		struct timeval wait, *pWait;
+		struct timeval wait{0, 0}, *pWait;
 		if( timeout < 0) { // Negative timeout value means we are willing to wait forever
 			pWait = NULL;
 		} else {
@@ -354,7 +354,7 @@ SocketPipe::Read( void *data_buffer, int nbytes_to_read, double timeout)
 		}
 
 		// Set up file descriptor set for reading
-		fd_set readfds;
+		fd_set readfds{};
 		FD_ZERO(&readfds);
 		FD_SET(_hPipe.id, &readfds);
 		int high_fd = 0;
@@ -420,7 +420,7 @@ SocketPipe::Write( void *data_buffer, int n_bytes, double timeout)
 {
 	TRY {
 		// Set up wait struct
-		struct timeval wait, *pWait;
+		struct timeval wait {},* pWait;
 		if( timeout < 0) { // Negative timeout value means we are willing to wait forever
 			pWait = NULL;
 		} else {
@@ -431,7 +431,7 @@ SocketPipe::Write( void *data_buffer, int n_bytes, double timeout)
 		}
 
 		// Set up file descriptor set for writing
-		fd_set writefds;
+		fd_set writefds{};
 		FD_ZERO(&writefds);
 		FD_SET(_hPipe.id, &writefds);
 		int high_fd = 0;
@@ -630,7 +630,7 @@ SocketPipeServer::WaitForDataAndClients( UPipe *pipes[], double timeout, bool *c
 {
 	TRY {
 		// Set up wait struct
-		struct timeval wait, *pWait;
+		struct timeval wait{0, 0}, *pWait;
 		if( timeout < 0) { // Negative timeout value means we are willing to wait forever
 			pWait = NULL;
 		} else {
@@ -641,7 +641,7 @@ SocketPipeServer::WaitForDataAndClients( UPipe *pipes[], double timeout, bool *c
 		}
 
 		// Set up file descriptor set for reading
-		fd_set readfds;
+		fd_set readfds{};
 		FD_ZERO(&readfds);
 		int high_fd = 0;
 		for( unsigned int i = 0; i < _numClients; i++) {

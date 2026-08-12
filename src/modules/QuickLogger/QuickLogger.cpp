@@ -45,7 +45,7 @@ void CQuickLogger::MainFunction()
 	TRY {
 		CMessage M;
 		MDF_SAVE_MESSAGE_LOG FilenameData;
-		char Filename[MAX_LOGGER_FILENAME_LENGTH+1];
+		char Filename[MAX_LOGGER_FILENAME_LENGTH + 1]{};
 
 		// Get connected
 		int logger_status = 1;

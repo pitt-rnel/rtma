@@ -670,7 +670,7 @@ void CMessageManager::AddSubscription(CModuleRecord *mod, MSG_TYPE message_type)
 		if (((message_type < 0) || (message_type >= MAX_MESSAGE_TYPES)) && (message_type != ALL_MESSAGE_TYPES))
 		{
 			// send MDF_FAIL_SUBSCRIBE instead of ACK so the module's subscribe function will fail
-			MDF_FAIL_SUBSCRIBE data;
+			MDF_FAIL_SUBSCRIBE data{};
 			data.mod_id = mod->ModuleID;
 			data.msg_type = message_type;
 			CMessage R(MT_FAIL_SUBSCRIBE, (void *)&data, sizeof(data));
@@ -911,7 +911,7 @@ void CMessageManager::SendIntroductions(MODULE_ID mod_id)
 	}
 }
 
-int CMessageManager::ModuleIsConnected(MODULE_ID mod_id)
+int CMessageManager::ModuleIsConnected(MODULE_ID mod_id) const
 {
 	if (mod_id < MID_MESSAGE_MANAGER)
 		return 0;

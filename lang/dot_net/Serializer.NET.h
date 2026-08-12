@@ -130,7 +130,7 @@ namespace RTMA {
 		// The Output object serves as its own template, i.e. it needs to have the correct
 		// structure when passed as an input. This function merely replaces the values in it.
 		//
-		void DeserializeData( Object ^%Output, void *pInput, int NumDataBytes)
+		void DeserializeData( Object ^Output, void *pInput, int NumDataBytes)
 		{
 			int NumTemplateBytes;
 			void *pEnd;
@@ -312,7 +312,7 @@ namespace RTMA {
 		// structure when passed as an input. This function merely replaces the values in it.
 		// Returns a pointer to the next byte after the last byte read from the input buffer.
 		//
-		void* DeserializeData( Object ^%Output, void *pInput)
+		void* DeserializeData( Object ^Output, void *pInput)
 		{
 			int NumElements;
 			int NumFields;

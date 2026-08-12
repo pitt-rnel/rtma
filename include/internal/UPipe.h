@@ -174,7 +174,7 @@ public:
 		Initialize();
 	}
 
-	unsigned int GetNumClients() { return _numClients; }
+	unsigned int GetNumClients() const { return _numClients; }
 
 	// Accepts a client from the listening socket and returns a pointer to a pipe object that
 	// represents the new connection. This pipe object can be used to excange data with the

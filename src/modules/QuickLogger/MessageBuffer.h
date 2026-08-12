@@ -7,7 +7,7 @@
 #ifndef _MESSAGE_BUFFER_H_
 #define _MESSAGE_BUFFER_H_
 
-#define MESSAGE_BUFFER_FILE_FORMAT_VERSION  1
+constexpr auto MESSAGE_BUFFER_FILE_FORMAT_VERSION = 1;
 
 typedef struct {
 	unsigned int FileFormatVersion;
@@ -73,29 +73,29 @@ public:
 	}
 	void ClearBuffer( void)
 	{
-		memset( Header, 0, MessageHeaderBytes * NumMessages);
+		memset( Header, 0, static_cast<size_t>(MessageHeaderBytes) * NumMessages);
 		memset( DataBlockOffsets, 0, sizeof(*DataBlockOffsets) * NumMessages);
 		memset( Data, 0, TotalDataBytes);
 		NumMessages = 0;
 		TotalDataBytes = 0;
 	}
-	unsigned int GetNumPreallocMessages( void)
+	unsigned int GetNumPreallocMessages(void) const
 	{
 		return NumPreallocMessages;
 	}
-	unsigned int GetMessageHeaderBytes( void)
+	unsigned int GetMessageHeaderBytes( void) const
 	{
 		return MessageHeaderBytes;
 	}
-	unsigned int GetNumPreallocDataBytes( void)
+	unsigned int GetNumPreallocDataBytes( void) const
 	{
 		return NumPreallocDataBytes;
 	}
-	unsigned int GetNumMessages( void)
+	unsigned int GetNumMessages( void) const
 	{
 		return NumMessages;
 	}
-	unsigned int GetNumDataBytes( void)
+	unsigned int GetNumDataBytes( void) const
 	{
 		return TotalDataBytes;
 	}
@@ -109,19 +109,19 @@ public:
 		if( DataBlockOffsets[i] >= TotalDataBytes) throw MyCException( "CMessageBuffer::GetDataPtr(): Data block address would exceed amount of data in buffer");
 		return Data + DataBlockOffsets[i];
 	}
-	void SaveDatafile( char *filename)
+	void SaveDatafile( char *filename) const
 	{
 		FILE *f = fopen( filename, "wb");
 		if( f == NULL) throw MyCException( (MyCString) "CMessageBuffer::SaveDatafile: Unable to open data file '" + filename + "'");
 		unsigned int num_items_written;
 		// Write a file header, containing, number of messages and number of data bytes etc.
-		MESSAGE_BUFFER_FILE_HEADER h;
+		MESSAGE_BUFFER_FILE_HEADER h{};
 		h.FileFormatVersion = MESSAGE_BUFFER_FILE_FORMAT_VERSION;
 		h.NumMessages = NumMessages;
 		h.MessageHeaderSize = MessageHeaderBytes;
 		h.DataBlockOffsetSize = sizeof(*DataBlockOffsets);
 		h.NumDataBytes = TotalDataBytes;
-		h.FileTotalBytes = sizeof(h) + h.NumMessages*(h.MessageHeaderSize+h.DataBlockOffsetSize) + h.NumDataBytes;
+		h.FileTotalBytes = sizeof(h) + h.NumMessages * (static_cast<unsigned long long>(h.MessageHeaderSize) + h.DataBlockOffsetSize) + h.NumDataBytes;
 		num_items_written = fwrite( &h, sizeof(h), 1, f);
 		if( num_items_written != 1) throw MyCException( "CMessageBuffer::SaveDatafile: Could not write file header");
 		// Write the buffer of headers
@@ -148,7 +148,7 @@ public:
 		if( h.FileFormatVersion != MESSAGE_BUFFER_FILE_FORMAT_VERSION) throw MyCException( (MyCString) "CMessageBuffer::LoadDataFile: File format version (" + h.FileFormatVersion + ") does not match this reader's version (" + MESSAGE_BUFFER_FILE_FORMAT_VERSION + ")");
 		// Do sanity checks on header information
 		if( h.DataBlockOffsetSize != sizeof(*DataBlockOffsets)) throw MyCException( MyCString( "CMessageBuffer::LoadDataFile: Number of data block offset bytes in file (") + h.DataBlockOffsetSize + ") does not match size of data block offset in reader (" + (int)sizeof(*DataBlockOffsets) + ")");
-		unsigned int DoubleCheckFileTotalBytes = sizeof(h) + h.NumMessages*(h.MessageHeaderSize+h.DataBlockOffsetSize) + h.NumDataBytes;
+		unsigned int DoubleCheckFileTotalBytes = sizeof(h) + h.NumMessages * (static_cast<unsigned long long>(h.MessageHeaderSize) + h.DataBlockOffsetSize) + h.NumDataBytes;
 		if( h.FileTotalBytes != DoubleCheckFileTotalBytes) throw MyCException( MyCString( "CMessageBuffer::LoadDataFile: Number of file total bytes in file header (") + h.FileTotalBytes + ") does not match number of total bytes calculated from other header fields (" + DoubleCheckFileTotalBytes + ")");
 		unsigned int FileLength = GetFileLength( f);
 		if( FileLength != h.FileTotalBytes) throw MyCException( MyCString( "CMessageBuffer::LoadDataFile: Actual file length (") + FileLength + ") does not match file length field in header (" + h.FileTotalBytes + ")");
