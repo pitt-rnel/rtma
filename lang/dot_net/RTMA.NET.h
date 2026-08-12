@@ -475,32 +475,7 @@ namespace RTMA {
 
 		//
 		//
-		int
-		SetTimer( unsigned int SnoozeTime) {
-			TRY {
 
-				if( !mod->IsConnected( )) throw MyCException( "Module not connected to MM");
-				int TimerID = mod->SetTimer( SnoozeTime);
-				return TimerID;
-
-			} CATCH_and_THROW_dotNET( "Error in RTMA.Module.SetTimer(): ")
-		}
-
-		//
-		//
-		int
-		CancelTimer( int TimerID) {
-			TRY {
-
-				if( !mod->IsConnected( )) throw MyCException( "Module not connected to MM");
-				int status = mod->CancelTimer( TimerID);
-				return status;
-
-			} CATCH_and_THROW_dotNET( "Error in RTMA.Module.CancelTimer(): ")
-		}
-
-		//
-		//
 		double
 		GetAbsTime( void) {
 			TRY {
