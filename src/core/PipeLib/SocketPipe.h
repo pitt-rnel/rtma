@@ -67,7 +67,7 @@ public:
 	SocketPipe( SocketHandle hSocket);
 	
 	// Returns an underlying C-library pipe handle
-	SocketHandle GetPipeHandle( void) { return _hPipe; }
+	SocketHandle GetPipeHandle(void) const { return _hPipe; }
 
 	//
 	// Overrides of abstract base methods
@@ -112,7 +112,7 @@ protected:
 
 private:
 	SocketHandle _hListeningSocket;
-	SocketHandle _hClientSockets[MAX_CLIENTS];
+	SocketHandle _hClientSockets[MAX_CLIENTS] = {};
 };
 
 class SocketPipeClient : public UPipeClient

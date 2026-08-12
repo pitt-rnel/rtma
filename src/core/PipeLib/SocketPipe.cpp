@@ -49,10 +49,8 @@ SocketHandle CreateSocket( char *host_addr, short port_no)
 		SocketHandle theSocket;
 		#ifdef _WINDOWS_C
 			SOCKADDR_IN* saServer;
-			LPHOSTENT hp;
 		#else
 			struct sockaddr_in* saServer;
-			struct hostent *hp;
 		#endif
 
 		theSocket.id = 0;
@@ -80,17 +78,20 @@ SocketHandle CreateSocket( char *host_addr, short port_no)
 		memset( saServer, 0, sizeof(*saServer));
 		saServer->sin_family = AF_INET;
 		if( strlen( host_addr) > 0) { // If host name or IP specified, then use that specific address
-			hp = gethostbyname( host_addr);
-			if( hp == NULL) {
+
+			struct addrinfo hints, * result = NULL;
+			memset(&hints, 0, sizeof(hints));
+			hints.ai_family = AF_INET;      // IPv4
+			hints.ai_socktype = SOCK_STREAM;
+
+			int ret = getaddrinfo(host_addr, NULL, &hints, &result);
+			if(ret != 0) {
 				MyCString ErrMsg( "Cannot get host IP for ");
 				ErrMsg += host_addr;
 				throw UPipeException( ErrMsg);
 			}
-			#ifdef _WINDOWS_C
-				saServer->sin_addr   = *((LPIN_ADDR)*hp->h_addr_list);
-			#else
-				saServer->sin_addr   = *((struct in_addr*)(hp->h_addr));//Server's address
-			#endif
+			saServer->sin_addr = ((struct sockaddr_in*)result->ai_addr)->sin_addr; //Server's address
+			freeaddrinfo(result);
 		} else { // If no host name or IP specified, then allow any incoming interface
 			saServer->sin_addr.s_addr = htonl(INADDR_ANY); // Any incoming interface
 		}
@@ -643,7 +644,7 @@ SocketPipeServer::WaitForDataAndClients( UPipe *pipes[], double timeout, bool *c
 		fd_set readfds;
 		FD_ZERO(&readfds);
 		int high_fd = 0;
-		for( int i = 0; i < _numClients; i++) {
+		for( unsigned int i = 0; i < _numClients; i++) {
 			SocketPipe *pClientPipe = (SocketPipe*) _clientList[i];
 			SocketHandle hClientPipe = pClientPipe->GetPipeHandle();
 			_hClientSockets[i] = hClientPipe;
@@ -677,7 +678,7 @@ SocketPipeServer::WaitForDataAndClients( UPipe *pipes[], double timeout, bool *c
 
 		// Find out which socket(s) have data
 		int C = 0;
-		for( int i = 0; i < _numClients; i++) {
+		for( unsigned int i = 0; i < _numClients; i++) {
 			if( FD_ISSET(_hClientSockets[i].id, &readfds)) {
 				pipes[C] = _clientList[i];
 				C++; 

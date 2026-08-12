@@ -4,6 +4,8 @@
 
 #include "Debug.h"
 
+#include <memory> // For std::unique_ptr
+
 //namespace RTMA {
 
 //////////////////////////////////////////////////////////////////////////////
@@ -399,15 +401,15 @@ RTMA_Module::ConnectToMMM( char *server_name, int logger_status, int read_dd_fil
 		try {
 			SendMessage( &M);
 		
-			CMessage ackMsg;
-			status = WaitForAcknowledgement( 1, &ackMsg); // Wait for up to 3 seconds
+			std::unique_ptr<CMessage> ack_msg(new CMessage()); // Use smart pointer for acknowledgment message
+			status = WaitForAcknowledgement( 1, ack_msg.get()); // Wait for up to 3 seconds
 			if( status == 0){
 				throw MyCException( "Did not receive ACK from MessageManager upon CONNECT");
 			}
 
 			// save own module ID from ACK if asked to be assigned dynamic ID
 			if (m_ModuleID == 0)
-				m_ModuleID = ackMsg.dest_mod_id;
+				m_ModuleID = ack_msg->dest_mod_id;
 
 			m_Connected = 1;
 
@@ -503,10 +505,12 @@ RTMA_Module::IsConnected( void)
 			try {
 				_MMpipe->Read( &dummy_buffer, 0, 0);
 				return 1;
-			} catch( UPipeException) {
+			}
+			catch (UPipeClosedException) {
 				return 0;
-			} catch (UPipeClosedException) {
-			    return 0;
+			}
+			catch( UPipeException) {
+				return 0;
 			}
 		}
 	} CATCH_and_THROW( "RTMA_Module::IsConnected( void)");
