@@ -38,6 +38,7 @@
 
 /*Non OS specific h files*/
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
