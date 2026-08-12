@@ -190,7 +190,7 @@ namespace RTMA {
 				// Convert server name string from .NET to regular C string
 				int NumChars = ServerName->Length;
 				cli::array<Char> ^charArray = ServerName->ToCharArray( );
-				char server_name[1024];
+				char server_name[1024]{};
 				if( NumChars > 1023) throw gcnew Exception( "ServerName argument is too long, 1023 is max");
 				for( int i = 0; i < NumChars; i++) {
 					unsigned short UnicodeChar = charArray[i];

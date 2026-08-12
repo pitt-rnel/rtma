@@ -48,7 +48,7 @@ using namespace std;
    |                   Defines  & Globals                                     |
    ----------------------------------------------------------------------------*/
 
-#define CSTRING_IN_BUFFER 100 //buffer size for >> operator overloading & for other internal operations
+constexpr auto CSTRING_IN_BUFFER = 100; //buffer size for >> operator overloading & for other internal operations
 
 //OS dependent functions
 //itoa() is not ansi C so is not present on Linux

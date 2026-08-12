@@ -48,8 +48,8 @@ using namespace std;
 // it will have unpredictable behavior and unexplained crashes.
 #include "internal/mex_hack.h"
 
-#define MYCEXCEPTION_STACK_TRACE_SIZE 100                   //size of stack trace
-#define MYCEXCEPTION_STACK_FILE_NAME "exception_trace.txt"  //default file name for exception trace
+constexpr auto MYCEXCEPTION_STACK_TRACE_SIZE = 100;                   //size of stack trace
+constexpr auto MYCEXCEPTION_STACK_FILE_NAME = "exception_trace.txt";  //default file name for exception trace
 
 
 
@@ -77,9 +77,9 @@ public:
 	void AddToStack(const char* err_str);
 	void AddToStack(const MyCString &err_str);
 	
-	int  GetErrorCode(){return m_ErrorCode;}
+	int  GetErrorCode() const { return m_ErrorCode; }
 	char* GetTrace(int trace_level) const;
-	int  GetNumTraceLevels(){ return m_TraceIndex;}
+	int  GetNumTraceLevels() const { return m_TraceIndex; }
 	void AppendTraceToString(MyCString& str) const;
 	
 	void Reset();

@@ -29,7 +29,7 @@ void
 InitializeAbsTime( void)
 {
 #ifdef _WINDOWS_C
-	LONGLONG freq;
+    LONGLONG freq = 0;
 	QueryPerformanceFrequency( (LARGE_INTEGER*) &freq);
 	win_counter_freq = (double) freq;
 #endif
@@ -49,7 +49,7 @@ GetAbsTime( void)
         return 0.0;
     }
 #else
-    LONGLONG current_time;
+    LONGLONG current_time = 0;
     QueryPerformanceCounter( (LARGE_INTEGER*) &current_time);
     return (double) current_time / win_counter_freq;
 #endif

@@ -76,7 +76,7 @@ public:
 	GetDataPointer( void);
 
 	int
-	GetData( void *pData);
+	GetData( void *pData) const;
 
 	int
 	SetData( void *pData, int num_bytes);
@@ -100,10 +100,10 @@ public:
 	Send( UPipe *output_pipe, double timeout);
 
 	bool
-	IsDynamic();
+	IsDynamic() const;
 
 	RTMA_MSG_HEADER
-	GetHeader( void);
+	GetHeader( void) const;
 };
 
 /* ----------------------------------------------------------------------------
@@ -150,9 +150,6 @@ protected:
 	IncrementMessageCount();
 	//increments m_MessageCount by 1, and returns the NEW value
 
-	void
-	ReportProfileData( void);
-	//reports the profile data to a binary file if RTMA_PROFILE is defined in RTMA_profile.h
 public:
 
 	#ifdef USE_DYNAMIC_DATA
@@ -251,18 +248,18 @@ public:
 	//if MsgType is specified- will not return until the requested msg type was received (and will discard all other messages received)
 	//if MsgType is not specified- will return the first message received (in this case just a wrapper for ReadMessage) 
 
-	double UpTime( void);
+	double UpTime( void) const;
 
-	int GetPid( void);
+	int GetPid( void) const;
 
 	int
-	GetMessageCount(){ return m_MessageCount; }
+		GetMessageCount() const { return m_MessageCount; }
 
 	HOST_ID 
-	GetHostID() { return m_HostID;}
+		GetHostID() const { return m_HostID; }
 
 	MODULE_ID 
-	GetModuleID(){ return m_ModuleID;}
+		GetModuleID() const { return m_ModuleID; }
 };
 
 /* ----------------------------------------------------------------------------

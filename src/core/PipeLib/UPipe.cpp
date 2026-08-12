@@ -71,7 +71,7 @@ UPipeFactory::ServerType UPipeFactory::ParseServerAddress( const char* server_ad
 					throw UPipeException("Invalid server name, missing terminating null character");
 					break;
 				}else{ //the port is in the string between start & i-1
-					memcpy(str_port, server_addr+start+1, (i-1)-start);
+					memcpy(str_port, server_addr + start + 1, (static_cast<size_t>(i) - 1) - start);
 					*port_no = atoi(str_port);
 				}
 				break;
