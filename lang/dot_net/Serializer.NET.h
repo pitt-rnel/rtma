@@ -119,7 +119,7 @@ namespace RTMA {
 		{
 			void *pEndData = SerializeData( Data, pOutputBuffer);
 
-			int CheckSum = (char *) pEndData - (char *) pOutputBuffer;
+			auto CheckSum = (char *) pEndData - (char *) pOutputBuffer;
 			if( CheckSum != NumDataBytes) throw gcnew Exception( "Wrong number of bytes serialized");
 		}
 
@@ -143,7 +143,7 @@ namespace RTMA {
 			}
 			pEnd = DeserializeData( Output, pInput);
 
-			int CheckSum = (char *) pEnd - (char *) pInput;
+			auto CheckSum = (char *) pEnd - (char *) pInput;
 			if( CheckSum != NumDataBytes) throw gcnew Exception( "Wrong number of bytes de-serialized (" + CheckSum.ToString() + " instead of the expected " + NumDataBytes.ToString() + ")");
 		}
 
@@ -349,7 +349,7 @@ namespace RTMA {
 								pEnd = DeserializePrimitiveArray( Output, elementType, NumElements, pInput);
 							} else {
 								// If data is an array of objects, then we copy each element by calling this function recursively
-								cli::array<Object^> ^%objArray = safe_cast<cli::array<Object^>^%>( a);
+								cli::array<Object^>^ objArray = safe_cast<cli::array<Object^>^>(a);
 								pEnd = pInput;
 								for( i = 0; i < NumElements; i++) {
 									Object ^Element = objArray[i];

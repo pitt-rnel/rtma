@@ -12,7 +12,7 @@ private:
 	static const int MAX_CLIENTS = 10;
 	UPipeServer *_server;
 	UPipe *_pipes[MAX_CLIENTS];
-	int _numClients;
+	unsigned int _numClients;
 public:
 	ServerTest() {
 		_server = NULL;
@@ -33,7 +33,7 @@ public:
 	}
 
 	void TestWriting() {
-		int num_clients = _server->GetNumClients();
+		unsigned int num_clients = _server->GetNumClients();
 		for( int i = 0; i < num_clients; i++) {
 			int value = i+10;
 			int nbytes = sizeof(value);
@@ -45,7 +45,7 @@ public:
 	}
 
 	void TestReading() {
-		int num_clients = _server->GetNumClients();
+		unsigned int num_clients = _server->GetNumClients();
 		for( int i = 0; i < num_clients; i++) {
 			int value;
 			int nbytes = sizeof(value);
@@ -89,7 +89,7 @@ public:
 	}
 
 	void TestMultiRead_InOrder( void) {
-		int num_clients = _server->GetNumClients();
+		unsigned int num_clients = _server->GetNumClients();
 		while( num_clients > 0) {
 			std::cout << "Waiting for data from any clients... ";
 			UPipe *p[UPipeServer::MAX_CLIENTS];
@@ -113,7 +113,7 @@ public:
 	}
 
 	void TestMultiRead_InRandomOrder( void) {
-		int num_clients = _server->GetNumClients();
+		unsigned int num_clients = _server->GetNumClients();
 		while( num_clients > 0) {
 			std::cout << "Waiting for data from any clients... "; std::flush(std::cout);
 			UPipe *p[UPipeServer::MAX_CLIENTS];
@@ -229,7 +229,7 @@ public:
 		std::cout << "Received data from " << p << ", a = " << data.a << ", b = " << data.b << ", x = " << data.x << std::endl;
 		// Send response to client
 		double multiplier = (double) data.b;
-		data.a = _server->GetNumClients();
+		data.a = (int)_server->GetNumClients();
 		data.b = 47;
 		data.x = multiplier * data.x;
 		p->Write( buffer, nbytes);
@@ -250,7 +250,7 @@ public:
 		std::cout << "Received data from " << pClientPipe << ", a = " << data.a << ", b = " << data.b << ", x = " << data.x << std::endl;
 		// Send response to client
 		double multiplier = (double) data.b;
-		data.a = _server->GetNumClients();
+		data.a = (int)_server->GetNumClients();
 		data.b = 47;
 		data.x = multiplier * data.x;
 		pClientPipe->Write( buffer, nbytes);

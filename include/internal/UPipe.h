@@ -169,7 +169,12 @@ public:
     // Time when the latest bit of data arrived
     double _recvTime;
 
-	int GetNumClients() { return _numClients; }
+	// constructor
+	UPipeServer() {
+		Initialize();
+	}
+
+	unsigned int GetNumClients() { return _numClients; }
 
 	// Accepts a client from the listening socket and returns a pointer to a pipe object that
 	// represents the new connection. This pipe object can be used to excange data with the
@@ -309,14 +314,12 @@ private:
 
 protected:
 	UPipe *_clientList[MAX_CLIENTS];
-	int _numClients;
+	unsigned int _numClients;
 
 	// Initialize internal data structures
 	void Initialize( void) {
-		TRY {
-			for( int i = 0; i < MAX_CLIENTS; i++) _clientList[i] = NULL;
-			_numClients = 0;
-		} CATCH_and_THROW( "UPipeServer::Initialize");
+		for( int i = 0; i < MAX_CLIENTS; i++) _clientList[i] = nullptr;
+		_numClients = 0;
 	}
 
 	// Add a client pipe pointer to client list
@@ -333,7 +336,7 @@ protected:
 	bool RemoveClientFromList( UPipe *pClientPipe) {
 		TRY {
 			// Find client in the list
-			int i;
+			unsigned int i;
 			for( i = 0; i < _numClients; i++) if( _clientList[i] == pClientPipe) break;
 			if( i == _numClients) return false; // If client not in list
 			// Client Found, now overwrite it with the last thing in the list to keep
@@ -438,7 +441,7 @@ protected:
 	UPipeServer *_server;
 	bool _keepRunning;
 public:
-	UPipeAutoServer() { _server = NULL; }
+	UPipeAutoServer() { _server = NULL; _keepRunning = false; }
 	~UPipeAutoServer() { 
 		if( _server != NULL) {
 			_server->DisconnectAllClients();
@@ -497,7 +500,7 @@ protected:
 	UPipeClient *_client;
 	bool _keepRunning;
 public:
-	UPipeAutoClient() { _client = NULL;	}
+	UPipeAutoClient() { _client = NULL; _keepRunning = false; }
 	~UPipeAutoClient() {
 		if( _client != NULL) {
 			_client->Disconnect();
