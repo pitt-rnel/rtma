@@ -55,8 +55,6 @@ mexFunction(
 
 	double timeout;
     int status;
-	unsigned int SnoozeTime;
-    int TimerID;
     int logger_status;
 
     void *pData;
@@ -248,19 +246,6 @@ mexFunction(
             Template = input_arg[1];
             ReturnData = C2Matlab( Template, M.GetDataPointer(), M.num_data_bytes);
             output_arg[0] = ReturnData;
-            break;
-
-        case SET_TIMER:
-
-            if( num_input_args < 2) Error( "incorrect number of arguments");
-            TimerID = -1;
-            output_arg[0] = mxCreateDoubleScalar( (double) TimerID);
-            break;
-
-        case CANCEL_TIMER:
-            if( num_input_args < 2) Error( "incorrect number of arguments");
-            status = -1;
-            output_arg[0] = mxCreateDoubleScalar( (double) status);
             break;
 
         case SEND_MODULE_READY:
