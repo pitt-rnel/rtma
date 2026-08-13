@@ -4,6 +4,11 @@
  */
 
 #include "MyCString.h"
+#include <string.h>
+#include <cstdio>
+#include <istream>
+#include <ostream>
+#include <string>
 
 #ifdef _UNIX_C
 void itoa(int number, char* buf, int radix)

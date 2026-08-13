@@ -21,7 +21,6 @@
 #define _UPIPE_H_
 
 #include "../OS_defines.h"
-#include "../Timing.h"
 
 #ifdef _WINDOWS_C 
 	//prevent WINSOCK1 from being included (included from within windows.h)
@@ -30,7 +29,6 @@
 	#endif
 	//WINDOWS only h files
 	#include <windows.h>
-	#include <process.h>	
 #else
 /*	LINUX   only h files*/
 	#include <unistd.h>		
@@ -38,14 +36,8 @@
 
 /*Non OS specific h files*/
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <fcntl.h>      //definitions for O_RDONLY O_WRONLY
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <cstdint>
+#include <cstdlib>
 
 // If this is compiled as part of a Matlab MEX file, then this 
 // hack helps redirect memory allocation requests to the Matlab
@@ -54,6 +46,7 @@
 #include "mex_hack.h"
 
 #include "../MyCException.h"
+#include <MyCString.h>
 
 //windows only functions
 #ifdef _WINDOWS_C 

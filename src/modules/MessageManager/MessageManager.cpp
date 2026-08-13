@@ -8,6 +8,18 @@
 
 #include "MessageManager.h"
 #include "Debug.h"
+#include <UPipe.h>
+#include <MyCException.h>
+#include <OS_defines.h>
+#include <RTMA.h>
+#include <RTMA_types.h>
+#include <Timing.h>
+#include <string.h>
+#include <cstdio>
+
+#ifdef _WINDOWS_C
+#include <Windows.h>
+#endif
 
 #ifdef _UNIX_C
 int main(int argc, char *argv[])

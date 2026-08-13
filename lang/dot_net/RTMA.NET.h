@@ -9,6 +9,11 @@
 
 #include "RTMA.h"
 #include "Serializer.NET.h"
+#include <MyCException.h>
+#include <MyCString.h>
+#include <RTMA_types.h>
+#include <Timing.h>
+#include <cstdio>
 
 using namespace System;
 using namespace System::Runtime::InteropServices;

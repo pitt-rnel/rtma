@@ -8,6 +8,9 @@
 #define _MESSAGE_BUFFERER_H_
 
 #include "MessageBuffer.h"
+#include <UPipe.h>
+#include <RTMA.h>
+#include <RTMA_types.h>
 
 class CMessageBufferer : public CMessageBuffer {
 public:

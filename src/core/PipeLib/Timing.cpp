@@ -4,7 +4,6 @@
 #ifdef _WINDOWS_C 
 	//WINDOWS only h files
 	#include <windows.h>
-	#include <process.h>	
 #else
 /*	LINUX   only h files*/
 	#include <unistd.h>
@@ -13,12 +12,6 @@
 
 /*Non OS specific h files*/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 
 #ifdef _WINDOWS_C
 	//Global counter frequency value- used by GetAbsTime() on Windows

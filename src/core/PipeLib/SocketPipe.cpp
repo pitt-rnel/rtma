@@ -6,6 +6,23 @@
 // Emrah Diril  10/14/2011
 
 #include "SocketPipe.h"
+#include <UPipe.h>
+#include <MyCException.h>
+#include <MyCString.h>
+#include <OS_defines.h>
+#include <Timing.h>
+#include <string.h>
+#include <cstdint>
+#include <cstdio>
+#include <iostream>
+
+#ifdef _WINDOWS_C
+#include <ws2def.h>
+#include <Windows.h>
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+#endif
+
 
 ///////////////////////////////////////////////////////////////////////
 //

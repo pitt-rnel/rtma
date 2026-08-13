@@ -3,6 +3,13 @@
 
 #include "UPipe.h"
 #include "SocketPipe.h"
+#include <OS_defines.h>
+#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+#include <ostream>
 
 #ifdef _UNIX_C
 

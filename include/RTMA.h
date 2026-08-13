@@ -9,9 +9,12 @@
    |                              INCLUDES                                    |
    ----------------------------------------------------------------------------*/
 #include "OS_defines.h"
-#include "Timing.h"
 #include "RTMA_types.h"
 #include "internal/UPipe.h"
+
+#ifdef _WINDOWS_C
+#include <windows.h>
+#endif
 
 /*#ifdef _UNIX_C
 	#include <sys/types.h> //for getpid()
@@ -21,9 +24,6 @@
 #else
 	#include <windows.h>
 #endif */
-
-#include <stdio.h>
-#include <string>
 
 // If this is compiled as part of a Matlab MEX file, then this 
 // hack helps redirect memory allocation requests to the Matlab

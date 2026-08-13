@@ -2,6 +2,10 @@
  * String class to be used with C++ code
  * Written by Sagi Perel, 03/21/06
  */
+#include "MyCException.h"
+#include <cstdlib>
+#include <istream>
+#include <string>
 #ifndef _MYCSTRING_H_
 #define _MYCSTRING_H_
 
@@ -30,13 +34,9 @@
    |                   Includes                                                |
    ----------------------------------------------------------------------------*/
 #include <iostream>
-#include <fstream>
-#include <cstring>
 using namespace std;
 #define itoa _itoa		// use ISO name for itoa (deprecated) - also note, most 'c' string functions are also deprecated.
 
-#include <stdio.h>
-#include <stdlib.h>
 
 // If this is compiled as part of a Matlab MEX file, then this 
 // hack helps redirect memory allocation requests to the Matlab

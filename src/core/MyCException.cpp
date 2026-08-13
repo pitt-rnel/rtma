@@ -4,6 +4,9 @@
  */
 
 #include "MyCException.h"
+#include <MyCString.h>
+#include <fstream>
+#include <ostream>
 
 MyCException::MyCException() : m_TraceIndex(0), m_ErrorCode(0)
 {
