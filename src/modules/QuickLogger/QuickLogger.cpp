@@ -5,6 +5,19 @@
  */
 #include "QuickLogger.h"
 #include <ctime>
+#include <UPipe.h>
+#include <MyCException.h>
+#include <MyCString.h>
+#include <RTMA.h>
+#include <RTMA_types.h>
+#include <OS_defines.h>
+#include <cstdio>
+#include <iostream>
+#include <ostream>
+
+#ifdef _WINDOWS_C
+#include <Windows.h>
+#endif
 
 CQuickLogger QL;
 

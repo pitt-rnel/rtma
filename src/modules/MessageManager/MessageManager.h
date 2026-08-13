@@ -3,14 +3,25 @@
 
 #include "RTMA.h"
 #include "bit_operations.h"
-#include <sys/timeb.h>
-#include <time.h>
-#include "Debug.h"
+#include <UPipe.h>
+#include <MyCString.h>
+#include <RTMA_types.h>
+#include <OS_defines.h>
+#include <malloc.h>
+#include <string.h>
+#include <cstdint>
+#include <cstdio>
+
+#ifdef _WINDOWS_C
+#include <Windows.h>
+#endif
+
 
 #ifdef _UNIX_C
 	#include <pthread.h>
 	#include <limits.h> //where PIPE_BUF is located
 #endif
+
 
 class CModuleRecord
 {

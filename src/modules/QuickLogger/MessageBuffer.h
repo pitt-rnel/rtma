@@ -7,6 +7,11 @@
 #ifndef _MESSAGE_BUFFER_H_
 #define _MESSAGE_BUFFER_H_
 
+#include <MyCException.h>
+#include <MyCString.h>
+#include <string.h>
+#include <cstdio>
+
 constexpr auto MESSAGE_BUFFER_FILE_FORMAT_VERSION = 1;
 
 typedef struct {

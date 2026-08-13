@@ -25,22 +25,10 @@
     #endif
 #endif
 
-#include <iostream>
-#include <fstream>
-#include <cstring>
-#include <exception>
 using namespace std;
 
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "MyCString.h"
-#ifdef	_WINDOWS_C
-	#ifdef MYCEXCEPTION_NO_ATL
-	#else
-		#include <atltime.h>
-	#endif
-#endif
 
 // If this is compiled as part of a Matlab MEX file, then this 
 // hack helps redirect memory allocation requests to the Matlab

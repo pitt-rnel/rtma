@@ -5,6 +5,19 @@
 #include "Debug.h"
 
 #include <memory> // For std::unique_ptr
+#include <UPipe.h>
+#include <MyCString.h>
+#include <RTMA_types.h>
+#include <Timing.h>
+#include <malloc.h>
+#include <string.h>
+#include <OS_defines.h>
+
+#ifdef _WINDOWS_C
+#include <Windows.h>
+#include <process.h>
+#endif
+
 
 //namespace RTMA {
 

@@ -1,7 +1,7 @@
 #ifndef _RTMA_TYPES_H_ // this is commented out becuase make_config fails with it
 #define _RTMA_TYPES_H_
 
-#include <stdint.h>
+#include <cstdint>
 // Types used in the RTMA system
 
 typedef short MODULE_ID;

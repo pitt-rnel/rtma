@@ -6,6 +6,7 @@
 // Copyright (c) 2008 by Meel Velliste, University of Pittsburgh. All rights reserved.
 
 #pragma once
+#include <string.h>
 
 using namespace System;
 using namespace System::Runtime::InteropServices;
