@@ -16,7 +16,6 @@
     #else
         #ifndef _WINDOWS_C  
         #define _WINDOWS_C
-		#define _CRT_SECURE_NO_DEPRECATE 1         //prevent vs2005 deprecated warning
         #endif
     #endif
 #endif
@@ -29,6 +28,7 @@
 	#define FALSE 0
 #else
 	#define _CRT_SECURE_NO_DEPRECATE 1 //prevent vs2005 deprecated warning
+	#define _CRT_SECURE_NO_WARNINGS 1         //disable deprecations
 #endif
 
 #ifdef _UNIX_C
