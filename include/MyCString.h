@@ -2,37 +2,16 @@
  * String class to be used with C++ code
  * Written by Sagi Perel, 03/21/06
  */
-#include "MyCException.h"
-#include <cstdlib>
-#include <istream>
-#include <string>
 #ifndef _MYCSTRING_H_
 #define _MYCSTRING_H_
 
 /* ----------------------------------------------------------------------------
-   |                   OS to compile the code on                              |
-   ----------------------------------------------------------------------------*/
-#ifndef _OS_DEFINED
-    #define _OS_DEFINED TRUE
-    #ifdef USE_LINUX
-    	#ifndef _UNIX_C
-    	#define _UNIX_C
-    	#endif
-    #elif defined USE_IRIX 
-    	#ifndef _UNIX_C
-    	#define _UNIX_C
-    	#endif
-    #else
-        #ifndef _WINDOWS_C  
-        #define _WINDOWS_C
-		#define _CRT_SECURE_NO_DEPRECATE 1 //prevent vs2005 deprecated warning
-        #endif
-    #endif
-#endif
-
-/* ----------------------------------------------------------------------------
    |                   Includes                                                |
    ----------------------------------------------------------------------------*/
+#include "OS_defines.h"
+#include <cstdlib>
+#include <istream>
+#include <string>
 #include <iostream>
 using namespace std;
 #define itoa _itoa		// use ISO name for itoa (deprecated) - also note, most 'c' string functions are also deprecated.
