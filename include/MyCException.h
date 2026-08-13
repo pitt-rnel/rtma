@@ -5,28 +5,9 @@
 #ifndef _MYCEXCEPTION_H_
 #define _MYCEXCEPTION_H_
 
-/* ----------------------------------------------------------------------------
-   |                   OS to compile the code on                              |
-   ----------------------------------------------------------------------------*/
-#ifndef _OS_DEFINED
-    #define _OS_DEFINED TRUE
-    #ifdef USE_LINUX
-    	#ifndef _UNIX_C
-    	#define _UNIX_C
-    	#endif
-    #elif defined USE_IRIX 
-    	#ifndef _UNIX_C
-    	#define _UNIX_C
-    	#endif
-    #else
-        #ifndef _WINDOWS_C  
-        #define _WINDOWS_C
-        #endif
-    #endif
-#endif
+#include "OS_defines.h"
 
 using namespace std;
-
 
 #include "MyCString.h"
 
