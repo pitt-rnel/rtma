@@ -7,6 +7,7 @@
 // Copyright (c) 2006 - Meel Velliste, University of Pittsburgh
 
 #include "RTMA.h"
+#include "Timing.h"
 
 extern "C" {
 #include "mex.h"
@@ -50,7 +51,7 @@ mexFunction(
     HOST_ID DestHostID;
     short *HostAddress_raw;
     char HostAddress[MAX_HOST_ADDR_LENGTH];
-    int HostAddressLength = 0;
+    size_t HostAddressLength = 0;
     MSG_TYPE MessageType;
 
 	double timeout;
@@ -58,7 +59,7 @@ mexFunction(
     int logger_status;
 
     void *pData;
-    int NumDataBytes;
+    size_t NumDataBytes;
 
     const mxArray *Template;
     mxArray *ReturnData;
@@ -176,7 +177,7 @@ mexFunction(
             if( TheModule.IsConnected( )) {
                 MessageType = (MSG_TYPE) mxGetScalar( input_arg[1]);
                 pData = SerializeData( input_arg[2], &NumDataBytes);
-                M.Set( MessageType, pData, NumDataBytes);
+                M.Set( MessageType, pData, (int) NumDataBytes);
                 DestModID = (MODULE_ID) mxGetScalar( input_arg[3]);
                 DestHostID = (HOST_ID) mxGetScalar( input_arg[4]);
                 status = TheModule.SendMessage( &M, DestModID, DestHostID);
@@ -221,7 +222,7 @@ mexFunction(
 			  try_again = false;
 			  try {
 				status = TheModule.ReadMessage( &M, timeout);
-			  } catch( UPipeSignalException &e) {
+			  } catch( UPipeSignalException) {
 				end_time = GetAbsTime();
 				elapsed_time = end_time - begin_time;
 				timeout = timeout - elapsed_time;
@@ -244,7 +245,7 @@ mexFunction(
 
             if( num_input_args < 2) Error( "incorrect number of arguments");
             Template = input_arg[1];
-            ReturnData = C2Matlab( Template, M.GetDataPointer(), M.num_data_bytes);
+            ReturnData = C2Matlab( Template, M.GetDataPointer(), (size_t) M.num_data_bytes);
             output_arg[0] = ReturnData;
             break;
 
