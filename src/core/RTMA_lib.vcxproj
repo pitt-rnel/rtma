@@ -182,16 +182,11 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="MyCException.cpp" />
-    <ClCompile Include="MyCString.cpp" />
-    <ClCompile Include="PipeLib\Timing.cpp" />
     <ClCompile Include="RTMA.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\internal\Debug.h" />
     <ClInclude Include="..\..\include\internal\mex_hack.h" />
-    <ClInclude Include="..\..\include\MyCException.h" />
-    <ClInclude Include="..\..\include\MyCString.h" />
     <ClInclude Include="..\..\include\RTMA.h" />
     <ClInclude Include="..\..\include\RTMA_types.h" />
     <ClInclude Include="..\..\include\internal\UPipe.h" />
