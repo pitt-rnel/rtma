@@ -8,129 +8,128 @@
 #ifndef _SOCKETPIPE_H_
 #define _SOCKETPIPE_H_
 
-/* ----------------------- INCLUDES ---------------------------------------------*/
+/* ----------------------- INCLUDES
+ * ---------------------------------------------*/
 #include "UPipe.h"
 #ifdef _WINDOWS_C
-	//WINDOWS only h files
-	#ifndef WINSOCK_H
-		#define WINSOCK_H
-		#define FD_SETSIZE UPipeServer::MAX_CLIENTS
-		#include <winsock2.h>
-		#include <ws2tcpip.h>
-	#endif
+// WINDOWS only h files
+#ifndef WINSOCK_H
+#define WINSOCK_H
+#define FD_SETSIZE UPipeServer::MAX_CLIENTS
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#endif
 #else
-	//LINUX   only h files
-	#include <stdlib.h>
-	#include <unistd.h>
-	#include <errno.h>
-	#include <string.h>
-	#include <netdb.h>
-	#include <sys/types.h>
-	#include <arpa/inet.h>
-	#include <netinet/in.h>
-	#include <sys/socket.h>
-	#include <netinet/tcp.h>
-	#ifndef ERRNO_VAR
-		#define ERRNO_VAR
-		extern int errno;
-	#endif
+// LINUX   only h files
+#include <arpa/inet.h>
+#include <errno.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+#ifndef ERRNO_VAR
+#define ERRNO_VAR
+extern int errno;
+#endif
 
-	// for Mac OS X, solution from https://nwat.xyz/blog/2014/01/16/porting-msg_more-and-msg_nosigpipe-to-osx/
-	#ifndef MSG_NOSIGNAL 
-        # define MSG_NOSIGNAL 0
-    # ifdef SO_NOSIGPIPE
-        #  define RTMA_USE_SO_NOSIGPIPE
-    # else
-        #  error "Cannot block SIGPIPE!"
-    # endif
-    #endif
+// for Mac OS X, solution from
+// https://nwat.xyz/blog/2014/01/16/porting-msg_more-and-msg_nosigpipe-to-osx/
+#ifndef MSG_NOSIGNAL
+#define MSG_NOSIGNAL 0
+#ifdef SO_NOSIGPIPE
+#define RTMA_USE_SO_NOSIGPIPE
+#else
+#error "Cannot block SIGPIPE!"
+#endif
+#endif
 
-	#define SOCKET_ERROR (-1)
+#define SOCKET_ERROR (-1)
 
 #endif
 
 typedef struct {
-	#ifdef _WINDOWS_C
-		SOCKET id;
-		SOCKADDR_IN saServer;
-	#else
-		int id;
-		struct sockaddr_in saServer;
-	#endif
+#ifdef _WINDOWS_C
+  SOCKET id;
+  SOCKADDR_IN saServer;
+#else
+  int id;
+  struct sockaddr_in saServer;
+#endif
 } SocketHandle;
 
-
-class SocketPipe : public UPipe
-{
+class SocketPipe : public UPipe {
 public:
-	// Constructs a pipe object from a socket handle
-	SocketPipe( SocketHandle hSocket);
-	
-	// Returns an underlying C-library pipe handle
-	SocketHandle GetPipeHandle(void) const { return _hPipe; }
+  // Constructs a pipe object from a socket handle
+  SocketPipe(SocketHandle hSocket);
 
-	//
-	// Overrides of abstract base methods
-	//
-	int GetCapacity( void);
-	int Read( void *data_buffer, int n_bytes, double timeout);
-	int Write( void *data_buffer, int n_bytes, double timeout);
-	int GetIpAddress(char* addr, uint16_t* port, int bufsz);
+  // Returns an underlying C-library pipe handle
+  SocketHandle GetPipeHandle(void) const { return _hPipe; }
+
+  //
+  // Overrides of abstract base methods
+  //
+  int GetCapacity(void);
+  int Read(void *data_buffer, int n_bytes, double timeout);
+  int Write(void *data_buffer, int n_bytes, double timeout);
+  int GetIpAddress(char *addr, uint16_t *port, int bufsz);
 
 private:
-	SocketHandle _hPipe; // Handle to underlying OS socket
+  SocketHandle _hPipe; // Handle to underlying OS socket
 };
 
-class SocketPipeServer : public UPipeServer
-{
+class SocketPipeServer : public UPipeServer {
 public:
-	// Constructor/destructor
-	SocketPipeServer( char *host_addr, short port_no);
-	~SocketPipeServer();
+  // Constructor/destructor
+  SocketPipeServer(char *host_addr, short port_no);
+  ~SocketPipeServer();
 
-	//
-	// Overrides of abstract base methods
-	//
+  //
+  // Overrides of abstract base methods
+  //
 public:
-	int WaitForDataAndClients( UPipe *pipes[], double timeout, bool *connection_request);
+  int WaitForDataAndClients(UPipe *pipes[], double timeout,
+                            bool *connection_request);
 
-	// Disconnects all clients
-	void DisconnectAllClients( void)
-	{
-		TRY {
-			for( int i = 0; i < MAX_CLIENTS; i++) {
-				if( _clientList[i] != NULL) {
-					DisconnectClient( _clientList[i]);
-				}
-			}
-		} CATCH_and_THROW( "SocketPipeServer::DisconnectAllClients");
-	}
+  // Disconnects all clients
+  void DisconnectAllClients(void) {
+    TRY {
+      for (int i = 0; i < MAX_CLIENTS; i++) {
+        if (_clientList[i] != NULL) {
+          DisconnectClient(_clientList[i]);
+        }
+      }
+    }
+    CATCH_and_THROW("SocketPipeServer::DisconnectAllClients");
+  }
 
 protected:
-	void DoDisconnectClient( UPipe *client_pipe);
-	UPipe* DoAcceptClient( void);
+  void DoDisconnectClient(UPipe *client_pipe);
+  UPipe *DoAcceptClient(void);
 
 private:
-	SocketHandle _hListeningSocket;
-	SocketHandle _hClientSockets[MAX_CLIENTS] = {};
+  SocketHandle _hListeningSocket;
+  SocketHandle _hClientSockets[MAX_CLIENTS] = {};
 };
 
-class SocketPipeClient : public UPipeClient
-{
+class SocketPipeClient : public UPipeClient {
 public:
-	// Constructor/destructor
-	SocketPipeClient( char *host_addr, short port_no);
-	~SocketPipeClient();
+  // Constructor/destructor
+  SocketPipeClient(char *host_addr, short port_no);
+  ~SocketPipeClient();
 
-	//
-	// Overrides of abstract base methods
-	//
-	UPipe* DoConnect( void);
-	void DoDisconnect( void);
+  //
+  // Overrides of abstract base methods
+  //
+  UPipe *DoConnect(void);
+  void DoDisconnect(void);
 
 private:
-	char _serverName[UPipeFactory::MAX_SERVER_ADDR_LENGTH];
-	short _serverPort;
+  char _serverName[UPipeFactory::MAX_SERVER_ADDR_LENGTH];
+  short _serverPort;
 };
 
 #endif // _SOCKETPIPE_H_

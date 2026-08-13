@@ -11,56 +11,56 @@ using namespace std;
 
 #include "MyCString.h"
 
-// If this is compiled as part of a Matlab MEX file, then this 
+// If this is compiled as part of a Matlab MEX file, then this
 // hack helps redirect memory allocation requests to the Matlab
 // memory manager. This is important in Matlab because otherwise
 // it will have unpredictable behavior and unexplained crashes.
 #include "internal/mex_hack.h"
 
-constexpr auto MYCEXCEPTION_STACK_TRACE_SIZE = 100;                   //size of stack trace
-constexpr auto MYCEXCEPTION_STACK_FILE_NAME = "exception_trace.txt";  //default file name for exception trace
-
-
+constexpr auto MYCEXCEPTION_STACK_TRACE_SIZE = 100; // size of stack trace
+constexpr auto MYCEXCEPTION_STACK_FILE_NAME =
+    "exception_trace.txt"; // default file name for exception trace
 
 /*
  * Base exception class
  */
 class MyCException;
 
-class MyCException 
-{
+class MyCException {
 private:
-	MyCString m_StackTrace[MYCEXCEPTION_STACK_TRACE_SIZE];
-	int     m_TraceIndex;
-	int     m_ErrorCode;
+  MyCString m_StackTrace[MYCEXCEPTION_STACK_TRACE_SIZE];
+  int m_TraceIndex;
+  int m_ErrorCode;
+
 public:
-	MyCException();
-	MyCException(const char* err_str, int error_code = 0 );
-	MyCException(const MyCString& str, int error_code = 0 );
-	MyCException(const MyCException &E);
-	//MyCException(MyCException &E);
-	~MyCException();
-	
-	void ReportToFile(const char* file_name="");
-	
-	void AddToStack(const char* err_str);
-	void AddToStack(const MyCString &err_str);
-	
-	int  GetErrorCode() const { return m_ErrorCode; }
-	char* GetTrace(int trace_level) const;
-	int  GetNumTraceLevels() const { return m_TraceIndex; }
-	void AppendTraceToString(MyCString& str) const;
-	
-	void Reset();
-	void Set(const char* err_str, int error_code=0);
-	void Set(const MyCString& str, int error_code=0);
-	void Set(const MyCException &E);
+  MyCException();
+  MyCException(const char *err_str, int error_code = 0);
+  MyCException(const MyCString &str, int error_code = 0);
+  MyCException(const MyCException &E);
+  // MyCException(MyCException &E);
+  ~MyCException();
+
+  void ReportToFile(const char *file_name = "");
+
+  void AddToStack(const char *err_str);
+  void AddToStack(const MyCString &err_str);
+
+  int GetErrorCode() const { return m_ErrorCode; }
+  char *GetTrace(int trace_level) const;
+  int GetNumTraceLevels() const { return m_TraceIndex; }
+  void AppendTraceToString(MyCString &str) const;
+
+  void Reset();
+  void Set(const char *err_str, int error_code = 0);
+  void Set(const MyCString &str, int error_code = 0);
+  void Set(const MyCException &E);
 };
 
 #ifdef _WINDOWS_C
 /*
  * Handles unexpected exception types
- * Should be assigned from the main by calling:  set_unexpected(HandleUnexpectedExceptions);
+ * Should be assigned from the main by calling:
+ * set_unexpected(HandleUnexpectedExceptions);
  */
 void HandleUnexpectedExceptions();
 #endif
