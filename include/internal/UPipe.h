@@ -504,13 +504,13 @@ public:
 
       // Accept new client, if any
       if (connection_request) {
-        UPipe *client_pipe = _server->AcceptClient();
+        _server->AcceptClient();
       }
     }
   }
 
   virtual void HandleData(UPipe *pClientPipe) = 0;
-  virtual void HandleDisconnect(UPipe *pClientPipe) {}
+  virtual void HandleDisconnect(UPipe*) {}
 };
 
 // Implements a simple pipe client that connects to a server automatically

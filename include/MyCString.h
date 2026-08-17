@@ -56,8 +56,8 @@ private:
 
   // tokenizing members
   char *m_Delims;     // char array of delimiters
-  int m_NumDelims;    // number of delimiters in the above array
-  int m_NextTokenIdx; // index in m_Content where we should start looking for
+  size_t m_NumDelims;    // number of delimiters in the above array
+  size_t m_NextTokenIdx; // index in m_Content where we should start looking for
                       // the next token
   char *m_LastToken;  // the last token returned to the user
 
@@ -71,14 +71,14 @@ public:
   MyCString(double num);
   MyCString(float num);
   MyCString(const std::string &cstring);
-  MyCString(void *mem_buf, int buf_size);
+  MyCString(void *mem_buf, size_t buf_size);
   ~MyCString();
 
   // operator overloading
   friend ostream &operator<<(ostream &out, const MyCString &str);
   friend istream &operator>>(istream &in, MyCString &dest);
 
-  char operator[](int itr) const;
+  char operator[](size_t itr) const;
 
   const MyCString &operator=(const MyCString &str);
   const MyCString &operator=(const char *str);
