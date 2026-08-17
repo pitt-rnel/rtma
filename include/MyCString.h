@@ -84,6 +84,7 @@ public:
   const MyCString &operator=(const char *str);
   const MyCString &operator=(int num);
   const MyCString &operator=(unsigned int num);
+  const MyCString &operator=(size_t num);
   const MyCString &operator=(float num);
   const MyCString &operator=(double num);
 
@@ -99,6 +100,7 @@ public:
   MyCString operator+(const char *str);
   MyCString operator+(int num);
   MyCString operator+(unsigned int num);
+  MyCString operator+(size_t num);
   MyCString operator+(float num);
   MyCString operator+(double num);
 
@@ -106,6 +108,7 @@ public:
   const MyCString &operator+=(const char *str);
   const MyCString &operator+=(int num);
   const MyCString &operator+=(unsigned int num);
+  const MyCString &operator+=(size_t num);
   const MyCString &operator+=(float num);
   const MyCString &operator+=(double num);
 
@@ -120,6 +123,7 @@ public:
   void AppendContent(const char *str, int len = -1);
   void AppendContent(int num);
   void AppendContent(unsigned int num);
+  void AppendContent(size_t num);
   void AppendContent(float num);
   void AppendContent(double num);
 

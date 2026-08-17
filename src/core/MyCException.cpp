@@ -22,7 +22,7 @@ MyCException::MyCException(const MyCString &str, int error_code)
 
 MyCException::MyCException(const MyCException &E)
     : m_TraceIndex(E.m_TraceIndex), m_ErrorCode(E.m_ErrorCode) {
-  int itr;
+  size_t itr;
   for (itr = 0; itr < MYCEXCEPTION_STACK_TRACE_SIZE; itr++) {
     m_StackTrace[itr].SetContent(E.m_StackTrace[itr]);
   }
@@ -45,14 +45,14 @@ void MyCException::Set(const MyCString &str, int error_code) {
 void MyCException::Set(const MyCException &E) {
   m_TraceIndex = E.m_TraceIndex;
   m_ErrorCode = E.m_ErrorCode;
-  int itr;
+  size_t itr;
   for (itr = 0; itr < MYCEXCEPTION_STACK_TRACE_SIZE; itr++) {
     m_StackTrace[itr].SetContent(E.m_StackTrace[itr]);
   }
 }
 
 void MyCException::ReportToFile(const char *file_name) {
-  int itr;
+  size_t itr;
   ofstream ReportFile;
   MyCString time;
 
@@ -121,7 +121,7 @@ char *MyCException::GetTrace(int trace_level) const {
 }
 
 void MyCException::AppendTraceToString(MyCString &str) const {
-  int itr = 0;
+  size_t itr = 0;
 
   str += MyCString("\n") + "--------------------------------------" + "\n" +
          "Stack trace " + "\n" + "--------------------------------------" +

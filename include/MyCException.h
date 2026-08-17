@@ -29,7 +29,7 @@ class MyCException;
 class MyCException {
 private:
   MyCString m_StackTrace[MYCEXCEPTION_STACK_TRACE_SIZE];
-  int m_TraceIndex;
+  size_t m_TraceIndex;
   int m_ErrorCode;
 
 public:
@@ -47,7 +47,7 @@ public:
 
   int GetErrorCode() const { return m_ErrorCode; }
   char *GetTrace(int trace_level) const;
-  int GetNumTraceLevels() const { return m_TraceIndex; }
+  size_t GetNumTraceLevels() const { return m_TraceIndex; }
   void AppendTraceToString(MyCString &str) const;
 
   void Reset();
