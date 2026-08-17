@@ -177,6 +177,12 @@ const MyCString &MyCString::operator=(unsigned int num) {
   return *this;
 }
 
+const MyCString& MyCString::operator=(size_t num) {
+  this->Reset();
+  AppendContent(num);
+  return *this;
+}
+
 const MyCString &MyCString::operator=(float num) {
   this->Reset();
   AppendContent(num);
@@ -289,6 +295,12 @@ MyCString MyCString::operator+(unsigned int num) {
   return tmp;
 }
 
+MyCString MyCString::operator+(size_t num) {
+  MyCString tmp(this->GetContent());
+  tmp.AppendContent(num);
+  return tmp;
+}
+
 MyCString MyCString::operator+(float num) {
   MyCString tmp(this->GetContent());
   tmp.AppendContent(num);
@@ -317,6 +329,11 @@ const MyCString &MyCString::operator+=(int num) {
 }
 
 const MyCString &MyCString::operator+=(unsigned int num) {
+  AppendContent(num);
+  return *this;
+}
+
+const MyCString& MyCString::operator+=(size_t num) {
   AppendContent(num);
   return *this;
 }
@@ -414,6 +431,12 @@ void MyCString::AppendContent(int num) {
 void MyCString::AppendContent(unsigned int num) {
   char num_str[CSTRING_IN_BUFFER] = {0};
   itoa(num, num_str, 10);
+  AppendContent(num_str);
+}
+
+void MyCString::AppendContent(size_t num) {
+  char num_str[CSTRING_IN_BUFFER] = {0};
+  itoa((int)num, num_str, 10);
   AppendContent(num_str);
 }
 
