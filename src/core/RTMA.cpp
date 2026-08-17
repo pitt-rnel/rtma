@@ -371,7 +371,8 @@ int RTMA_Module::ConnectToMMM(int logger_status, int read_dd_file,
 // Opens a read and a write connection to the Message Management Module
 {
   TRY {
-    return ConnectToMMM(DEFAULT_PIPE_SERVER_NAME_FOR_MODULES, logger_status,
+    char server_name[] = DEFAULT_PIPE_SERVER_NAME_FOR_MODULES;
+    return ConnectToMMM(server_name, logger_status,
                         read_dd_file, daemon_status);
   }
   CATCH_and_THROW("RTMA_Module::ConnectToMMM( int logger_status, int "
