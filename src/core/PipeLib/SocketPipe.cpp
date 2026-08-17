@@ -130,18 +130,13 @@ static int CloseSocket(SocketHandle socket_handle) {
   TRY {
 #ifdef _WINDOWS_C
     SOCKET socket = socket_handle.id;
-#else
-    int socket = socket_handle.id;
-#endif
-    int ret = 0;
-#ifdef _WINDOWS_C
-    ret = closesocket(socket);
+    int ret = closesocket(socket);
     if (ret == SOCKET_ERROR)
       return -1;
     else
       return 0;
 #else
-    ret = 0;              // to prevent compilation warning
+    int socket = socket_handle.id;
     return close(socket); // returns 0 on success, -1 on failure
 #endif
   }

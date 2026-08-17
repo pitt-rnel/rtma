@@ -13,11 +13,13 @@
 #ifdef _UNIX_C
 void itoa(int number, char *buf, int radix) {
   // did not put implementation for radix yet- for now it is only base 10
+  (void)radix; // supress gcc unused parameter warning
   sprintf(buf, "%i", number);
 }
 
 void itoa(unsigned int number, char *buf, int radix) {
   // did not put implementation for radix yet- for now it is only base 10
+  (void)radix; // supress gcc unused parameter warning
   sprintf(buf, "%i", number);
 }
 #else
@@ -109,7 +111,7 @@ MyCString::MyCString(const std::string &cstring) {
 }
 
 // this ctor copies buf_size bytes from the memory buffer
-MyCString::MyCString(void *mem_buf, int buf_size) {
+MyCString::MyCString(void *mem_buf, size_t buf_size) {
   if (buf_size <= 0) {
     m_Content = NULL;
     m_Len = 0;
@@ -141,8 +143,8 @@ istream &operator>>(istream &in, MyCString &dest) {
   return in;
 }
 
-char MyCString::operator[](int itr) const {
-  if ((itr < 0) || (itr > m_Len - 1))
+char MyCString::operator[](size_t itr) const {
+  if (itr > m_Len - 1)
     return 0;
   else
     return m_Content[itr];
@@ -390,7 +392,7 @@ void MyCString::AppendContent(const char *str, int len) {
   if (len < 0)
     str_len = strlen(str);
   else
-    str_len = len;
+    str_len = (size_t)len;
   new_str = new char[m_Len + str_len + 1];
   strncpy(new_str, m_Content,
           m_Len); // copy current string to new allocated string
@@ -437,7 +439,8 @@ void MyCString::Reset() {
 
 void MyCString::DeletePrefix(const MyCString &delims) {
   char *new_content = NULL;
-  int itr = 0, itr_d = 0, no_match = 1;
+  bool no_match = 1;
+  size_t itr = 0, itr_d = 0;
 
   if (this->IsNull() || delims.IsNull())
     return;
@@ -493,7 +496,7 @@ int MyCString::Tokenize(const char *delims) {
   m_Delims = new char[m_NumDelims];
   strncpy(m_Delims, delims, m_NumDelims);
 
-  return m_NumDelims;
+  return (int)m_NumDelims;
 }
 
 void MyCString::InitTokenizer() {
@@ -542,12 +545,12 @@ char *MyCString::GetNextToken() {
   int found_delim = 0;
       start_index = end_index;
           */
-  int found_delim = 0;
-  int start_index = m_NextTokenIdx;
-  int end_index = m_NextTokenIdx;
+  bool found_delim = 0;
+  size_t start_index = m_NextTokenIdx;
+  size_t end_index = m_NextTokenIdx;
   // find the first delimiter
   while (end_index < m_Len && !found_delim) {
-    for (int i = 0; i < m_NumDelims; i++) {
+    for (size_t i = 0; i < m_NumDelims; i++) {
       if (m_Content[end_index] == m_Delims[i]) {
         found_delim = 1;
         break;
@@ -558,7 +561,7 @@ char *MyCString::GetNextToken() {
   }
 
   // when exiting the loop, end_index will be on the delimiter
-  int token_len;
+  size_t token_len;
   if (end_index == m_Len)
     token_len = end_index - start_index;
   else
