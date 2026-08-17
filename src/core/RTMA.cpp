@@ -445,6 +445,8 @@ int RTMA_Module::ConnectToMMM(char *server_name, int logger_status,
           SendMessage(&R);
         }
       }
+#else
+    (void)read_dd_file; // suppress gcc unused-parameter warning
 #endif
 
       connect_complete = true;
@@ -867,6 +869,7 @@ handle if(hProcess == NULL) return 0;
 #endif
   } CATCH_and_THROW( "SetMyPriority(int priority_class)");
   */
+  (void)priority_class; // suppress gcc unused parameter warning
   return 1;
 }
 
