@@ -162,12 +162,12 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>../../../lib/RTMAd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>MessageManager.exe</OutputFile>
+      <OutputFile>.\MessageManager.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\PipeLib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Debug/MessageManager.pdb</ProgramDatabaseFile>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
     </Link>
     <PostBuildEvent>
       <Command>copy MessageManager.exe ..\..\..\bin</Command>

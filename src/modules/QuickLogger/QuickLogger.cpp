@@ -38,8 +38,6 @@ CQuickLogger::CQuickLogger()
 
 CQuickLogger::~CQuickLogger()
 {
-	TRY {
-	} CATCH_and_THROW( "CQuickLogger::~CQuickLogger()");
 }
 
 void CQuickLogger::MainFunction()

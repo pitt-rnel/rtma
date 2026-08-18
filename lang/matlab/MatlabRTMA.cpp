@@ -55,8 +55,6 @@ mexFunction(
 
 	double timeout;
     int status;
-	unsigned int SnoozeTime;
-    int TimerID;
     int logger_status;
 
     void *pData;
@@ -248,29 +246,6 @@ mexFunction(
             Template = input_arg[1];
             ReturnData = C2Matlab( Template, M.GetDataPointer(), M.num_data_bytes);
             output_arg[0] = ReturnData;
-            break;
-
-        case SET_TIMER:
-
-            if( num_input_args < 2) Error( "incorrect number of arguments");
-            if( TheModule.IsConnected( )) {
-                SnoozeTime = (unsigned int) mxGetScalar( input_arg[1]);
-                TimerID = TheModule.SetTimer( SnoozeTime);
-            } else {
-                TimerID = -1;
-            }
-            output_arg[0] = mxCreateDoubleScalar( (double) TimerID);
-            break;
-
-        case CANCEL_TIMER:
-            if( num_input_args < 2) Error( "incorrect number of arguments");
-            if( TheModule.IsConnected( )) {
-                TimerID = (unsigned int) mxGetScalar( input_arg[1]);
-                status = TheModule.CancelTimer( TimerID);
-            } else {
-                status = -1;
-            }
-            output_arg[0] = mxCreateDoubleScalar( (double) status);
             break;
 
         case SEND_MODULE_READY:

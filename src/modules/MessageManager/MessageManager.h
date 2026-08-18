@@ -19,17 +19,144 @@ public:
 	UPipe       *pModulePipe;
 	short       LoggerStatus;
 	short		DaemonStatus;
+	short		AllowMultiple;
+	uint16_t	port;
+	int32_t		uid;
+	int32_t		pid;
+	char*		addr;
+	char*    	name;
 	
 	CModuleRecord( ) {
+		name = NULL;
+		addr = NULL;
 		Reset();
 	}
 
+	void SetName(const char* src_name) {
+		if (name != NULL) {
+			myfree(name);
+			name = NULL;
+		}
+		name = (char*)malloc(MAX_NAME_LEN);
+		if (name != NULL) {
+			memset(name, 0, MAX_NAME_LEN);
+			if (src_name != NULL) {
+				strncpy(name, src_name, MAX_NAME_LEN - 1);
+			}
+		}
+	}
+
+	void SetUPipe(UPipe* pipe) {
+		if (addr != NULL) {
+			myfree(addr);
+			addr = NULL;
+
+		}
+
+
+		pModulePipe = pipe;
+
+		port = 0;
+
+		if (pipe == NULL) {
+			return;
+		}
+
+		addr = (char*)malloc(MAX_NAME_LEN);
+		if (addr != NULL) {
+			memset(addr, 0, MAX_NAME_LEN);
+
+			if (!pipe->GetIpAddress(addr, &port, MAX_NAME_LEN)) {
+
+				addr[0] = '\0';
+
+				port = 0;
+
+			}
+
+		}
+	}
+
+	void SetHello(MDF_HELLO *hello) {
+		if (hello == NULL) {
+
+			return;
+
+		}
+
+		memset(hello, 0, sizeof(*hello));
+
+
+
+		hello->uid = uid;
+		hello->mod_id = ModuleID;
+		hello->pid = pid;
+		hello->port = port;
+
+		if (addr != NULL) {
+			strncpy(hello->addr, addr, sizeof(hello->addr) - 1);
+
+		}
+
+		if (name != NULL) {
+			strncpy(hello->name, name, sizeof(hello->name) - 1);
+
+		}
+	}
+
+	void SetGoodbye(MDF_GOODBYE *goodbye) {
+		if (goodbye == NULL) {
+			return;
+		}
+		memset(goodbye, 0, sizeof(*goodbye));
+		goodbye->uid = uid;
+		goodbye->mod_id = ModuleID;
+		goodbye->pid = pid;
+		goodbye->port = port;
+
+		if (addr != NULL) {
+			strncpy(goodbye->addr, addr, sizeof(goodbye->addr) - 1);
+		}
+
+		if (name != NULL) {
+			strncpy(goodbye->name, name, sizeof(goodbye->name) - 1);
+		}
+	}
+
+	void myfree(char* p) {
+		free(p);
+	}
+
 	void
-	Reset( void) {
-		ModuleID     = -1;
-		pModulePipe  = NULL;
+	Reset(void) {
+
+		if (name != NULL) {
+			myfree(name);
+			name = NULL;
+		}
+
+		if (addr != NULL) {
+			myfree(addr);
+			addr = NULL;
+		}
+
+
+		ModuleID = -1;
+
+		pModulePipe = NULL;
+
 		LoggerStatus = 0;
 		DaemonStatus = 0;
+		AllowMultiple = 0;
+		port = 0;
+
+		pid = 0;
+		uid = -1;
+	}
+
+	~CModuleRecord() {
+
+		Reset();
 	}
 };
 
@@ -45,7 +172,10 @@ public:
 	int flags;
 
 	CListItem( ) {
-		CListItem( 0);
+		data = 0;
+		flags = 0;
+		next = NULL;
+		prev = NULL;
 	}
 	CListItem( int i) {
 		data = i;
@@ -124,7 +254,8 @@ public:
 	}
 };
 
-#define SUBSCRIBER_FLAG_PAUSE 0x01
+#define SUBSCRIBER_FLAG_PAUSE  			0x01
+
 
 class CSubscriberList : protected CList
 {
@@ -139,28 +270,28 @@ public:
 	}
 
 	void
-	AddSubscriber( MODULE_ID ModuleID) {
-		CListItem *subscriber = new CListItem( ModuleID);
+	AddSubscriber(UID uid) {
+		CListItem *subscriber = new CListItem(uid);
 		AppendItem( subscriber);
 	}
 
 	void
-	RemoveSubscriber( MODULE_ID ModuleID) {
+	RemoveSubscriber(UID uid) {
 		CListItem *current_item = GetFirstItem();
 		while( current_item != NULL) {
-			if( current_item->data == ModuleID) {
-				RemoveItem( current_item);
-				break;
+			CListItem *next_item = GetNextItem(current_item);
+			if( current_item->data == uid) {
+				RemoveItem(current_item);
 			}
-			current_item = GetNextItem( current_item);
+			current_item = next_item;
 		}
 	}
 
 	void
-	PauseSubscriber( MODULE_ID ModuleID) {
+	PauseSubscriber(UID uid) {
 		CListItem *current_item = GetFirstItem();
 		while( current_item != NULL) {
-			if( current_item->data == ModuleID) {
+			if( current_item->data == uid) {
 				set_flag_bits( current_item->flags, SUBSCRIBER_FLAG_PAUSE);
 				break;
 			}
@@ -169,10 +300,10 @@ public:
 	}
 
 	void
-	ResumeSubscriber( MODULE_ID ModuleID) {
+	ResumeSubscriber(UID uid) {
 		CListItem *current_item = GetFirstItem();
 		while( current_item != NULL) {
-			if( current_item->data == ModuleID) {
+			if( current_item->data == uid) {
 				clear_flag_bits( current_item->flags, SUBSCRIBER_FLAG_PAUSE);
 				break;
 			}
@@ -181,7 +312,7 @@ public:
 	}
 
 	int
-	SubscriptionPaused( void) {
+	SubscriptionPaused(void) {
 		int is_paused = 0;
 		if( m_CurrentItem != NULL) {
 			if( check_flag_bits( m_CurrentItem->flags, SUBSCRIBER_FLAG_PAUSE)) {
@@ -191,8 +322,8 @@ public:
 		return is_paused;
 	}
 
-	MODULE_ID
-	GetFirstSubscriber( void) {
+	UID
+	GetFirstSubscriber(void) {
 		m_CurrentItem = GetFirstItem();
 		if( m_CurrentItem == NULL) {
 			return -1;
@@ -201,8 +332,8 @@ public:
 		}
 	}
 
-	MODULE_ID
-	GetNextSubscriber( void) {
+	UID
+	GetNextSubscriber(void) {
 		m_CurrentItem = GetNextItem( m_CurrentItem);
 		if( m_CurrentItem == NULL) {
 			return -1;
@@ -212,8 +343,8 @@ public:
 	}
 	
 	bool
-	IsSubscribed(MODULE_ID ModuleID){
-		CListItem subscriber = CListItem( ModuleID);
+	IsSubscribed(UID uid){
+		CListItem subscriber = CListItem(uid);
 		return DoesItemExist(&subscriber);
 	}
 
@@ -231,42 +362,27 @@ public:
 	MainLoop( char *cmd_line_options);
 
 private:
-	MODULE_ID		m_NextDynamicModIdOffset;
+	MODULE_ID		m_NextDynamicModId;
 	CModuleRecord   m_ConnectedModules[MAX_MODULES];
 	CSubscriberList m_SubscribersToMessageType[MAX_MESSAGE_TYPES];
 	CSubscriberList m_EmptySubscriberList;
+	CMessage		m_OutMsg;
 	MyCString       m_Version;
-	unsigned short  m_MessageCounts[MAX_MESSAGE_TYPES];
-	int				m_ModulePIDs[MAX_MODULES];
-	time_t  m_LastMessageCount;
-	unsigned short  m_LastMessageCountmsec;
-        #ifdef __unix__
-            struct timeb timebuffer;
-        #else
-            struct _timeb   timebuffer;
-        #endif
 
 	MODULE_ID GetDynamicModuleId()
 	{
-		for(MODULE_ID id=0; id < (MAX_MODULES - DYN_MOD_ID_START); id++)
-		{
-			MODULE_ID curr_id = m_NextDynamicModIdOffset + DYN_MOD_ID_START;
+		MODULE_ID curr_id = m_NextDynamicModId;
 
-			// update offset to next available dynamic module ID
-			m_NextDynamicModIdOffset++;
-			if (m_NextDynamicModIdOffset == MAX_MODULES-DYN_MOD_ID_START)
-				m_NextDynamicModIdOffset = 0;
-
-			if (m_ConnectedModules[curr_id].ModuleID != curr_id)
-				return curr_id;
+		if (curr_id > MAX_MODULE_ID) {
+			printf("All dynamic IDs are in use.\n");
+			return 0;
 		}
-		DEBUG_TEXT("CMessageBuffer::GetDynamicModuleId(): All dynamic IDs are in use");
-		return 0;
+		else {
+			// update offset to next available dynamic module ID
+			m_NextDynamicModId++;
+			return curr_id;
+		}
 	}
-
-	void
-	SendMessageTiming();
-	// Sends timing information to subscribed modules and resets the counter
 
 	void
 	HandleData( UPipe *pClientPipe);
@@ -288,15 +404,11 @@ private:
 	//Sends the message to all subscribers and Logger modules, headers specifying the message came from MM
 
 	void
-	DispatchMessage( CMessage *M, MODULE_ID mod_id);
+	DispatchMessage( CMessage *M, CModuleRecord *dest_mod);
 	//Sends the message only to the specified mod_id and Logger modules, headers specifying the message came from MM
 
 	void
-	DispatchSignal( MSG_TYPE sig);
-	//Sends the signal to all subscribers and Logger modules, headers specifying the signal came from MM
-
-	void
-	DispatchSignal( MSG_TYPE sig, MODULE_ID mod_id);
+	DispatchSignal( MSG_TYPE sig, CModuleRecord *dest_mod);
 	//Sends the signal only to the specified mod_id and Logger modules, headers specifying the message came from MM
 
 	void
@@ -310,75 +422,100 @@ private:
 	MODULE_ID
 	ConnectModule( MODULE_ID module_id, UPipe *pSourcePipe, short logger_status, short daemon_status);
 
-	void
-	DisconnectModule( MODULE_ID module_id);
+	MODULE_ID
+	ConnectModuleV2( MODULE_ID module_id, UPipe *pSourcePipe, MDF_CONNECT_V2 *connect);
+
+	CModuleRecord* GetOpenRecord();
+
+	CModuleRecord* GetRecord(MODULE_ID module_id);
 
 	void
-	CleanUpModuleRecord( MODULE_ID module_id);
+	DisconnectModule(MODULE_ID module_id);
 
 	void
-	ShutdownModule(  MODULE_ID mod_id);
+	CleanUpModuleRecord(CModuleRecord *mod);
 
 	void
-	ShutdownAllModules( int shutdown_RTMA=1, int shutdown_daemons=1);
+	ShutdownModule(MODULE_ID module_id);
 
 	void
-	ShutdownStatusModule( void);
-
-	void 
-	ShutdownLoggerModule( void);
+	ShutdownAllModules(int shutdown_RTMA=1, int shutdown_daemons=1);
 
 	void
-	AddSubscription( MODULE_ID module_id, MSG_TYPE message_type);
+	AddSubscription(CModuleRecord *mod, MSG_TYPE message_type);
 
 	void
-	RemoveSubscription( MODULE_ID module_id, MSG_TYPE message_type);
+	RemoveSubscription(CModuleRecord *mod, MSG_TYPE message_type);
 	
 	void
-	PauseSubscription( MODULE_ID mod_id, MSG_TYPE msg_type_to_pause);
+	PauseSubscription(CModuleRecord *mod, MSG_TYPE msg_type_to_pause);
 
 	void
-	ResumeSubscription( MODULE_ID mod_id, MSG_TYPE msg_type_to_resume);
+	ResumeSubscription(CModuleRecord *mod, MSG_TYPE msg_type_to_resume);
 
 	CSubscriberList *
 	GetSubscriberList( MSG_TYPE message_type);
 
 	bool
-	IsModuleSubscribed( MODULE_ID mod_id, MSG_TYPE message_type);
+	IsModuleSubscribed(UID uid, MSG_TYPE message_type);
 
+	void 
+	SendAcknowledge(CModuleRecord* mod);
+	
 	void
-	SendAcknowledge( MODULE_ID mod_id);
+	SendIntroductions(MODULE_ID mod_id);
+
+	void 
+	SendHello(CModuleRecord *mod);
+
+	void 
+	SendGoodbye(CModuleRecord* mod);
+
+	void 
+	SendPing(MODULE_ID mod_id);
+
+	void 
+	HandleSetName(CMessage *m);
+
+	void 
+	HandleForceDisconnect(CMessage *m);
+
+	void 
+	HandleModuleDisconnect(CMessage *m);
+
+	void 
+	HandleModuleReady(CMessage *m);
+
+	void 
+	HandleSubscribe(CMessage *m);
+
+	void 
+	HandleUnsubscribe(CMessage *m);
+
+	void 
+	HandlePauseSubscription(CMessage *m);
+
+	void 
+	HandleResumeSubscription(CMessage *m);
+
+	void 
+	HandleConnect(CMessage *m, UPipe* pSourcePipe);
+
+	void 
+	HandleConnectV2(CMessage *m, UPipe* PSourcePipe);
+
+	int
+	SendMessage( CMessage *m, CModuleRecord *dest_mod);
 	
 	int
-	SendMessage( CMessage *m, MODULE_ID mod_id);
-	
-	int
-	SendSignal( MSG_TYPE sig, MODULE_ID dest_mod_id);
+	SendSignal( MSG_TYPE sig, CModuleRecord *dest_mod);
 	//dest_mod_id= module id that should be put in dest_mod_id in message header
 
 	int
-	ForwardMessage( CMessage *m, MODULE_ID mod_id);
+	ForwardMessage(CMessage *m, CModuleRecord* mod);
 
 	int
-	ModuleIsConnected( MODULE_ID mod_id);
-
-	UPipe*
-	GetModPipe( MODULE_ID mod_id);
-
-	int
-	IsDaemon( MODULE_ID mod_id);
-
-	void
-	ReportLoad( void);
-	//sends an MT_MM_LOAD_REPORT message with the load data of all connected modules
-
-	void
-	AskUsageReport( void);
-	//sends MT_MOD_REPORT_USAGE to all connected modules
-
-	void
-	ReportMMStatus( void);
-	//sends MT_MM_STATUS_REPORT message
+	ModuleIsConnected(MODULE_ID mod_id);
 
 	void
 	LogFailedMessage( CMessage *m, MODULE_ID mod_id);

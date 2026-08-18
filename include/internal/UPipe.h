@@ -38,6 +38,7 @@
 
 /*Non OS specific h files*/
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -116,6 +117,8 @@ public:
 class UPipe
 {
 public:
+	virtual ~UPipe() { }
+
 	// Obtains the capacity of the pipe, i.e. how many bytes can be written
 	// to the pipe without being read out the other end.
 	virtual int GetCapacity( void) = 0;
@@ -150,7 +153,7 @@ public:
 	// never blocks (if no space in pipe, then returns with 0). Returns number of
 	// bytes written.
 	virtual int Write( void *data_buffer, int n_bytes, double timeout) = 0;
-
+	virtual int GetIpAddress(char* addr, uint16_t* port, int bufsz) = 0;
 };
 
 
@@ -289,8 +292,6 @@ public:
 
 	// Destructor
 	virtual ~UPipeServer() {
-		TRY {
-		} CATCH_and_THROW( "UPipeServer::~UPipeServer");
 	}
 
 	static const int MAX_CLIENTS = 1024;
@@ -374,9 +375,7 @@ public:
 
 	// Destructor makes sure we disconnect cleanly
 	virtual ~UPipeClient() {
-		TRY {
-			if( _pServerPipe != NULL) delete _pServerPipe;
-		} CATCH_and_THROW( "UPipeClient::~UPipeClient");
+		if( _pServerPipe != NULL) delete _pServerPipe;
 	}
 protected:
 	UPipe *_pServerPipe;

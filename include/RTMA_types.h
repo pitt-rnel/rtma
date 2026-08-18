@@ -1,25 +1,27 @@
 #ifndef _RTMA_TYPES_H_ // this is commented out becuase make_config fails with it
 #define _RTMA_TYPES_H_
 
+#include <stdint.h>
 // Types used in the RTMA system
 
 typedef short MODULE_ID;
 typedef short HOST_ID;
 typedef int MSG_TYPE;
 typedef int MSG_COUNT;
+typedef int32_t UID;
 
 // Maximums for the entire RTMA system
-#define MAX_MODULES       200  //maximal number of modules in the system
-#define DYN_MOD_ID_START  100  //module ID where pool of dynamic IDs begin
+#define MAX_MODULES       256  //maximal number of modules in the system
+#define DYN_MOD_ID_START  10000 //module ID where pool of dynamic IDs begin (10000 - 32000)
 #define MAX_HOSTS         5    //maximal number of hosts in the system
 #define MAX_MESSAGE_TYPES 10000 //maximal number of message types in the system
 #define MIN_STREAM_TYPE    9000 //minimal number type for a data stream
-#define MAX_TIMERS        100  //maximal number of total timers TimerModule can handle
-#define MAX_INTERNAL_TIMERS 20 //maximal number of internal timers that can be set by an RTMA module
+#define MAX_NAME_LEN		32 // Module name length limit
 
 // Maximums for core modules
 #define MAX_RTMA_MSG_TYPE  99 // Message types below 100 are reserved for RTMA core
 #define MAX_RTMA_MODULE_ID  9 // Module ID-s below 10 are reserved for RTMA core
+#define MAX_MODULE_ID  32000
 
 // Header fields for all messages passed through RTMA
 // Following macro was commented out for compatibility with ctypesgen2 v2.2.2 python package (used for Python3 compatiblity) All references to this macro in this file and in RTMA.h were replaced with actual values
@@ -88,10 +90,6 @@ typedef struct {
 
 // Module ID-s of core modules
 #define MID_MESSAGE_MANAGER     0
-#define MID_COMMAND_MODULE      1
-#define MID_APPLICATION_MODULE  2
-#define MID_NETWORK_RELAY       3
-#define MID_STATUS_MODULE       4
 #define MID_QUICKLOGGER         5
 
 #define HID_LOCAL_HOST  0
@@ -107,8 +105,14 @@ typedef char STRING_DATA[];   //message data type for variable length string mes
 #define MT_EXIT            0
 #define MT_KILL			   1
 #define MT_ACKNOWLEDGE     2
+
 #define MT_FAIL_SUBSCRIBE  6
-typedef struct { MODULE_ID mod_id; short reserved; MSG_TYPE msg_type;} MDF_FAIL_SUBSCRIBE;
+typedef struct { 
+	MODULE_ID mod_id; 
+	short reserved; 
+	MSG_TYPE msg_type;
+} MDF_FAIL_SUBSCRIBE;
+
 #define MT_FAILED_MESSAGE  8 // Sent by MM when it cannot forward a message to a module
 typedef struct { 
 	MODULE_ID dest_mod_id;
@@ -116,14 +120,14 @@ typedef struct {
 	double time_of_failure;
 	RTMA_MSG_HEADER msg_header;
 } MDF_FAILED_MESSAGE;
-#define MT_MM_ERROR			83
-typedef STRING_DATA MDF_MM_ERROR;
-#define MT_MM_INFO		    84
-typedef STRING_DATA MDF_MM_INFO;
 
 // Messages sent by modules to MessageManager
 #define MT_CONNECT         13
-typedef struct { short logger_status; short daemon_status;} MDF_CONNECT;
+typedef struct { 
+	short logger_status; 
+	short daemon_status;
+} MDF_CONNECT;
+
 #define MT_DISCONNECT     14
 
 // Subscription messages
@@ -136,115 +140,27 @@ typedef MSG_TYPE MDF_UNSUBSCRIBE;
 typedef MSG_TYPE MDF_PAUSE_SUBSCRIPTION;
 typedef MSG_TYPE MDF_RESUME_SUBSCRIPTION;
 
-#define MT_SHUTDOWN_RTMA  17
-#define MT_SHUTDOWN_APP   18
 #define MT_FORCE_DISCONNECT 82
-typedef struct { int mod_id; } MDF_FORCE_DISCONNECT;
+typedef struct { 
+	int mod_id; 
+} MDF_FORCE_DISCONNECT;
 
-
-//Messages sent by all core modules
-#define MT_CORE_MODULE_REINIT_ACK 25
 
 //Messages sent by all modules
 #define MT_MODULE_READY   26
-typedef struct { int pid; } MDF_MODULE_READY;
-#define MT_DYNAMIC_DD_READ_ERR 90
-typedef STRING_DATA MDF_DYNAMIC_DD_READ_ERR;
+typedef struct { 
+	int pid; 
+} MDF_MODULE_READY;
+
 #define MT_DEBUG_TEXT     91
 typedef STRING_DATA MDF_DEBUG_TEXT;
-
-// Messages sent to ApplicationModule
-#define MT_AM_EXIT        30
-#define MT_START_APP      31
-typedef STRING_DATA MDF_START_APP;
-#define MT_STOP_APP       32
-typedef STRING_DATA MDF_STOP_APP;
-#define MT_RESTART_APP    33
-typedef STRING_DATA MDF_RESTART_APP;
-#define MT_KILL_APP       34
-typedef STRING_DATA MDF_KILL_APP;
-#define MT_AM_RE_READ_CONFIG_FILE 89
-#define MT_AM_GET_APP_NAME        92
-	//sent by MASTER AM to SLAVE AMs
-#define MT_SLAVE_START_APP 64		
-typedef STRING_DATA MDF_SLAVE_START_APP;
-#define MT_SLAVE_START_APP_ACK 65
-typedef struct {int num_remote_hosts; } MDF_SLAVE_START_APP_ACK;
-#define MT_SLAVE_STOP_APP      66
-typedef STRING_DATA MDF_SLAVE_STOP_APP;
-#define MT_SLAVE_KILL_APP      67
-typedef STRING_DATA MDF_SLAVE_KILL_APP;
-#define MT_SLAVE_RESTART_APP   68
-typedef STRING_DATA MDF_SLAVE_RESTART_APP;
-
-//Messages sent by ApplicationModule
-#define MT_AM_ERROR       35 //sends out if a module started not by application manager
-typedef STRING_DATA MDF_AM_ERROR;
-#define MT_AM_ACKNOWLEDGE 36 //sent as an immediate reply to MT_START_APP, MT_STOP_APP, MT_KILL_APP
-#define MT_FAIL_START_APP 37 //sent if got MT_START_APP and failed to start ANY module
-typedef STRING_DATA MDF_FAIL_START_APP;
-#define MT_FAIL_STOP_APP  38 //sent if got MT_STOP_APP  and failed to stop  ANY module
-typedef STRING_DATA MDF_FAIL_STOP_APP;
-#define MT_FAIL_KILL_APP  39 //sent if got MT_KILL_APP  and failed to kill  ANY module
-typedef STRING_DATA MDF_FAIL_KILL_APP;
-#define MT_APP_START_COMPLETE    40 //a final reply to MT_START_APP    when done starting application
-#define MT_APP_SHUTODWN_COMPLETE 41 //a final reply to MT_STOP_APP     when done with application shutdown
-#define MT_APP_RESTART_COMPLETE  42 //a final reply to MT_RESTART_APP  when done with application restart
-#define MT_APP_KILL_COMPLETE     43 //a final reply to MT_KILL_APP  when done with killing application
-#define MT_ALL_MODULES_READY     44 //sent if got MT_MODULE_READY from all modules
-#define MT_CORE_MODULE_REINIT    45 //sent after an application is shutdown/killed - to indicate core modules that they have to reinitialize
-#define MT_AM_CONFIG_FILE_DATA   46 //data about what was read from the AM config file
-typedef STRING_DATA MDF_AM_CONFIG_FILE_DATA;
-#define MT_AM_APP_NAME           93
-typedef char MDF_AM_APP_NAME[];
-
-//sent by SLAVE AMs
-#define MT_SLAVE_ALL_MODULES_READY	69
-#define MT_SLAVE_FAIL_START_APP		70
-typedef STRING_DATA MDF_SLAVE_FAIL_START_APP;
-#define MT_SLAVE_FAIL_STOP_APP		71
-#define MT_SLAVE_FAIL_KILL_APP      72
-#define MT_SLAVE_APP_SHUTODWN_COMPLETE	74 
-#define MT_SLAVE_APP_RESTART_COMPLETE	75 
-#define MT_SLAVE_APP_KILL_COMPLETE		76
-#define MT_SLAVE_AM_ERROR               77
-typedef STRING_DATA MDF_SLAVE_AM_ERROR;
-
-
-// Error in Module
-#define MT_APP_ERROR      47
-typedef STRING_DATA MDF_APP_ERROR;
-
-//Messages sent to StatusModule
-#define MT_SM_EXIT        48
-
-//Messages sent by TimerModule
-#define MT_CLOCK_SYNC     49
-#define MT_TIMER_EXPIRED  50
-typedef struct { int timer_id; } MDF_TIMER_EXPIRED;
-#define MT_TIMED_OUT      73
-typedef MDF_TIMER_EXPIRED MDF_TIMED_OUT;
-#define MT_SET_TIMER_FAILED 51
-typedef struct { MODULE_ID mod_id; int timer_id; int snooze_time; } MDF_SET_TIMER_FAILED;
-
-//typedef struct { int a; int b; double x; } MDF_TEST_DATA;
-
-//Messages sent to TimerModule
-#define MT_TM_EXIT        52
-#define MT_SET_TIMER      53
-typedef struct { int timer_id; int snooze_time; } MDF_SET_TIMER;
-
-#define MT_CANCEL_TIMER   54
-typedef struct { int timer_id; } MDF_CANCEL_TIMER;
 
 //Messages sent to LoggerModule
 #define MT_LM_EXIT        55
 
 // Messages sent by core modules when they have finished initializing and are ready to serve
 #define MT_MM_READY             94
-//#define MT_SM_READY				95
 #define MT_LM_READY             96
-//#define MT_AM_READY				97
 
 // Messages for QuickLogger Module
 // MT_SAVE_MESSAGE_LOG - Tells QuickLogger to dump its current message buffer
@@ -264,11 +180,61 @@ typedef struct {
 #define MT_RESET_MESSAGE_LOG       60
 #define MT_DUMP_MESSAGE_LOG        61
 
-#define MT_TIMING_MESSAGE		80
+#define MT_CONNECT_V2	4
 typedef struct {
-	unsigned short timing[MAX_MESSAGE_TYPES];
-	int ModulePID[MAX_MODULES]; //0 if not connected
-	double send_time;
-} MDF_TIMING_MESSAGE;
+	int16_t logger_status;
+	int16_t daemon_status;
+	int16_t allow_multiple;
+	MODULE_ID mod_id;
+	int32_t pid;
+	char name[MAX_NAME_LEN];
+} MDF_CONNECT_V2;
+
+#define MT_SUBSCRIPTION_OPTION	7
+typedef struct {
+	MSG_TYPE msg_type;
+	int32_t option;
+	int32_t value;
+} MDF_SUBSCRIPTION_OPTION;
+
+#define MT_PING 29
+typedef struct {
+	int32_t uid;
+	MODULE_ID dest_id;
+} MDF_PING;
+
+#define MT_PONG 30
+typedef struct {
+	int32_t uid;
+	MODULE_ID src_id;
+} MDF_PONG;
+
+#define MT_INTRODUCE 31
+
+#define MT_HELLO	32
+typedef struct {
+	int32_t uid;
+	int32_t pid;
+	MODULE_ID mod_id;
+	uint16_t port;
+	char addr[MAX_NAME_LEN];
+	char name[MAX_NAME_LEN];
+} MDF_HELLO;
+
+#define MT_GOODBYE		33
+typedef struct {
+	int32_t uid;
+	int32_t pid;
+	MODULE_ID mod_id;
+	uint16_t port;
+	char addr[MAX_NAME_LEN];
+	char name[MAX_NAME_LEN];
+} MDF_GOODBYE;
+
+#define MT_CLIENT_SET_NAME		34
+typedef struct {
+	char name[MAX_NAME_LEN];
+} MDF_CLIENT_SET_NAME;
+
 
 #endif //_RTMA_TYPES_H_
