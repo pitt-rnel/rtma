@@ -1,14 +1,14 @@
 /*
  * Returns how many bytes the given Matlab array contains
  */
-int CountDataBytes( const mxArray *Data)
+size_t CountDataBytes( const mxArray *Data)
 {
-    int NumElements, ElementSize, NumDataBytes;
+    size_t NumElements, ElementSize, NumDataBytes;
     const mxArray *Field;
     const mxArray *Element;
     int NumFields;
     int i, el;
-    int TotalDataBytes = 0;
+    size_t TotalDataBytes = 0;
 
     if( mxIsNumeric( Data)) {
         
@@ -54,16 +54,16 @@ int CountDataBytes( const mxArray *Data)
  */
 void* FillOutputArray( const mxArray *Output, void *pData)
 {
-    int NumDataBytes;
+    size_t NumDataBytes;
     const mxArray *Field;
     void *pOutputData;
     int NumFields;
     int i, el;
     unsigned char *C_String;
     unsigned short *MatlabString;
-    int NumChars;
+    size_t NumChars;
     const mxArray *Element;
-    int NumElements;
+    size_t NumElements;
 
     if( mxIsNumeric( Output)) {
 
@@ -115,16 +115,16 @@ void* FillOutputArray( const mxArray *Output, void *pData)
  */
 void* ExtractData( const mxArray *Data, void *pExtractedData)
 {
-    int NumDataBytes;
+    size_t NumDataBytes;
     const mxArray *Field;
     void *pData;
     int NumFields;
     int i;
     unsigned char *C_String;
     unsigned short *MatlabString;
-    int NumChars;
+    size_t NumChars;
     const mxArray *Element;
-    int NumElements;
+    size_t NumElements;
 
     if( mxIsNumeric( Data)) {
 
@@ -150,7 +150,7 @@ void* ExtractData( const mxArray *Data, void *pExtractedData)
         NumFields = mxGetNumberOfFields(Data);
         for (mwSize idx = 0; idx < NumElements; idx++) {
             for (mwSize fnum = 0; fnum < NumFields; fnum++) {
-                Field = mxGetFieldByNumber(Data, idx, fnum);
+                Field = mxGetFieldByNumber(Data, idx, (int)fnum);
                 pExtractedData = ExtractData(Field, pExtractedData);
             }
         }
@@ -174,9 +174,10 @@ void* ExtractData( const mxArray *Data, void *pExtractedData)
 /*
  * Get data from a matlab array to a C array
  */
-void* SerializeData( const mxArray *Data, int *pNumDataBytes)
+void* SerializeData( const mxArray *Data, size_t *pNumDataBytes)
 {
-    int NumDataBytes, CheckSum;
+    size_t NumDataBytes;
+    size_t CheckSum;
     void *pExtractedData, *pEndData;
 
     NumDataBytes = CountDataBytes( Data);
@@ -192,16 +193,16 @@ void* SerializeData( const mxArray *Data, int *pNumDataBytes)
     return pExtractedData;
 }
 
-mxArray *C2Matlab( const mxArray *Template, void *pData, int NumDataBytes)
+mxArray *C2Matlab( const mxArray *Template, void *pData, size_t NumDataBytes)
 {
-    int NumTemplateBytes;
+    size_t NumTemplateBytes;
     mxArray *ReturnData;
     
     NumTemplateBytes = CountDataBytes( Template);
     if( NumTemplateBytes != NumDataBytes)
 	{
 		char error_txt[1000]={0};
-		sprintf(error_txt, "C2Matlab: number of template bytes [%i] does not match number of C data bytes [%i]",NumTemplateBytes, NumDataBytes );
+		sprintf(error_txt, "C2Matlab: number of template bytes [%zu] does not match number of C data bytes [%zu]",NumTemplateBytes, NumDataBytes );
 		mexErrMsgTxt( error_txt);
 	}
     ReturnData = mxDuplicateArray( Template);
