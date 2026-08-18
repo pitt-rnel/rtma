@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
 CMessageManager::CMessageManager()
 {
-	m_Version = "2.11bci";
+	m_Version = "3.0bci";
 	m_NextDynamicModId = DYN_MOD_ID_START;
 
 	// Initialize the module record array
