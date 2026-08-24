@@ -177,7 +177,8 @@ public:
          item != m_Subscribers.end();) {
       if (item->uid == uid) {
         if (item == m_CurrentItem) {
-          m_CurrentItem = m_Subscribers.erase(item);
+          item = m_Subscribers.erase(item);
+          m_CurrentItem = item;
           continue;
         }
         item = m_Subscribers.erase(item);
