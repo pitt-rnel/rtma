@@ -163,24 +163,17 @@ private:
   };
 
   std::list<Subscriber> m_Subscribers;
-  std::list<Subscriber>::iterator m_CurrentItem;
 
 public:
-  CSubscriberList() { m_CurrentItem = m_Subscribers.end(); }
+  CSubscriberList() {}
 
   void AddSubscriber(UID uid) {
     m_Subscribers.push_back({uid, 0});
   }
 
   void RemoveSubscriber(UID uid) {
-    for (std::list<Subscriber>::iterator item = m_Subscribers.begin();
-         item != m_Subscribers.end();) {
+    for (auto item = m_Subscribers.begin(); item != m_Subscribers.end();) {
       if (item->uid == uid) {
-        if (item == m_CurrentItem) {
-          item = m_Subscribers.erase(item);
-          m_CurrentItem = item;
-          continue;
-        }
         item = m_Subscribers.erase(item);
       } else {
         ++item;
@@ -208,29 +201,22 @@ public:
     }
   }
 
-  int SubscriptionPaused(void) {
-    return m_CurrentItem != m_Subscribers.end() &&
-           check_flag_bits(m_CurrentItem->flags, SUBSCRIBER_FLAG_PAUSE);
+  // Iterator access for range-based iteration
+  std::list<Subscriber>::const_iterator begin() const {
+    return m_Subscribers.begin();
   }
 
-  UID GetFirstSubscriber(void) {
-    m_CurrentItem = m_Subscribers.begin();
-    if (m_CurrentItem == m_Subscribers.end()) {
-      return -1;
-    } else {
-      return m_CurrentItem->uid;
-    }
+  std::list<Subscriber>::const_iterator end() const {
+    return m_Subscribers.end();
   }
 
-  UID GetNextSubscriber(void) {
-    if (m_CurrentItem != m_Subscribers.end()) {
-      ++m_CurrentItem;
-    }
-    if (m_CurrentItem == m_Subscribers.end()) {
-      return -1;
-    } else {
-      return m_CurrentItem->uid;
-    }
+  // Helper methods to access iterator data
+  UID GetUID(std::list<Subscriber>::const_iterator it) const {
+    return it->uid;
+  }
+
+  bool IsPaused(std::list<Subscriber>::const_iterator it) const {
+    return check_flag_bits(it->flags, SUBSCRIBER_FLAG_PAUSE);
   }
 
   bool IsSubscribed(UID uid) {
