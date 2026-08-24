@@ -245,11 +245,10 @@ void CMessageManager::DistributeMessage(CMessage *M) {
   CSubscriberList *SL;
   SL = GetSubscriberList(M->msg_type);
   if (SL != NULL) {
-    UID uid = SL->GetFirstSubscriber();
-    while (uid >= 0) {
+    for (auto it = SL->begin(); it != SL->end(); ++it) {
+      UID uid = SL->GetUID(it);
       if (uid >= MAX_MODULES) {
         DEBUG_TEXT("Skipping invalid subscriber UID " << uid);
-        uid = SL->GetNextSubscriber();
         continue;
       }
 
@@ -277,7 +276,7 @@ void CMessageManager::DistributeMessage(CMessage *M) {
       if (mod->LoggerStatus)
         send_it = 1;
 
-      if (SL->SubscriptionPaused())
+      if (SL->IsPaused(it))
         send_it = 0;
 
       if (send_it) {
@@ -295,8 +294,6 @@ void CMessageManager::DistributeMessage(CMessage *M) {
                      "closed/dead");
         }
       }
-
-      uid = SL->GetNextSubscriber();
     }
   }
   DEBUG_TEXT("Done distributing!");
@@ -312,17 +309,15 @@ void CMessageManager::DispatchMessage(CMessage *M) {
   SL = GetSubscriberList(M->msg_type);
   if (SL != NULL) {
     // Send message to all subscribers
-    UID uid = SL->GetFirstSubscriber();
-    while (uid >= 0) {
+    for (auto it = SL->begin(); it != SL->end(); ++it) {
+      UID uid = SL->GetUID(it);
       if (uid >= MAX_MODULES) {
         DEBUG_TEXT("Skipping invalid subscriber UID " << uid);
-        uid = SL->GetNextSubscriber();
         continue;
       }
 
       CModuleRecord *mod = &m_ConnectedModules[uid];
       SendMessage(M, mod);
-      uid = SL->GetNextSubscriber();
     }
   }
 }
@@ -343,12 +338,10 @@ void CMessageManager::DispatchMessage(CMessage *M, CModuleRecord *dest_mod) {
   // CC all logger modules
   SL = GetSubscriberList(M->msg_type);
   if (SL != NULL) {
-    UID uid = SL->GetFirstSubscriber();
-
-    while (uid >= 0) {
+    for (auto it = SL->begin(); it != SL->end(); ++it) {
+      UID uid = SL->GetUID(it);
       if (uid >= MAX_MODULES) {
         DEBUG_TEXT("Skipping invalid subscriber UID " << uid);
-        uid = SL->GetNextSubscriber();
         continue;
       }
 
@@ -357,8 +350,6 @@ void CMessageManager::DispatchMessage(CMessage *M, CModuleRecord *dest_mod) {
         if (mod->ModuleID !=
             dest_mod->ModuleID) // don't send to destination module again
           ForwardMessage(M, mod);
-
-      uid = SL->GetNextSubscriber();
     }
   }
 }
