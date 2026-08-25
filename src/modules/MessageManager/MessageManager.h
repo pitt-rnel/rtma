@@ -43,7 +43,7 @@ public:
 
   void SetName(const char *src_name) {
     if (name != NULL) {
-      myfree(name);
+      free(name);
       name = NULL;
     }
     name = (char *)malloc(MAX_NAME_LEN);
@@ -57,7 +57,7 @@ public:
 
   void SetUPipe(UPipe *pipe) {
     if (addr != NULL) {
-      myfree(addr);
+      free(addr);
       addr = NULL;
     }
 
@@ -123,17 +123,15 @@ public:
     }
   }
 
-  void myfree(char *p) { free(p); }
-
   void Reset(void) {
 
     if (name != NULL) {
-      myfree(name);
+      free(name);
       name = NULL;
     }
 
     if (addr != NULL) {
-      myfree(addr);
+      free(addr);
       addr = NULL;
     }
 
