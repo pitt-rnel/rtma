@@ -9,6 +9,7 @@
 #include <UPipe.h>
 #include <cstdint>
 #include <cstdio>
+#include <list>
 #include <malloc.h>
 #include <string.h>
 
@@ -42,7 +43,7 @@ public:
 
   void SetName(const char *src_name) {
     if (name != NULL) {
-      myfree(name);
+      free(name);
       name = NULL;
     }
     name = (char *)malloc(MAX_NAME_LEN);
@@ -56,7 +57,7 @@ public:
 
   void SetUPipe(UPipe *pipe) {
     if (addr != NULL) {
-      myfree(addr);
+      free(addr);
       addr = NULL;
     }
 
@@ -122,17 +123,15 @@ public:
     }
   }
 
-  void myfree(char *p) { free(p); }
-
   void Reset(void) {
 
     if (name != NULL) {
-      myfree(name);
+      free(name);
       name = NULL;
     }
 
     if (addr != NULL) {
-      myfree(addr);
+      free(addr);
       addr = NULL;
     }
 
@@ -152,173 +151,80 @@ public:
   ~CModuleRecord() { Reset(); }
 };
 
-class CListItem {
-  friend class CList;
-
-private:
-  CListItem *next;
-  CListItem *prev;
-
-public:
-  int data;
-  int flags;
-
-  CListItem() {
-    data = 0;
-    flags = 0;
-    next = NULL;
-    prev = NULL;
-  }
-  CListItem(int i) {
-    data = i;
-    flags = 0;
-    next = NULL;
-    prev = NULL;
-  }
-};
-
-class CList {
-private:
-  CListItem head;
-  CListItem tail;
-
-public:
-  CList() {
-    head.next = &tail;
-    head.prev = NULL;
-    tail.next = NULL;
-    tail.prev = &head;
-  }
-
-  ~CList() {
-    CListItem *item = GetFirstItem();
-    while (item != NULL) {
-      CListItem *next_item = GetNextItem(item);
-      delete item;
-      item = next_item;
-    }
-  }
-
-  void InsertItemBefore(CListItem *new_item, CListItem *item) {
-    new_item->prev = item->prev;
-    new_item->next = item;
-    new_item->prev->next = new_item;
-    item->prev = new_item;
-  }
-
-  void AppendItem(CListItem *item) { InsertItemBefore(item, &tail); }
-
-  void RemoveItem(CListItem *item) {
-    item->prev->next = item->next;
-    item->next->prev = item->prev;
-    delete item;
-  }
-
-  CListItem *GetFirstItem(void) {
-    if (head.next == &tail)
-      return NULL;
-    else
-      return head.next;
-  }
-
-  CListItem *GetNextItem(CListItem *current_item) {
-    if (current_item == NULL)
-      return NULL;
-    if (current_item->next == &tail)
-      return NULL;
-    else
-      return current_item->next;
-  }
-
-  bool DoesItemExist(CListItem *search_item) {
-    CListItem *item = GetFirstItem();
-    while (item != NULL) {
-      if (item->data == search_item->data)
-        return true;
-      item = GetNextItem(item);
-    }
-    return false;
-  }
-};
-
 constexpr auto SUBSCRIBER_FLAG_PAUSE = 0x01;
 
-class CSubscriberList : protected CList {
+class CSubscriberList {
 private:
-  CListItem *m_CurrentItem;
+  struct Subscriber {
+    UID uid;
+    int flags;
+  };
+
+  std::list<Subscriber> m_Subscribers;
 
 public:
-  CSubscriberList() { m_CurrentItem = NULL; }
+  CSubscriberList() {}
 
   void AddSubscriber(UID uid) {
-    CListItem *subscriber = new CListItem(uid);
-    AppendItem(subscriber);
+    m_Subscribers.push_back({uid, 0});
   }
 
   void RemoveSubscriber(UID uid) {
-    CListItem *current_item = GetFirstItem();
-    while (current_item != NULL) {
-      CListItem *next_item = GetNextItem(current_item);
-      if (current_item->data == uid) {
-        RemoveItem(current_item);
+    for (auto item = m_Subscribers.begin(); item != m_Subscribers.end();) {
+      if (item->uid == uid) {
+        item = m_Subscribers.erase(item);
+      } else {
+        ++item;
       }
-      current_item = next_item;
     }
   }
 
   void PauseSubscriber(UID uid) {
-    CListItem *current_item = GetFirstItem();
-    while (current_item != NULL) {
-      if (current_item->data == uid) {
-        set_flag_bits(current_item->flags, SUBSCRIBER_FLAG_PAUSE);
+    for (std::list<Subscriber>::iterator item = m_Subscribers.begin();
+         item != m_Subscribers.end(); ++item) {
+      if (item->uid == uid) {
+        set_flag_bits(item->flags, SUBSCRIBER_FLAG_PAUSE);
         break;
       }
-      current_item = GetNextItem(current_item);
     }
   }
 
   void ResumeSubscriber(UID uid) {
-    CListItem *current_item = GetFirstItem();
-    while (current_item != NULL) {
-      if (current_item->data == uid) {
-        clear_flag_bits(current_item->flags, SUBSCRIBER_FLAG_PAUSE);
+    for (std::list<Subscriber>::iterator item = m_Subscribers.begin();
+         item != m_Subscribers.end(); ++item) {
+      if (item->uid == uid) {
+        clear_flag_bits(item->flags, SUBSCRIBER_FLAG_PAUSE);
         break;
       }
-      current_item = GetNextItem(current_item);
     }
   }
 
-  int SubscriptionPaused(void) {
-    int is_paused = 0;
-    if (m_CurrentItem != NULL) {
-      if (check_flag_bits(m_CurrentItem->flags, SUBSCRIBER_FLAG_PAUSE)) {
-        is_paused = 1;
-      }
-    }
-    return is_paused;
+  // Iterator access for range-based iteration
+  std::list<Subscriber>::const_iterator begin() const {
+    return m_Subscribers.begin();
   }
 
-  UID GetFirstSubscriber(void) {
-    m_CurrentItem = GetFirstItem();
-    if (m_CurrentItem == NULL) {
-      return -1;
-    } else {
-      return m_CurrentItem->data;
-    }
+  std::list<Subscriber>::const_iterator end() const {
+    return m_Subscribers.end();
   }
 
-  UID GetNextSubscriber(void) {
-    m_CurrentItem = GetNextItem(m_CurrentItem);
-    if (m_CurrentItem == NULL) {
-      return -1;
-    } else {
-      return m_CurrentItem->data;
-    }
+  // Helper methods to access iterator data
+  UID GetUID(std::list<Subscriber>::const_iterator it) const {
+    return it->uid;
+  }
+
+  bool IsPaused(std::list<Subscriber>::const_iterator it) const {
+    return check_flag_bits(it->flags, SUBSCRIBER_FLAG_PAUSE);
   }
 
   bool IsSubscribed(UID uid) {
-    CListItem subscriber = CListItem(uid);
-    return DoesItemExist(&subscriber);
+    for (std::list<Subscriber>::const_iterator item = m_Subscribers.begin();
+         item != m_Subscribers.end(); ++item) {
+      if (item->uid == uid) {
+        return true;
+      }
+    }
+    return false;
   }
 };
 
