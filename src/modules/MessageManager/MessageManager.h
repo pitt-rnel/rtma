@@ -9,9 +9,9 @@
 #include <UPipe.h>
 #include <cstdint>
 #include <cstdio>
-#include <list>
 #include <malloc.h>
 #include <string.h>
+#include <unordered_map>
 
 #ifdef _WINDOWS_C
 #include <Windows.h>
@@ -30,7 +30,6 @@ public:
   short DaemonStatus;
   short AllowMultiple;
   uint16_t port;
-  int32_t uid;
   int32_t pid;
   char *addr;
   char *name;
@@ -90,7 +89,7 @@ public:
 
     memset(hello, 0, sizeof(*hello));
 
-    hello->uid = uid;
+    hello->uid = 0;
     hello->mod_id = ModuleID;
     hello->pid = pid;
     hello->port = port;
@@ -109,7 +108,7 @@ public:
       return;
     }
     memset(goodbye, 0, sizeof(*goodbye));
-    goodbye->uid = uid;
+    goodbye->uid = 0;
     goodbye->mod_id = ModuleID;
     goodbye->pid = pid;
     goodbye->port = port;
@@ -145,7 +144,6 @@ public:
     port = 0;
 
     pid = 0;
-    uid = -1;
   }
 
   ~CModuleRecord() { Reset(); }
@@ -154,77 +152,54 @@ public:
 constexpr auto SUBSCRIBER_FLAG_PAUSE = 0x01;
 
 class CSubscriberList {
-private:
+public:
   struct Subscriber {
-    UID uid;
     int flags;
   };
 
-  std::list<Subscriber> m_Subscribers;
+private:
+  std::unordered_map<MODULE_ID, Subscriber> m_Subscribers;
 
 public:
   CSubscriberList() {}
 
-  void AddSubscriber(UID uid) {
-    m_Subscribers.push_back({uid, 0});
+  void AddSubscriber(MODULE_ID module_id) {
+    m_Subscribers.emplace(module_id, Subscriber{});
   }
 
-  void RemoveSubscriber(UID uid) {
-    for (auto item = m_Subscribers.begin(); item != m_Subscribers.end();) {
-      if (item->uid == uid) {
-        item = m_Subscribers.erase(item);
-      } else {
-        ++item;
-      }
+  void RemoveSubscriber(MODULE_ID module_id) {
+    m_Subscribers.erase(module_id);
+  }
+
+  void PauseSubscriber(MODULE_ID module_id) {
+    auto item = m_Subscribers.find(module_id);
+    if (item != m_Subscribers.end()) {
+      set_flag_bits(item->second.flags, SUBSCRIBER_FLAG_PAUSE);
     }
   }
 
-  void PauseSubscriber(UID uid) {
-    for (std::list<Subscriber>::iterator item = m_Subscribers.begin();
-         item != m_Subscribers.end(); ++item) {
-      if (item->uid == uid) {
-        set_flag_bits(item->flags, SUBSCRIBER_FLAG_PAUSE);
-        break;
-      }
+  void ResumeSubscriber(MODULE_ID module_id) {
+    auto item = m_Subscribers.find(module_id);
+    if (item != m_Subscribers.end()) {
+      clear_flag_bits(item->second.flags, SUBSCRIBER_FLAG_PAUSE);
     }
   }
 
-  void ResumeSubscriber(UID uid) {
-    for (std::list<Subscriber>::iterator item = m_Subscribers.begin();
-         item != m_Subscribers.end(); ++item) {
-      if (item->uid == uid) {
-        clear_flag_bits(item->flags, SUBSCRIBER_FLAG_PAUSE);
-        break;
-      }
-    }
-  }
+  using const_iterator = std::unordered_map<MODULE_ID, Subscriber>::const_iterator;
 
   // Iterator access for range-based iteration
-  std::list<Subscriber>::const_iterator begin() const {
-    return m_Subscribers.begin();
-  }
-
-  std::list<Subscriber>::const_iterator end() const {
-    return m_Subscribers.end();
-  }
+  const_iterator begin() const { return m_Subscribers.begin(); }
+  const_iterator end() const { return m_Subscribers.end(); }
 
   // Helper methods to access iterator data
-  UID GetUID(std::list<Subscriber>::const_iterator it) const {
-    return it->uid;
+  MODULE_ID GetModuleID(const_iterator it) const { return it->first; }
+
+  bool IsPaused(const_iterator it) const {
+    return check_flag_bits(it->second.flags, SUBSCRIBER_FLAG_PAUSE);
   }
 
-  bool IsPaused(std::list<Subscriber>::const_iterator it) const {
-    return check_flag_bits(it->flags, SUBSCRIBER_FLAG_PAUSE);
-  }
-
-  bool IsSubscribed(UID uid) {
-    for (std::list<Subscriber>::const_iterator item = m_Subscribers.begin();
-         item != m_Subscribers.end(); ++item) {
-      if (item->uid == uid) {
-        return true;
-      }
-    }
-    return false;
+  bool IsSubscribed(MODULE_ID module_id) const {
+    return m_Subscribers.find(module_id) != m_Subscribers.end();
   }
 };
 
@@ -237,8 +212,8 @@ public:
 
 private:
   MODULE_ID m_NextDynamicModId;
-  CModuleRecord m_ConnectedModules[MAX_MODULES];
-  CSubscriberList m_SubscribersToMessageType[MAX_MESSAGE_TYPES];
+  std::unordered_map<MODULE_ID, CModuleRecord> m_ConnectedModules;
+  std::unordered_map<MSG_TYPE, CSubscriberList> m_SubscribersToMessageType;
   CSubscriberList m_EmptySubscriberList;
   CMessage m_OutMsg;
   MyCString m_Version;
@@ -296,8 +271,6 @@ private:
   ConnectModuleV2(MODULE_ID module_id, UPipe *pSourcePipe,
                   MDF_CONNECT_V2 *connect);
 
-  CModuleRecord *GetOpenRecord();
-
   CModuleRecord *GetRecord(MODULE_ID module_id);
 
   void DisconnectModule(MODULE_ID module_id);
@@ -318,7 +291,7 @@ private:
 
   CSubscriberList *GetSubscriberList(MSG_TYPE message_type);
 
-  bool IsModuleSubscribed(UID uid, MSG_TYPE message_type);
+  bool IsModuleSubscribed(MODULE_ID module_id, MSG_TYPE message_type);
 
   void SendAcknowledge(CModuleRecord *mod);
 
