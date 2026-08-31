@@ -6,17 +6,26 @@
    ----------------------------------------------------------------------------*/
 #ifndef _OS_DEFINED
 #define _OS_DEFINED TRUE
-#ifdef USE_LINUX
-#ifndef _UNIX_C
-#define _UNIX_C
-#endif
-#ifndef __unix__ // OS X does not define __UNIX__
-#define __unix__
-#endif
-#else
+#if defined(_WIN32)
 #ifndef _WINDOWS_C
 #define _WINDOWS_C
 #endif
+#elif defined(__linux__)
+#ifndef _UNIX_C
+#define _UNIX_C
+#endif
+#ifndef _LINUX_C
+#define _LINUX_C
+#endif
+#elif defined(__APPLE__)
+#ifndef _UNIX_C
+#define _UNIX_C
+#endif
+#ifndef _MAC_C
+#define _MAC_C
+#endif
+#else
+#error "RTMA supports Windows, Linux, and macOS only"
 #endif
 #endif
 

@@ -35,9 +35,9 @@ Publications whose experiments utilized RTMA Messaging include:
 
 ## Prerequisites
 
-Bare minimum requirement is that you have a C++ compiler installed. On linux/mac, you also need to have qt-qmake (from qt4 or qt5)
-installed (in a future release, this requirement may be eliminated). If you'd like to have support for other languages, 
-see below further requirements:
+Bare minimum requirements are CMake 3.15 or newer and a C++11-capable compiler.
+RTMA supports MSVC on Windows and GCC or Clang on Linux and macOS. If you'd like to
+have support for other languages, see below for their separate requirements:
 
 #### Python
 - Version >= 2.6 (python3.7 preferred)
@@ -65,18 +65,13 @@ see below further requirements:
 
 Clone the repository and compile the source as follows:
 
-1. If planning to use the python interface, the makefile in `RTMA/lang/python` may need to be manually edited to correctly set variables (i.e. point to the correct python install location)
+1. In a terminal execute the following from the repository root:
 
-2. In a terminal execute the following:
+    cmake -S . -B build/cmake -DCMAKE_BUILD_TYPE=Release
+    cmake --build build/cmake --parallel
+    cmake --install build/cmake --prefix /desired/install/prefix
 
-        cd RTMA/build
-        ./build_with_qmake.sh
-
-3. Create `RTMA` environment variable and set it to where your RTMA folder is (optional but can be used when building C++ modules)
-
-4. Copy `RTMA/lib/libRTMA.so` to `/usr/lib` or add `RTMA/lib` to `LD_LIBRARY_PATH` 
-    *  On older versions of MacOS, setting DYLD_LIBRARY_PATH may work. On recent versions of Mac (>= El Capitan), this no longer works due to System Integrity Protection (SIP). Instead, the .so file can be moved, copied, or hard linked via the `ln` command (e.g. `ln -s /path/to/original /path/to/link`) to standard library locations (~/lib, /usr/lib, or /usr/local/lib).
-    * Installing the library with a symlink (`ln -s`) to /usr/local/lib works well on Linux as well. You will likely need to run `sudo ldconfig` after linking the library so that the system recongnizes it.
+2. Create `RTMA` environment variable and set it to where your RTMA folder is (optional but can be used when building C++ modules)
 
 5. If you plan to use the matlab interface, start matlab and execute the following:
 
@@ -92,7 +87,11 @@ Clone the repository and compile the source as follows:
 
 If you'd like to compile from source, clone the repository and follow these instructions:
 
-1. Build `RTMA/build/RTMA.sln` with Visual Studio (2005 or later)
+1. Generate and build a Visual Studio solution from the repository root:
+
+    cmake -S . -B build/cmake -G "Visual Studio 17 2022" -A x64
+    cmake --build build/cmake --config Release
+    cmake --install build/cmake --config Release --prefix C:\desired\install\prefix
 
 2. Create `RTMA` environment variable and set it to where your RTMA folder is (optional, but can be used to build C++ modules)
 

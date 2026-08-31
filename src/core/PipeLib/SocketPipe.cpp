@@ -553,7 +553,7 @@ SocketPipeServer::SocketPipeServer(char *host_addr, short port_no) {
       throw e;
     }
 
-#ifndef USE_LINUX
+#ifndef _LINUX_C
     // Set socket address reusable for parallel runs of this program
     const char optval = 1;
     status = setsockopt(_hListeningSocket.id, SOL_SOCKET, SO_REUSEADDR, &optval,
@@ -571,9 +571,9 @@ SocketPipeServer::SocketPipeServer(char *host_addr, short port_no) {
       throw UPipeException("Could not set socket option SO_REUSEPORT");
     }
 #endif
-#endif // USE_LINUX
+#endif // _LINUX_C
 
-#ifdef USE_LINUX
+#ifdef _LINUX_C
 #ifdef SO_LINGER
     struct linger Linger;
     Linger.l_onoff =
@@ -587,8 +587,11 @@ SocketPipeServer::SocketPipeServer(char *host_addr, short port_no) {
       throw UPipeException("Could not set socket option SO_LINGER");
     }
 
-#ifdef RTMA_USE_SO_NOSIGPIPE // for Mac OS X, solution from:
-                             // https://nwat.xyz/blog/2014/01/16/porting-msg_more-and-msg_nosigpipe-to-osx/
+#endif
+#endif // _LINUX_C
+
+#ifdef _MAC_C
+#ifdef RTMA_USE_SO_NOSIGPIPE
     int val = 1;
     status = setsockopt(_hListeningSocket.id, SOL_SOCKET, SO_NOSIGPIPE,
                         (void *)&val, sizeof(val));
@@ -596,9 +599,7 @@ SocketPipeServer::SocketPipeServer(char *host_addr, short port_no) {
       throw UPipeException("Could not set socket option SO_NOSIGPIPE");
     }
 #endif
-
-#endif
-#endif // USE_LINUX
+#endif // _MAC_C
 #ifdef _WINDOWS_C
     len = sizeof(struct sockaddr_in);
     status = bind(_hListeningSocket.id,
