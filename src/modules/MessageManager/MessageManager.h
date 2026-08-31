@@ -89,7 +89,6 @@ public:
 
     memset(hello, 0, sizeof(*hello));
 
-    hello->uid = 0; // remove this field?
     hello->mod_id = ModuleID;
     hello->pid = pid;
     hello->port = port;
@@ -108,7 +107,6 @@ public:
       return;
     }
     memset(goodbye, 0, sizeof(*goodbye));
-    goodbye->uid = 0; // remove this field?
     goodbye->mod_id = ModuleID;
     goodbye->pid = pid;
     goodbye->port = port;
