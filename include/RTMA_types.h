@@ -197,8 +197,8 @@ typedef struct {
 #define MT_CONNECT_V2 4
 typedef struct {
   int16_t logger_status;
-  int16_t daemon_status;
-  int16_t allow_multiple;
+  int16_t reserved;
+  int16_t reserved1;
   MODULE_ID mod_id;
   int32_t pid;
   char name[MAX_NAME_LEN];

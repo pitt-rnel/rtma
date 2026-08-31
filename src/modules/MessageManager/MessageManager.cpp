@@ -496,8 +496,6 @@ CMessageManager::ConnectModuleV2(MODULE_ID module_id, UPipe *pSourcePipe,
         mod->ModuleID = module_id;
         mod->SetUPipe(pSourcePipe);
         mod->LoggerStatus = data->logger_status;
-        mod->DaemonStatus = data->daemon_status;
-        mod->AllowMultiple = data->allow_multiple;
         mod->pid = data->pid;
         mod->SetName(&(data->name[0]));
 
@@ -686,7 +684,7 @@ void CMessageManager::HandleConnect(CMessage *M, UPipe *pSourcePipe) {
   int prev_priority_class = GetMyPriority();
   SetMyPriority(NORMAL_PRIORITY_CLASS);
   MODULE_ID mod_id = ConnectModule(M->src_mod_id, pSourcePipe,
-                                   data.logger_status, data.daemon_status);
+                                   data.logger_status, 0);
   // printf("Connect: %d\n", mod_id);
   if (mod_id > 0) {
     SetMyPriority(prev_priority_class);
