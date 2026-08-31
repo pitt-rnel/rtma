@@ -172,6 +172,8 @@ void CQuickLogger::Status(const MyCString &msg) {
     std::cout << t_str << " " << msg.GetContent() << std::endl;
     // std::cout << tm->tm_hour << ":" << tm->tm_min << ":" << tm->tm_sec << "
     // " << msg.GetContent() << std::endl;
+    
+    // TODO: Remove this in the future
     CMessage S(MT_DEBUG_TEXT, msg.GetContent(), msg.GetLen());
     SendMessage(&S);
   }
