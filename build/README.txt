@@ -1,16 +1,20 @@
-This directory contains the top-level build-scripts for RTMA.
-To build RTMA:
+This directory contains legacy build artifacts. The native C++ build is configured
+from the repository root with CMake; Qt/qmake is not required.
 
-On Windows, open RTMA.sln in Visual Studio (tested with version 2017), 
-select the "Release" configuration and run Build All. This will build
-the C++ API (lib/RTMA.lib), the .NET API (lang/dot_net/RTMA.NET.dll), 
-and the executable modules (bin/MessageManager.exe and bin/QuickLogger.exe).
+On Linux or macOS:
 
-On Linux/MacOS, make sure you have qmake installed in addition to regular make,
-and run build_with_qmake.sh. This will build the C++ API
-(lib/libRTMA.so), the Python API (lang/python/PyRTMA.?), and the
-executable modules (bin/MessageManager and bin/QuickLogger).
+	cmake -S . -B build/cmake -DCMAKE_BUILD_TYPE=Release
+	cmake --build build/cmake --parallel
+	ctest --test-dir build/cmake --output-on-failure
+	cmake --install build/cmake --prefix /desired/install/prefix
 
-The Matlab API needs to be compiled separately by starting matlab, changing current
-directory to lang/matlab and running the make.m script. It works the same on
-Windows or Linux.
+On Windows, generate a Visual Studio solution with CMake:
+
+	cmake -S . -B build/cmake -G "Visual Studio 17 2022" -A x64
+	cmake --build build/cmake --config Release
+	cmake --install build/cmake --config Release --prefix C:\desired\install\prefix
+
+The native build produces the RTMA C++ library plus MessageManager and QuickLogger.
+For compatibility, 32-bit Windows builds retain the RTMA32 name and 64-bit Debug
+Windows builds retain the RTMAd name. Language wrappers under lang/ have separate
+build processes and are not part of this build.
