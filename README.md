@@ -94,7 +94,7 @@ If you'd like to compile from source, clone the repository and follow these inst
 
 1. Generate and build a Visual Studio solution from the repository root:
 ```shell
-cmake -S . -B build/cmake -G "Visual Studio 17 2022" -A x64
+cmake -S . -B build/cmake -G "Visual Studio 18 2026" -A x64
 cmake --build build/cmake --config Release
 ```
 To install in a desired prefix directory, run:
