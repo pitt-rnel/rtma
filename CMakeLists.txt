@@ -4,6 +4,7 @@ project(RTMA VERSION 1.0.0 LANGUAGES CXX)
 
 include(CMakePackageConfigHelpers)
 include(CTest)
+include(FetchContent)
 include(GNUInstallDirs)
 
 option(RTMA_BUILD_MODULES "Build native RTMA modules" ON)
@@ -18,8 +19,17 @@ set(RTMA_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 
+set(FMT_INSTALL ON CACHE BOOL "Install fmt with RTMA" FORCE)
+FetchContent_Declare(
+    fmt
+    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+    GIT_TAG 11.1.4
+)
+FetchContent_MakeAvailable(fmt)
+
 set(RTMA_SOURCES
     src/core/RTMA.cpp
+    src/core/RTMA_Logger.cpp
     src/core/MyCException.cpp
     src/core/MyCString.cpp
     src/core/PipeLib/SocketPipe.cpp
@@ -62,7 +72,10 @@ target_include_directories(RTMA
         ${CMAKE_CURRENT_SOURCE_DIR}/include/internal
 )
 
-target_link_libraries(RTMA PRIVATE Threads::Threads)
+target_link_libraries(RTMA
+    PRIVATE Threads::Threads
+    PUBLIC fmt::fmt
+)
 
 if(WIN32)
     target_link_libraries(RTMA PRIVATE ws2_32)
