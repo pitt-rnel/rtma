@@ -105,11 +105,6 @@ typedef struct {
 #define HID_LOCAL_HOST 0
 #define HID_ALL_HOSTS 0x7FFF
 
-typedef char
-    STRING_DATA[]; // message data type for variable length string messages
-// typedef char* STRING_DATA;   //message data type for variable length string
-// messages
-
 // Used for subscribing to all message types
 #define ALL_MESSAGE_TYPES 0x7FFFFFFF
 
@@ -163,9 +158,6 @@ typedef struct {
 typedef struct {
   int pid;
 } MDF_MODULE_READY;
-
-#define MT_DEBUG_TEXT 91
-typedef STRING_DATA MDF_DEBUG_TEXT;
 
 // Messages sent to LoggerModule
 #define MT_LM_EXIT 55
