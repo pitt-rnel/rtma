@@ -7,6 +7,9 @@ Makefile
 *.qmake.cache
 *.qmake.stash
 
+# CMake build trees
+/build/cmake/
+
 #swig
 *_wrap.cxx
 
@@ -34,6 +37,11 @@ _deps
 *-prefix/
 
 # End of https://www.gitignore.io/api/cmake
+
+# Distributed 64-bit Windows release artifacts
+!bin/MessageManager.exe
+!bin/QuickLogger.exe
+!lib/RTMA.lib
 
 # Created by https://www.gitignore.io/api/visualstudiocode
 # Edit at https://www.gitignore.io/?templates=visualstudiocode
