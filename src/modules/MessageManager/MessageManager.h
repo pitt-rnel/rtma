@@ -9,7 +9,7 @@
 #include <UPipe.h>
 #include <cstdint>
 #include <cstdio>
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unordered_map>
 
