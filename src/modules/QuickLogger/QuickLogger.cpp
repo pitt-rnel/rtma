@@ -68,39 +68,30 @@ void CQuickLogger::MainFunction() {
     // Do logging
     try {
       // Display the size of pre-allocated buffers
-      Status((MyCString) "Pre-allocated space for " +
-             _MessageBufrr.GetNumPreallocMessages() + " messages");
-      Status((MyCString) "Pre-allocated space for " +
-             _MessageBufrr.GetNumPreallocDataBytes() + " data bytes");
+      info(RTMA_LOG_SOURCE, "Pre-allocated space for {} messages",
+           _MessageBufrr.GetNumPreallocMessages());
+      info(RTMA_LOG_SOURCE, "Pre-allocated space for {} data bytes",
+           _MessageBufrr.GetNumPreallocDataBytes());
 
       _logging = true; // Start logging immediately by default
       while (1) {
         ReadMessage(&M);
-        // Status( (MyCString) "Received Message (msg_type = " + M.msg_type +
-        // ")");
+        debug(RTMA_LOG_SOURCE, "Received Message (msg_type = {})", M.msg_type);
         int saved = _MessageBufrr.SaveMessage(&M);
         if (saved != 0) {
-          // Status( "Message buffer was full, saving log to
-          // QuickLoggerDump.bin"); _MessageBufrr.SaveDatafile(
-          //"QuickLoggerDump.bin");
-          //  TODO: revert to the version that saves dump files, but update
-          //  executive to pause logging during intertrial. Dump files should
-          //  only save if buffer unexpectedly fills during trial.
-          // Status( (MyCString) "\nMessage buffer full, dumping to file");
-          // AutoDumpBuffer(); // Commented out to stop saving dump files
-          // between trials. There is a risk that data could be lost if buffer
-          // overflows during a trial.
-
           if (saved == -1) { // msg count overflow
-            Status((MyCString) "\nMessage buffer count full, resetting buffer. "
-                               "Data may be lost if not in intertrial!");
+            warning(
+                RTMA_LOG_SOURCE,
+                "Message buffer count full, resetting buffer. Data may be lost "
+                "if not in intertrial!");
           } else { // msg size overflow
-            Status((MyCString) "\nMessage buffer size full, resetting buffer. "
-                               "Data may be lost if not in intertrial!");
+            warning(
+                RTMA_LOG_SOURCE,
+                "Message buffer data size full, resetting buffer. Data may be "
+                "lost if not in intertrial!");
           }
           _MessageBufrr.ClearBuffer();
-          // Status( "Log saved, message buffer has been reset");
-          Status("Message buffer has been reset");
+          warning(RTMA_LOG_SOURCE, "Message buffer has been reset");
           // Save the message again to the now cleared buffer
           _MessageBufrr.SaveMessage(&M);
         }
@@ -111,35 +102,33 @@ void CQuickLogger::MainFunction() {
               0; // Make sure string is zero-terminated
           _MessageBufrr.SaveDatafile(FilenameData.pathname);
           SendSignal(MT_MESSAGE_LOG_SAVED);
-          Status((MyCString) "Saved Data to '" + FilenameData.pathname + "':");
-          Status((MyCString) "    Num messages: " +
-                 _MessageBufrr.GetNumMessages());
-          Status((MyCString) "    Num data bytes: " +
-                 _MessageBufrr.GetNumDataBytes());
+          info(RTMA_LOG_SOURCE, "Saved Data to '{}'", FilenameData.pathname);
+          info(RTMA_LOG_SOURCE, "    Num messages: {}",
+               _MessageBufrr.GetNumMessages());
+          info(RTMA_LOG_SOURCE, "    Num data bytes: {}",
+               _MessageBufrr.GetNumDataBytes());
           _MessageBufrr.ClearBuffer();
           break;
         case MT_PAUSE_MESSAGE_LOGGING:
-          Status("Logging paused!");
+          info(RTMA_LOG_SOURCE, "Logging paused!");
           _logging = false;
           break;
         case MT_RESUME_MESSAGE_LOGGING:
-          Status("Logging resumed!");
+          info(RTMA_LOG_SOURCE, "Logging resumed!");
           _logging = true;
           break;
         case MT_RESET_MESSAGE_LOG:
-          Status("Resetting the message log");
+          info(RTMA_LOG_SOURCE, "Resetting the message log");
           _MessageBufrr.ClearBuffer();
           break;
         case MT_DUMP_MESSAGE_LOG:
-          // Status( "Dumping message log to QuickLoggerDump.bin");
-          Status("Dumping message log");
+          info(RTMA_LOG_SOURCE, "Dumping message log");
           //_MessageBufrr.SaveDatafile( "QuickLoggerDump.bin");
           AutoDumpBuffer();
           break;
         case MT_LM_EXIT:
           //_MessageBufrr.SaveDatafile( "QuickLoggerDump.bin");
-          // Status( "Auto dumping and Exiting");
-          Status("Exiting");
+          info(RTMA_LOG_SOURCE, "Exiting");
           // AutoDumpBuffer();
           return;
         default:
@@ -160,24 +149,6 @@ void CQuickLogger::MainFunction() {
   CATCH_and_THROW("void CQuickLogger::MainFunction()");
 }
 
-void CQuickLogger::Status(const MyCString &msg) {
-  TRY {
-    time_t ltime;
-    struct tm *tm;
-    // output timestamp right before it start saving the data in the buffer
-    ltime = time(NULL);
-    tm = localtime(&ltime);
-    char t_str[16];
-    std::strftime(t_str, sizeof(t_str), "%I:%M:%S", tm);
-    std::cout << t_str << " " << msg.GetContent() << std::endl;
-    // std::cout << tm->tm_hour << ":" << tm->tm_min << ":" << tm->tm_sec << "
-    // " << msg.GetContent() << std::endl;
-
-    Logger().Info(RTMA_LOG_SOURCE, "{}", msg.GetContent());
-  }
-  CATCH_and_THROW("void CQuickLogger::Status(const MyCString& msg)");
-}
-
 void CQuickLogger::DumpBuffer(char *Filename) {
   TRY {
     time_t ltime;
@@ -191,10 +162,11 @@ void CQuickLogger::DumpBuffer(char *Filename) {
     _MessageBufrr.SaveDatafile(Filename);
     printf("Buffer Dump Done (%d-%d-%d %d:%d:%d)\n", tm->tm_year + 1900,
            tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec);
-    Status((MyCString) "Saved Data to '" + Filename + "':");
-    Status((MyCString) "    Num messages: " + _MessageBufrr.GetNumMessages());
-    Status((MyCString) "    Num data bytes: " +
-           _MessageBufrr.GetNumDataBytes());
+    info(RTMA_LOG_SOURCE, "Saved Data to '{}'", Filename);
+    info(RTMA_LOG_SOURCE, "    Num messages: {}",
+         _MessageBufrr.GetNumMessages());
+    info(RTMA_LOG_SOURCE, "    Num data bytes: {}",
+         _MessageBufrr.GetNumDataBytes());
   }
   CATCH_and_THROW(
       "void DumpBuffer( char Filename[MAX_LOGGER_FILENAME_LENGTH+1])")
