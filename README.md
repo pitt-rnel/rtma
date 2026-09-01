@@ -69,6 +69,9 @@ Clone the repository and compile the source as follows:
 ```shell
 cmake -S . -B build/cmake -DCMAKE_BUILD_TYPE=Release
 cmake --build build/cmake --parallel
+```
+To install in a desired prefix directory, run:
+```shell
 cmake --install build/cmake --prefix /desired/install/prefix
 ```
 
@@ -93,6 +96,9 @@ If you'd like to compile from source, clone the repository and follow these inst
 ```shell
 cmake -S . -B build/cmake -G "Visual Studio 17 2022" -A x64
 cmake --build build/cmake --config Release
+```
+To install in a desired prefix directory, run:
+```shell
 cmake --install build/cmake --config Release --prefix C:\desired\install\prefix
 ```
 
