@@ -246,4 +246,33 @@ typedef struct {
   char name[MAX_NAME_LEN];
 } MDF_CLIENT_SET_NAME;
 
+// Structured client log messages. The level-specific message types all share
+// this payload so clients can subscribe at their desired severity.
+#define MT_RTMA_LOG 40
+#define MT_RTMA_LOG_CRITICAL 41
+#define MT_RTMA_LOG_ERROR 42
+#define MT_RTMA_LOG_WARNING 43
+#define MT_RTMA_LOG_INFO 44
+#define MT_RTMA_LOG_DEBUG 45
+
+#define MAX_LOG_LENGTH 1024
+typedef struct {
+  double time;
+  int32_t level;
+  int32_t lineno;
+  char name[128];
+  char pathname[512];
+  char funcname[256];
+  char message[MAX_LOG_LENGTH];
+} MDF_RTMA_LOG;
+
+typedef MDF_RTMA_LOG MDF_RTMA_LOG_CRITICAL;
+typedef MDF_RTMA_LOG MDF_RTMA_LOG_ERROR;
+typedef MDF_RTMA_LOG MDF_RTMA_LOG_WARNING;
+typedef MDF_RTMA_LOG MDF_RTMA_LOG_INFO;
+typedef MDF_RTMA_LOG MDF_RTMA_LOG_DEBUG;
+
+static_assert(sizeof(MDF_RTMA_LOG) == 1936,
+              "MDF_RTMA_LOG must retain its PyRTMA wire layout");
+
 #endif //_RTMA_TYPES_H_

@@ -10,6 +10,7 @@
    |                              INCLUDES                                    |
    ----------------------------------------------------------------------------*/
 #include "OS_defines.h"
+#include "RTMA_Logger.h"
 #include "RTMA_types.h"
 #include "internal/UPipe.h"
 
@@ -111,6 +112,7 @@ private:
   HOST_ID m_HostID;
   double m_StartTime;
   int m_Pid;
+  std::unique_ptr<RTMA_Logger> m_Logger;
 
 #if (RTMA_PROFILE == TRUE)
   int m_NumProfiledMsgs;
@@ -251,6 +253,47 @@ public:
 
   MODULE_ID
   GetModuleID() const { return m_ModuleID; }
+
+  RTMA_Logger &Logger();
+  const RTMA_Logger &Logger() const;
+
+  template <typename... Args>
+  void debug(const char *function, const char *file, int line,
+             fmt::format_string<Args...> format, Args &&...args) {
+    Logger().debug(function, file, line, format, std::forward<Args>(args)...);
+  }
+
+  template <typename... Args>
+  void info(const char *function, const char *file, int line,
+            fmt::format_string<Args...> format, Args &&...args) {
+    Logger().info(function, file, line, format, std::forward<Args>(args)...);
+  }
+
+  template <typename... Args>
+  void warning(const char *function, const char *file, int line,
+               fmt::format_string<Args...> format, Args &&...args) {
+    Logger().warning(function, file, line, format,
+                     std::forward<Args>(args)...);
+  }
+
+  template <typename... Args>
+  void warn(const char *function, const char *file, int line,
+            fmt::format_string<Args...> format, Args &&...args) {
+    Logger().warn(function, file, line, format, std::forward<Args>(args)...);
+  }
+
+  template <typename... Args>
+  void error(const char *function, const char *file, int line,
+             fmt::format_string<Args...> format, Args &&...args) {
+    Logger().error(function, file, line, format, std::forward<Args>(args)...);
+  }
+
+  template <typename... Args>
+  void critical(const char *function, const char *file, int line,
+                fmt::format_string<Args...> format, Args &&...args) {
+    Logger().critical(function, file, line, format,
+                      std::forward<Args>(args)...);
+  }
 };
 
 /* ----------------------------------------------------------------------------

@@ -172,10 +172,8 @@ void CQuickLogger::Status(const MyCString &msg) {
     std::cout << t_str << " " << msg.GetContent() << std::endl;
     // std::cout << tm->tm_hour << ":" << tm->tm_min << ":" << tm->tm_sec << "
     // " << msg.GetContent() << std::endl;
-    
-    // TODO: Remove this in the future
-    CMessage S(MT_DEBUG_TEXT, msg.GetContent(), msg.GetLen());
-    SendMessage(&S);
+
+    Logger().Info(RTMA_LOG_SOURCE, "{}", msg.GetContent());
   }
   CATCH_and_THROW("void CQuickLogger::Status(const MyCString& msg)");
 }
