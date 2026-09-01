@@ -12,6 +12,9 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+set(RTMA_BINARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+set(RTMA_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+
 find_package(Threads REQUIRED)
 
 set(RTMA_SOURCES
@@ -36,10 +39,19 @@ endif()
 add_library(RTMA::RTMA ALIAS RTMA)
 
 set_target_properties(RTMA PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR}
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
+    ARCHIVE_OUTPUT_DIRECTORY ${RTMA_LIBRARY_OUTPUT_DIRECTORY}
+    LIBRARY_OUTPUT_DIRECTORY ${RTMA_LIBRARY_OUTPUT_DIRECTORY}
+    RUNTIME_OUTPUT_DIRECTORY ${RTMA_BINARY_OUTPUT_DIRECTORY}
 )
+
+foreach(configuration Debug Release RelWithDebInfo MinSizeRel)
+    string(TOUPPER ${configuration} configuration_upper)
+    set_target_properties(RTMA PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY_${configuration_upper} ${RTMA_LIBRARY_OUTPUT_DIRECTORY}
+        LIBRARY_OUTPUT_DIRECTORY_${configuration_upper} ${RTMA_LIBRARY_OUTPUT_DIRECTORY}
+        RUNTIME_OUTPUT_DIRECTORY_${configuration_upper} ${RTMA_BINARY_OUTPUT_DIRECTORY}
+    )
+endforeach()
 
 target_include_directories(RTMA
     PUBLIC
@@ -72,15 +84,22 @@ if(RTMA_BUILD_MODULES)
     target_include_directories(MessageManager PRIVATE include/internal)
     target_link_libraries(MessageManager PRIVATE RTMA)
     set_target_properties(MessageManager PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
+        RUNTIME_OUTPUT_DIRECTORY ${RTMA_BINARY_OUTPUT_DIRECTORY}
     )
 
     add_executable(QuickLogger src/modules/QuickLogger/QuickLogger.cpp)
     target_include_directories(QuickLogger PRIVATE include/internal)
     target_link_libraries(QuickLogger PRIVATE RTMA)
     set_target_properties(QuickLogger PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR}
+        RUNTIME_OUTPUT_DIRECTORY ${RTMA_BINARY_OUTPUT_DIRECTORY}
     )
+
+    foreach(configuration Debug Release RelWithDebInfo MinSizeRel)
+        string(TOUPPER ${configuration} configuration_upper)
+        set_target_properties(MessageManager QuickLogger PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY_${configuration_upper} ${RTMA_BINARY_OUTPUT_DIRECTORY}
+        )
+    endforeach()
 endif()
 
 if(BUILD_TESTING)
