@@ -9,7 +9,7 @@
 #include <RTMA_types.h>
 #include <Timing.h>
 #include <UPipe.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <memory> // For std::unique_ptr
 #include <string.h>
 
