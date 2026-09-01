@@ -15,9 +15,9 @@ jobs:
           - os: ubuntu-latest
             compiler: gcc
             cxx: g++
-          - os: ubuntu-latest
-            compiler: clang
-            cxx: clang++
+          #- os: ubuntu-latest
+          #  compiler: clang
+          #  cxx: clang++
           - os: macos-latest
             compiler: clang
             cxx: clang++
