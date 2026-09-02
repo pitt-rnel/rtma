@@ -105,11 +105,6 @@ typedef struct {
 #define HID_LOCAL_HOST 0
 #define HID_ALL_HOSTS 0x7FFF
 
-typedef char
-    STRING_DATA[]; // message data type for variable length string messages
-// typedef char* STRING_DATA;   //message data type for variable length string
-// messages
-
 // Used for subscribing to all message types
 #define ALL_MESSAGE_TYPES 0x7FFFFFFF
 
@@ -163,9 +158,6 @@ typedef struct {
 typedef struct {
   int pid;
 } MDF_MODULE_READY;
-
-#define MT_DEBUG_TEXT 91
-typedef STRING_DATA MDF_DEBUG_TEXT;
 
 // Messages sent to LoggerModule
 #define MT_LM_EXIT 55
@@ -245,5 +237,31 @@ typedef struct {
 typedef struct {
   char name[MAX_NAME_LEN];
 } MDF_CLIENT_SET_NAME;
+
+// Structured client log messages. The level-specific message types all share
+// this payload so clients can subscribe at their desired severity.
+#define MT_RTMA_LOG 40
+#define MT_RTMA_LOG_CRITICAL 41
+#define MT_RTMA_LOG_ERROR 42
+#define MT_RTMA_LOG_WARNING 43
+#define MT_RTMA_LOG_INFO 44
+#define MT_RTMA_LOG_DEBUG 45
+
+#define MAX_LOG_LENGTH 1024
+typedef struct {
+  double time;
+  int32_t level;
+  int32_t lineno;
+  char name[128];
+  char pathname[512];
+  char funcname[256];
+  char message[MAX_LOG_LENGTH];
+} MDF_RTMA_LOG;
+
+typedef MDF_RTMA_LOG MDF_RTMA_LOG_CRITICAL;
+typedef MDF_RTMA_LOG MDF_RTMA_LOG_ERROR;
+typedef MDF_RTMA_LOG MDF_RTMA_LOG_WARNING;
+typedef MDF_RTMA_LOG MDF_RTMA_LOG_INFO;
+typedef MDF_RTMA_LOG MDF_RTMA_LOG_DEBUG;
 
 #endif //_RTMA_TYPES_H_

@@ -36,7 +36,6 @@ public:
   void MainFunction(void);
 
 private:
-  void Status(const MyCString &msg);
   void DumpBuffer(char *Filename);
   void AutoDumpBuffer();
 };
