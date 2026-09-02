@@ -264,7 +264,4 @@ typedef MDF_RTMA_LOG MDF_RTMA_LOG_WARNING;
 typedef MDF_RTMA_LOG MDF_RTMA_LOG_INFO;
 typedef MDF_RTMA_LOG MDF_RTMA_LOG_DEBUG;
 
-static_assert(sizeof(MDF_RTMA_LOG) == 1936,
-              "MDF_RTMA_LOG must retain its PyRTMA wire layout");
-
 #endif //_RTMA_TYPES_H_

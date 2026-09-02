@@ -1,4 +1,6 @@
 #include <RTMA.h>
+#include <RTMA_Logger.h>
+#include <RTMA_types.h>
 
 int main() {
   CMessage message;
@@ -24,5 +26,8 @@ int main() {
   logger.SetFileEnabled(false);
   logger.SetLogFilename("other.log");
 
-  return sizeof(MDF_RTMA_LOG) == 1936 ? 0 : 1;
+  // test message size compatibility
+  static_assert(sizeof(MDF_RTMA_LOG) == 1936, "MDF_RTMA_LOG must retain its PyRTMA wire layout");
+
+  return 0;
 }
