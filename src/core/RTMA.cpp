@@ -358,6 +358,8 @@ void RTMA_Module::InitVariables(MODULE_ID ModuleID, HOST_ID HostID) {
 }
 
 RTMA_Module::~RTMA_Module() {
+  if (m_Logger)
+    m_Logger->Detach();
   try {
     Cleanup();
   } catch (...) {

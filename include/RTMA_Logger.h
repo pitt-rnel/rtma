@@ -38,6 +38,7 @@ public:
       : std::runtime_error(message) {}
 };
 
+// Thread-safe, but RTMA output goes through RTMA_Module::SendMessage(), which is not.
 class RTMA_Logger {
 public:
   RTMA_Logger(RTMA_Module *module, const std::string &log_name,
@@ -155,6 +156,10 @@ public:
 
 private:
   class State;
+  friend class RTMA_Module;
+
+  // Stops RTMA output; called when the owning module is destroyed.
+  void Detach();
 
   RTMA_Logger(const std::shared_ptr<State> &state, const std::string &suffix);
   void LogMessage(int level, const char *function, const char *file, int line,

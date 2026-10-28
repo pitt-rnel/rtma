@@ -120,7 +120,7 @@ endif()
 
 if(BUILD_TESTING)
     add_executable(rtma_public_api_test tests/public_api_test.cpp)
-    target_link_libraries(rtma_public_api_test PRIVATE RTMA)
+    target_link_libraries(rtma_public_api_test PRIVATE RTMA Threads::Threads)
     add_test(NAME rtma_public_api COMMAND rtma_public_api_test)
 endif()
 

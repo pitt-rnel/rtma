@@ -104,6 +104,9 @@ public:
 /* ----------------------------------------------------------------------------
    |                       RTMA CODE                                           |
    ----------------------------------------------------------------------------*/
+// Not thread-safe: do not call SendMessage() or other members from several threads
+// at once. Logger() output to RTMA calls SendMessage(), so with it enabled (the
+// default) log from one thread only, or call Logger().SetRTMAEnabled(false).
 class RTMA_Module {
 private:
   UPipeClient *_pipeClient;
@@ -202,6 +205,7 @@ public:
   // Send a message through the RTMA system. If destination module ID is 0, then
   // the message is broadcast to all modules. If host is 0, then broadcast to
   // all hosts.
+  // Not thread-safe.
 
   int SendMessageRTMA(CMessage *M, MODULE_ID dest_mod_id = 0,
                       HOST_ID dest_host_id = 0);
