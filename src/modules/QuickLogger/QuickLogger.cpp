@@ -57,8 +57,10 @@ void CQuickLogger::MainFunction() {
 
     // Get connected
     int logger_status = 1;
+    RTMA_Logger *logger = &Logger();
     InitVariables(MID_QUICKLOGGER, 0);
     ConnectToMMM(logger_status);
+    logger->SetLogName("Quicklogger");
     Subscribe(ALL_MESSAGE_TYPES);
     //if (SetMyPriority(NORMAL_PRIORITY_CLASS) == 0)
     //  throw MyCException("SetMyPriority failed");
