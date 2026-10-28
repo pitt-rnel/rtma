@@ -6,12 +6,45 @@
 
 #include <cstdio>
 #include <cstring>
+#include <ctime>
+#include <fmt/chrono.h>
+#include <fmt/color.h>
 #include <fstream>
 #include <iomanip>
 #include <mutex>
 #include <sstream>
 
 namespace {
+
+fmt::text_style LevelStyle(int level) {
+  switch (level) {
+  case RTMA_LOG_INFO:
+    return fmt::fg(fmt::color::blue);
+  case RTMA_LOG_WARNING:
+    return fmt::fg(fmt::color::dark_red);
+  case RTMA_LOG_ERROR:
+    return fmt::fg(fmt::color::maroon);
+  case RTMA_LOG_CRITICAL:
+    return fmt::bg(fmt::color::maroon) | fmt::fg(fmt::color::black);
+  default:
+    return fmt::fg(fmt::color::green);
+  }
+}
+
+std::tm LocalTime(std::time_t t) {
+  std::tm result{};
+#ifdef _WIN32
+  localtime_s(&result, &t);
+#else
+  localtime_r(&t, &result);
+#endif
+  return result;
+}
+
+std::string Basename(const std::string &path) {
+  const size_t pos = path.find_last_of("/\\");
+  return pos == std::string::npos ? path : path.substr(pos + 1);
+}
 
 const char *LevelName(int level) {
   switch (level) {
@@ -181,8 +214,19 @@ void RTMA_Logger::LogMessage(int level, const char *function, const char *file,
                                              LevelName(level), GetAbsTime(), name,
                                              bounded_message, source_function, line);
 
-  if (m_State->console_enabled && level >= m_State->console_level)
-    fmt::print(stderr, "{}", formatted);
+  if (m_State->console_enabled && level >= m_State->console_level) {
+    const std::tm local = LocalTime(std::time(nullptr));
+    const std::string source =
+        fmt::format("{}:{}", Basename(source_file), line);
+    // Pad before styling so ANSI escapes don't count toward column widths.
+    fmt::print(stderr, "{} {} {} {} {}\n",
+               fmt::format(fmt::fg(fmt::color::light_slate_gray), "[{:%T}]", local),
+               fmt::format(LevelStyle(level), "{:<8}", LevelName(level)),
+               fmt::format(fmt::fg(fmt::color::khaki), "{:<24}",
+                           "[" + name + "]"),
+               fmt::format("{:<60}", bounded_message),
+               fmt::format(fmt::fg(fmt::color::dim_gray), "{}", source));
+  }
 
   if (m_State->file_enabled && level >= m_State->file_level) {
     RotateFileIfNeeded(m_State->log_filename);
