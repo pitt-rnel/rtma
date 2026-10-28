@@ -4,6 +4,8 @@
 #include "RTMA_types.h"
 #include "Timing.h"
 
+#include <algorithm>
+#include <cctype>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
@@ -13,8 +15,29 @@
 #include <iomanip>
 #include <mutex>
 #include <sstream>
+#include <stdexcept>
+
+#ifdef _WIN32
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 namespace {
+
+bool IsTerminal(FILE *stream) {
+#ifdef _WIN32
+  return stream != nullptr && _isatty(_fileno(stream)) != 0;
+#else
+  return stream != nullptr && isatty(fileno(stream)) != 0;
+#endif
+}
+
+bool UseColor(RTMA_ConsoleColor mode, FILE *stream) {
+  if (mode == RTMA_COLOR_ALWAYS)
+    return true;
+  return mode == RTMA_COLOR_AUTO && IsTerminal(stream);
+}
 
 fmt::text_style LevelStyle(int level) {
   switch (level) {
@@ -47,20 +70,7 @@ std::string Basename(const std::string &path) {
 }
 
 const char *LevelName(int level) {
-  switch (level) {
-  case RTMA_LOG_DEBUG:
-    return "DEBUG";
-  case RTMA_LOG_INFO:
-    return "INFO";
-  case RTMA_LOG_WARNING:
-    return "WARNING";
-  case RTMA_LOG_ERROR:
-    return "ERROR";
-  case RTMA_LOG_CRITICAL:
-    return "CRITICAL";
-  default:
-    return "LOG";
-  }
+  return RTMA_LevelName(level);
 }
 
 MSG_TYPE MessageTypeForLevel(int level) {
@@ -112,13 +122,64 @@ void RotateFileIfNeeded(const std::string &filename) {
 
 } // namespace
 
+const char *RTMA_LevelName(int level) {
+  switch (level) {
+  case RTMA_LOG_NOTSET:
+    return "NOTSET";
+  case RTMA_LOG_ALL:
+    return "ALL";
+  case RTMA_LOG_DEBUG:
+    return "DEBUG";
+  case RTMA_LOG_INFO:
+    return "INFO";
+  case RTMA_LOG_WARNING:
+    return "WARNING";
+  case RTMA_LOG_ERROR:
+    return "ERROR";
+  case RTMA_LOG_CRITICAL:
+    return "CRITICAL";
+  case RTMA_LOG_OFF:
+    return "OFF";
+  default:
+    return "LOG";
+  }
+}
+
+int RTMA_LevelFromName(const std::string &name) {
+  static const struct {
+    const char *name;
+    int level;
+  } levels[] = {{"NOTSET", RTMA_LOG_NOTSET},   {"ALL", RTMA_LOG_ALL},
+                {"DEBUG", RTMA_LOG_DEBUG},     {"INFO", RTMA_LOG_INFO},
+                {"WARN", RTMA_LOG_WARNING},    {"WARNING", RTMA_LOG_WARNING},
+                {"ERROR", RTMA_LOG_ERROR},     {"CRITICAL", RTMA_LOG_CRITICAL},
+                {"OFF", RTMA_LOG_OFF}};
+
+  std::string key = name;
+  std::transform(key.begin(), key.end(), key.begin(),
+                 [](unsigned char c) { return static_cast<char>(std::toupper(c)); });
+  // cc_logger spelled levels with an 'l' prefix (lDEBUG).
+  for (int attempt = 0; attempt < 2; ++attempt) {
+    for (size_t i = 0; i < sizeof(levels) / sizeof(levels[0]); ++i) {
+      if (key == levels[i].name)
+        return levels[i].level;
+    }
+    if (attempt == 0 && key.size() > 1 && key[0] == 'L')
+      key.erase(0, 1);
+    else
+      break;
+  }
+  throw std::invalid_argument("Unknown log level name: " + name);
+}
+
 class RTMA_Logger::State {
 public:
   State(RTMA_Module *owner, const std::string &name, int initial_level)
       : module(owner), log_name(name), level(initial_level),
         console_level(initial_level), rtma_level(initial_level),
         file_level(initial_level), console_enabled(true), rtma_enabled(true),
-        file_enabled(false), file_initialized(false) {}
+        file_enabled(false), file_initialized(false),
+        console_stream(stderr), color_mode(RTMA_COLOR_AUTO) {}
 
   RTMA_Module *module;
   std::string log_name;
@@ -131,6 +192,8 @@ public:
   bool rtma_enabled;
   bool file_enabled;
   bool file_initialized;
+  FILE *console_stream;
+  RTMA_ConsoleColor color_mode;
   std::mutex mutex;
 };
 
@@ -189,6 +252,17 @@ void RTMA_Logger::SetFileEnabled(bool enabled) {
 }
 bool RTMA_Logger::IsFileEnabled() const { return m_State->file_enabled; }
 
+void RTMA_Logger::SetConsoleStream(FILE *stream) {
+  std::lock_guard<std::mutex> lock(m_State->mutex);
+  m_State->console_stream = stream;
+}
+FILE *RTMA_Logger::GetConsoleStream() const { return m_State->console_stream; }
+void RTMA_Logger::SetConsoleColor(RTMA_ConsoleColor mode) {
+  std::lock_guard<std::mutex> lock(m_State->mutex);
+  m_State->color_mode = mode;
+}
+RTMA_ConsoleColor RTMA_Logger::GetConsoleColor() const { return m_State->color_mode; }
+
 void RTMA_Logger::SetLogName(const std::string &name) { m_State->log_name = name; }
 std::string RTMA_Logger::GetLogName() const {
   return m_NameSuffix.empty() ? m_State->log_name : m_State->log_name + "." + m_NameSuffix;
@@ -210,28 +284,31 @@ void RTMA_Logger::LogMessage(int level, const char *function, const char *file,
   const std::string bounded_message = TruncateMessage(message);
   const std::string source_file = file ? file : "";
   const std::string source_function = function ? function : "";
-  const std::string formatted = fmt::format("{} - {} - {} - {} - {}:{}\n",
-                                             LevelName(level), GetAbsTime(), name,
-                                             bounded_message, source_function, line);
+  const std::string source = fmt::format("{}:{}", Basename(source_file), line);
+  const std::tm local = LocalTime(std::time(nullptr));
 
   if (m_State->console_enabled && level >= m_State->console_level) {
-    const std::tm local = LocalTime(std::time(nullptr));
-    const std::string source =
-        fmt::format("{}:{}", Basename(source_file), line);
+    FILE *stream = m_State->console_stream;
+    const bool color = UseColor(m_State->color_mode, stream);
+    auto paint = [color](const fmt::text_style &style, const std::string &text) {
+      return color ? fmt::format(style, "{}", text) : text;
+    };
     // Pad before styling so ANSI escapes don't count toward column widths.
-    fmt::print(stderr, "{} {} {} {} {}\n",
-               fmt::format(fmt::fg(fmt::color::light_slate_gray), "[{:%T}]", local),
-               fmt::format(LevelStyle(level), "{:<8}", LevelName(level)),
-               fmt::format(fmt::fg(fmt::color::khaki), "{:<24}",
-                           "[" + name + "]"),
+    fmt::print(stream, "{} {} {} {} {}\n",
+               paint(fmt::fg(fmt::color::light_slate_gray),
+                     fmt::format("[{:%T}]", local)),
+               paint(LevelStyle(level), fmt::format("{:<8}", LevelName(level))),
+               paint(fmt::fg(fmt::color::khaki),
+                     fmt::format("{:<24}", "[" + name + "]")),
                fmt::format("{:<60}", bounded_message),
-               fmt::format(fmt::fg(fmt::color::dim_gray), "{}", source));
+               paint(fmt::fg(fmt::color::dim_gray), source));
   }
 
   if (m_State->file_enabled && level >= m_State->file_level) {
     RotateFileIfNeeded(m_State->log_filename);
     std::ofstream output(m_State->log_filename.c_str(), std::ios::app);
-    output << formatted;
+    output << fmt::format("{:%F %T} {} [{}] {}\t{}\n", local, LevelName(level),
+                          name, bounded_message, source);
   }
 
   if (m_State->rtma_enabled && level >= m_State->rtma_level) {

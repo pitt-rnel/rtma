@@ -1,6 +1,7 @@
 #ifndef _RTMA_LOGGER_H_
 #define _RTMA_LOGGER_H_
 
+#include <cstdio>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -19,6 +20,17 @@ enum RTMA_LogLevel {
   RTMA_LOG_CRITICAL = 50,
   RTMA_LOG_OFF = 1000
 };
+
+enum RTMA_ConsoleColor {
+  RTMA_COLOR_AUTO,
+  RTMA_COLOR_ALWAYS,
+  RTMA_COLOR_NEVER
+};
+
+const char *RTMA_LevelName(int level);
+
+// Accepts "DEBUG", "lDEBUG", "WARN", etc. (case-insensitive); throws std::invalid_argument.
+int RTMA_LevelFromName(const std::string &name);
 
 class RTMA_LoggingConfigurationError : public std::runtime_error {
 public:
@@ -126,6 +138,13 @@ public:
   bool IsRTMAEnabled() const;
   void SetFileEnabled(bool enabled);
   bool IsFileEnabled() const;
+
+  // The stream is not owned and must outlive the logger.
+  void SetConsoleStream(FILE *stream);
+  FILE *GetConsoleStream() const;
+  // AUTO colors only when the console stream is a terminal.
+  void SetConsoleColor(RTMA_ConsoleColor mode);
+  RTMA_ConsoleColor GetConsoleColor() const;
 
   void SetLogName(const std::string &name);
   std::string GetLogName() const;

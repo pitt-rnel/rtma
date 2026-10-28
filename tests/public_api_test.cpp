@@ -11,6 +11,18 @@ int main() {
   RTMA_Logger &logger = module.Logger();
   logger.SetConsoleEnabled(true);
   logger.SetRTMAEnabled(false);
+  if (logger.GetConsoleStream() != stderr || logger.GetConsoleColor() != RTMA_COLOR_AUTO)
+    return 1;
+  logger.SetConsoleStream(stdout);
+  logger.SetConsoleColor(RTMA_COLOR_ALWAYS);
+  if (RTMA_LevelFromName("lwarn") != RTMA_LOG_WARNING ||
+      RTMA_LevelFromName("Critical") != RTMA_LOG_CRITICAL)
+    return 1;
+  try {
+    RTMA_LevelFromName("bogus");
+    return 1;
+  } catch (const std::invalid_argument &) {
+  }
   module.info(RTMA_LOG_SOURCE, "client logger forwarding works");
   logger.SetLogFilename("rtma_public_api_test.log");
   logger.SetFileEnabled(true);
