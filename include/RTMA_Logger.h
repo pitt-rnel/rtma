@@ -147,6 +147,8 @@ public:
   RTMA_ConsoleColor GetConsoleColor() const;
 
   void SetLogName(const std::string &name);
+  // No-op once SetLogName() has been called explicitly.
+  void SetDefaultLogName(const std::string &name);
   std::string GetLogName() const;
   void SetLogFilename(const std::string &filename);
   std::string GetLogFilename() const;

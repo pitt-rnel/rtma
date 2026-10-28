@@ -40,6 +40,13 @@ int main() {
   logger.SetFileEnabled(false);
   logger.SetLogFilename("other.log");
 
+  RTMA_Module named(5, 0);
+  named.Logger().SetLogName("Custom");
+  named.InitVariables(6, 0);
+  named.Logger().SetDefaultLogName("Module 6");
+  if (named.Logger().GetLogName() != "Custom")
+    return 1;
+
   // test message size compatibility
   static_assert(sizeof(MDF_RTMA_LOG) == 1936, "MDF_RTMA_LOG must retain its PyRTMA wire layout");
 

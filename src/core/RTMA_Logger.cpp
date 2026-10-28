@@ -179,7 +179,8 @@ public:
         console_level(initial_level), rtma_level(initial_level),
         file_level(initial_level), console_enabled(true), rtma_enabled(true),
         file_enabled(false), file_initialized(false),
-        console_stream(stderr), color_mode(RTMA_COLOR_AUTO) {}
+        console_stream(stderr), color_mode(RTMA_COLOR_AUTO),
+        name_is_default(true) {}
 
   RTMA_Module *module;
   std::string log_name;
@@ -194,6 +195,7 @@ public:
   bool file_initialized;
   FILE *console_stream;
   RTMA_ConsoleColor color_mode;
+  bool name_is_default;
   std::mutex mutex;
 };
 
@@ -263,7 +265,14 @@ void RTMA_Logger::SetConsoleColor(RTMA_ConsoleColor mode) {
 }
 RTMA_ConsoleColor RTMA_Logger::GetConsoleColor() const { return m_State->color_mode; }
 
-void RTMA_Logger::SetLogName(const std::string &name) { m_State->log_name = name; }
+void RTMA_Logger::SetLogName(const std::string &name) {
+  m_State->log_name = name;
+  m_State->name_is_default = false;
+}
+void RTMA_Logger::SetDefaultLogName(const std::string &name) {
+  if (m_State->name_is_default)
+    m_State->log_name = name;
+}
 std::string RTMA_Logger::GetLogName() const {
   return m_NameSuffix.empty() ? m_State->log_name : m_State->log_name + "." + m_NameSuffix;
 }

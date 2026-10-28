@@ -351,7 +351,7 @@ void RTMA_Module::InitVariables(MODULE_ID ModuleID, HOST_ID HostID) {
     if (m_Logger.get() == NULL)
       m_Logger.reset(new RTMA_Logger(this, log_name));
     else
-      m_Logger->SetLogName(log_name);
+      m_Logger->SetDefaultLogName(log_name);
   }
   CATCH_and_THROW(
       "void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID)");
@@ -440,7 +440,7 @@ int RTMA_Module::ConnectToMMM(char *server_name, int logger_status,
       if (m_ModuleID == 0)
         m_ModuleID = ack_msg->dest_mod_id;
 
-      m_Logger->SetLogName("Module " + std::to_string(m_ModuleID));
+      m_Logger->SetDefaultLogName("Module " + std::to_string(m_ModuleID));
 
       m_Connected = 1;
 
