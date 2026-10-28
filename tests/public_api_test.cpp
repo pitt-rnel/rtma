@@ -9,13 +9,15 @@ int main() {
 
   RTMA_Module module(99, 0);
   RTMA_Logger &logger = module.Logger();
-  logger.SetConsoleEnabled(false);
+  logger.SetConsoleEnabled(true);
   logger.SetRTMAEnabled(false);
   module.info(RTMA_LOG_SOURCE, "client logger forwarding works");
   logger.SetLogFilename("rtma_public_api_test.log");
   logger.SetFileEnabled(true);
   logger.SetAllLevels(RTMA_LOG_DEBUG);
-  logger.info(RTMA_LOG_SOURCE, "public API test {}", 1);
+  logger.debug(RTMA_LOG_SOURCE, "public API test {}", 1);
+  logger.warning(RTMA_LOG_SOURCE, "warning test");
+  logger.error(RTMA_LOG_SOURCE, "error test");
 
   try {
     logger.SetLogFilename("other.log");
