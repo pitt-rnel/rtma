@@ -10,6 +10,7 @@
    |                              INCLUDES                                    |
    ----------------------------------------------------------------------------*/
 #include "OS_defines.h"
+#include "RTMA_Logger.h"
 #include "RTMA_types.h"
 #include "internal/UPipe.h"
 
@@ -103,6 +104,9 @@ public:
 /* ----------------------------------------------------------------------------
    |                       RTMA CODE                                           |
    ----------------------------------------------------------------------------*/
+// Not thread-safe: do not call SendMessage() or other members from several threads
+// at once. Logger() output to RTMA calls SendMessage(), so with it enabled (the
+// default) log from one thread only, or call Logger().SetRTMAEnabled(false).
 class RTMA_Module {
 private:
   UPipeClient *_pipeClient;
@@ -111,6 +115,7 @@ private:
   HOST_ID m_HostID;
   double m_StartTime;
   int m_Pid;
+  std::unique_ptr<RTMA_Logger> m_Logger;
 
 #if (RTMA_PROFILE == TRUE)
   int m_NumProfiledMsgs;
@@ -200,6 +205,7 @@ public:
   // Send a message through the RTMA system. If destination module ID is 0, then
   // the message is broadcast to all modules. If host is 0, then broadcast to
   // all hosts.
+  // Not thread-safe.
 
   int SendMessageRTMA(CMessage *M, MODULE_ID dest_mod_id = 0,
                       HOST_ID dest_host_id = 0);
@@ -251,6 +257,39 @@ public:
 
   MODULE_ID
   GetModuleID() const { return m_ModuleID; }
+
+  RTMA_Logger &Logger();
+  const RTMA_Logger &Logger() const;
+
+  template <typename... Args>
+  void debug(RTMA_LogFormatFor<Args...> format, Args &&...args) {
+    Logger().debug(format, std::forward<Args>(args)...);
+  }
+
+  template <typename... Args>
+  void info(RTMA_LogFormatFor<Args...> format, Args &&...args) {
+    Logger().info(format, std::forward<Args>(args)...);
+  }
+
+  template <typename... Args>
+  void warning(RTMA_LogFormatFor<Args...> format, Args &&...args) {
+    Logger().warning(format, std::forward<Args>(args)...);
+  }
+
+  template <typename... Args>
+  void warn(RTMA_LogFormatFor<Args...> format, Args &&...args) {
+    Logger().warn(format, std::forward<Args>(args)...);
+  }
+
+  template <typename... Args>
+  void error(RTMA_LogFormatFor<Args...> format, Args &&...args) {
+    Logger().error(format, std::forward<Args>(args)...);
+  }
+
+  template <typename... Args>
+  void critical(RTMA_LogFormatFor<Args...> format, Args &&...args) {
+    Logger().critical(format, std::forward<Args>(args)...);
+  }
 };
 
 /* ----------------------------------------------------------------------------

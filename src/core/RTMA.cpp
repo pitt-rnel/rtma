@@ -11,6 +11,7 @@
 #include <UPipe.h>
 #include <stdlib.h>
 #include <memory> // For std::unique_ptr
+#include <string>
 #include <string.h>
 
 #ifdef _WINDOWS_C
@@ -345,17 +346,29 @@ void RTMA_Module::InitVariables(MODULE_ID ModuleID, HOST_ID HostID) {
 #endif
 
     InitializeAbsTime();
+
+    const std::string log_name = "Module " + std::to_string(ModuleID);
+    if (m_Logger.get() == NULL)
+      m_Logger.reset(new RTMA_Logger(this, log_name));
+    else
+      m_Logger->SetDefaultLogName(log_name);
   }
   CATCH_and_THROW(
       "void RTMA_Module::InitVariables( MODULE_ID ModuleID, HOST_ID HostID)");
 }
 
 RTMA_Module::~RTMA_Module() {
+  if (m_Logger)
+    m_Logger->Detach();
   try {
     Cleanup();
   } catch (...) {
   }
 }
+
+RTMA_Logger &RTMA_Module::Logger() { return *m_Logger; }
+
+const RTMA_Logger &RTMA_Module::Logger() const { return *m_Logger; }
 
 void RTMA_Module::Cleanup(void) {
   TRY {
@@ -428,6 +441,8 @@ int RTMA_Module::ConnectToMMM(char *server_name, int logger_status,
       // save own module ID from ACK if asked to be assigned dynamic ID
       if (m_ModuleID == 0)
         m_ModuleID = ack_msg->dest_mod_id;
+
+      m_Logger->SetDefaultLogName("Module " + std::to_string(m_ModuleID));
 
       m_Connected = 1;
 
