@@ -19,12 +19,7 @@ int main(int argc, char *argv[])
 	{
 		char *options;
 		char empty_str[] = "";
-#ifdef _UNIX_C
 		options = (argc > 1) ? argv[1] : empty_str;
-#else
-		options = (argc > 1) ? argv[1] : empty_str;
-// options = (char*) lpCmdLine;
-#endif
 
 		CMessageManager* MM = new CMessageManager();
 		MM->MainLoop(options);
