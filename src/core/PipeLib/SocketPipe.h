@@ -16,6 +16,7 @@
 		#define WINSOCK_H
 		#define FD_SETSIZE UPipeServer::MAX_CLIENTS
 		#include <winsock2.h>
+		#include <ws2tcpip.h>
 	#endif
 #else
 	//LINUX   only h files
@@ -25,6 +26,7 @@
 	#include <string.h>
 	#include <netdb.h>
 	#include <sys/types.h>
+	#include <arpa/inet.h>
 	#include <netinet/in.h>
 	#include <sys/socket.h>
 	#include <netinet/tcp.h>
@@ -42,6 +44,8 @@
         #  error "Cannot block SIGPIPE!"
     # endif
     #endif
+
+	#define SOCKET_ERROR (-1)
 
 #endif
 
@@ -71,6 +75,7 @@ public:
 	int GetCapacity( void);
 	int Read( void *data_buffer, int n_bytes, double timeout);
 	int Write( void *data_buffer, int n_bytes, double timeout);
+	int GetIpAddress(char* addr, uint16_t* port, int bufsz);
 
 private:
 	SocketHandle _hPipe; // Handle to underlying OS socket

@@ -16,8 +16,6 @@ public:
 		} CATCH_and_THROW( "CMessageBufferer::CMessageBufferer( )");
 	}
 	~CMessageBufferer( ) {
-		TRY {
-		} CATCH_and_THROW( "CMessageBufferer::~CMessageBufferer( )");
 	}
 	int SaveMessage( CMessage *M)
 	{

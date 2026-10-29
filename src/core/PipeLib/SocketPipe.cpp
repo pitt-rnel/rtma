@@ -376,12 +376,28 @@ SocketPipe::Read( void *data_buffer, int nbytes_to_read, double timeout)
 			if( e == EINTR) throw UPipeSignalException("A signal was caught while waiting for incoming data in select()");
 			// Any other error codes are real errors, so throw a general exception
 			char errmsg[1024];
-			sprintf( errmsg, "error in select() call: errno = %i", e);
+			snprintf( errmsg, sizeof(errmsg), "error in select() call: errno = %i", e);
 			switch( e) {
-			case EBADF: sprintf( errmsg, "%s (EBADF, bad file descriptor in select set)", errmsg); break;
-			//case EINTR: sprintf( errmsg, "%s (EINTR, select was interrupted by a signal)", errmsg); break;
-			case EINVAL: sprintf( errmsg, "%s (EINVAL, nfds is negative or invalid timeout value)", errmsg); break;
-			case ENOMEM: sprintf( errmsg, "%s (ENOMEM, unable to allocate memory for internal tables)", errmsg); break;
+			case EBADF: {
+				size_t used = strlen(errmsg);
+				if( used < sizeof(errmsg)) snprintf( errmsg + used, sizeof(errmsg) - used, " (EBADF, bad file descriptor in select set)");
+				break;
+			}
+			//case EINTR: {
+			//	size_t used = strlen(errmsg);
+			//	if( used < sizeof(errmsg)) snprintf( errmsg + used, sizeof(errmsg) - used, " (EINTR, select was interrupted by a signal)");
+			//	break;
+			//}
+			case EINVAL: {
+				size_t used = strlen(errmsg);
+				if( used < sizeof(errmsg)) snprintf( errmsg + used, sizeof(errmsg) - used, " (EINVAL, nfds is negative or invalid timeout value)");
+				break;
+			}
+			case ENOMEM: {
+				size_t used = strlen(errmsg);
+				if( used < sizeof(errmsg)) snprintf( errmsg + used, sizeof(errmsg) - used, " (ENOMEM, unable to allocate memory for internal tables)");
+				break;
+			}
 			}
 		    throw UPipeException( errmsg);
 		}
@@ -443,8 +459,39 @@ SocketPipe::Write( void *data_buffer, int n_bytes, double timeout)
 		}
 		return nbytes_writ;
 	} CATCH_and_THROW( "SocketPipe::Write");
-}
+} 
 
+int SocketPipe::GetIpAddress(char* addr, uint16_t* port, int bufsz)
+{
+	// References:
+	// windows: https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-getsockname
+ 	// linux: https://man7.org/linux/man-pages/man2/getsockname.2.html
+
+	if (addr == NULL || port == NULL || bufsz <= 0) {
+		return 0;
+	}
+
+	struct sockaddr_in peer;
+	memset(&peer, 0, sizeof(peer));
+#ifdef _WINDOWS_C
+	int namelen = sizeof(peer);
+#else
+	socklen_t namelen = sizeof(peer);
+#endif
+	if (getpeername(_hPipe.id, (struct sockaddr*)&peer, &namelen) == SOCKET_ERROR) {
+		addr[0] = '\0';
+		*port = 0;
+		return 0;
+	}
+
+	*port = ntohs(peer.sin_port);
+	if (inet_ntop(AF_INET, &(peer.sin_addr), addr, bufsz) == NULL) {
+		addr[0] = '\0';
+		return 0;
+	}
+
+	return 1;
+}
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -560,13 +607,14 @@ SocketPipeServer::SocketPipeServer( char *host_addr, short port_no)
 
 SocketPipeServer::~SocketPipeServer()
 {
-	TRY {
+	try {
 		DisconnectAllClients();
 		CloseSocket( _hListeningSocket);
 		#ifdef _WINDOWS_C
 		CleanupWinSock();
 		#endif
-	} CATCH_and_THROW( "SocketPipeServer::~SocketPipeServer");
+	} catch(...) {
+	}
 }
 //
 ///////////////////////////////////////////////////////////////////////
@@ -701,12 +749,13 @@ SocketPipeClient::SocketPipeClient( char *host_addr, short port_no)
 
 SocketPipeClient::~SocketPipeClient()
 {
-	TRY {
+	try {
 		Disconnect();
 		#ifdef _WINDOWS_C
 		CleanupWinSock();
 		#endif
-	} CATCH_and_THROW( "SocketPipeClient::~SocketPipeClient");
+	} catch(...) {
+	}
 }
 //
 //////////////////////////////////////////////////////////////////////

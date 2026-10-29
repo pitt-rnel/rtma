@@ -119,7 +119,6 @@ private:
 	HOST_ID     m_HostID;
 	double      m_StartTime;
 	int         m_Pid;
-	int         m_TimerCount;
 
 	#if (RTMA_PROFILE == TRUE)
 		int			     m_NumProfiledMsgs;
@@ -251,17 +250,6 @@ public:
 	//Waits for a message: 
 	//if MsgType is specified- will not return until the requested msg type was received (and will discard all other messages received)
 	//if MsgType is not specified- will return the first message received (in this case just a wrapper for ReadMessage) 
-
-	int
-	SetTimer(unsigned int time_ms);
-	//sets a local timer to expire within the time stated (in ms). Returns timer_id or -1 on failure
-
-	int
-	CancelTimer(int timer_id);
-
-	int
-	SelfNotifyExpiredTimer(int timer_id);
-	//sends MT_TIMER_EXPIRED to m_WrtInputPipe (self input pipe). Returns 0 on failure, 1 on success
 
 	double UpTime( void);
 

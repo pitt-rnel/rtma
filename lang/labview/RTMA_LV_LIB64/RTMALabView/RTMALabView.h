@@ -86,11 +86,3 @@ RTMALabView_API	void WaitForMessage( int mt, void *pData, int num_bytes, int Msg
 	//Waits for a message: 
 	//if MsgType is specified- will not return until the requested msg type was received (and will discard all other messages received)
 	//if MsgType is not specified- will return the first message received (in this case just a wrapper for ReadMessage) 
-
-//RTMALabView_API	int	SetTimer(unsigned int time_ms);
-//	//sets a local timer to expire within the time stated (in ms). Returns timer_id or -1 on failure
-//
-//RTMALabView_API	int	CancelTimer(int timer_id);
-//
-//RTMALabView_API	int	SelfNotifyExpiredTimer(int timer_id);
-//	//sends MT_TIMER_EXPIRED to m_WrtInputPipe (self input pipe). Returns 0 on failure, 1 on success
