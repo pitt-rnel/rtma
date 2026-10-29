@@ -225,6 +225,8 @@ void CMessageManager::SendPing(MODULE_ID mod_id)
 void CMessageManager::HandleSetName(CMessage *M)
 {
 	MDF_CLIENT_SET_NAME set_name;
+	if (M->num_data_bytes != sizeof(set_name))
+		return;
 	M->GetData((void *)&set_name);
 	CModuleRecord *mod = GetRecord(M->src_mod_id);
 	if ((mod != NULL) && (mod->uid >= 0))
