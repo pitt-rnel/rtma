@@ -90,7 +90,7 @@ void CMessageManager::MainLoop(char *cmd_line_options)
 
 void CMessageManager::HandleData(UPipe *pSourcePipe)
 {
-	SetMyPriority(THIS_MODULE_BASE_PRIORITY);
+	//SetMyPriority(THIS_MODULE_BASE_PRIORITY);
 	DEBUG_TEXT_("Receiving message from pipe " << pSourcePipe << "... ");
 	CMessage M;
 	M.Receive(pSourcePipe);
@@ -98,7 +98,7 @@ void CMessageManager::HandleData(UPipe *pSourcePipe)
 
 	ProcessMessage(&M, pSourcePipe);
 	DistributeMessage(&M);
-	SetMyPriority(NORMAL_PRIORITY_CLASS);
+	//SetMyPriority(NORMAL_PRIORITY_CLASS);
 }
 
 void CMessageManager::HandleDisconnect(UPipe *pModulePipe)
@@ -754,13 +754,13 @@ void CMessageManager::HandleConnect(CMessage *M, UPipe *pSourcePipe)
 	memset(&data, 0, sizeof(data));
 	M->GetData((void *)&data);
 	int prev_priority_class = GetMyPriority();
-	SetMyPriority(NORMAL_PRIORITY_CLASS);
+	//SetMyPriority(NORMAL_PRIORITY_CLASS);
 	MODULE_ID mod_id = ConnectModule(M->src_mod_id, pSourcePipe, data.logger_status, data.daemon_status);
 	//printf("Connect: %d\n", mod_id);
-	if (mod_id > 0)
-	{
-		SetMyPriority(prev_priority_class);
-	}
+	// if (mod_id > 0)
+	// {
+	// 	SetMyPriority(prev_priority_class);
+	// }
 }
 
 void CMessageManager::HandleConnectV2(CMessage *M, UPipe *pSourcePipe)
@@ -768,13 +768,13 @@ void CMessageManager::HandleConnectV2(CMessage *M, UPipe *pSourcePipe)
 	MDF_CONNECT_V2 connect_v2;
 	M->GetData((void *)&connect_v2);
 	int prev_priority_class = GetMyPriority();
-	SetMyPriority(NORMAL_PRIORITY_CLASS);
+	//SetMyPriority(NORMAL_PRIORITY_CLASS);
 	MODULE_ID mod_id = ConnectModuleV2(M->src_mod_id, pSourcePipe, &connect_v2);
 	//printf("ConnectV2: %d\n", mod_id);
-	if (mod_id > 0)
-	{
-		SetMyPriority(prev_priority_class);
-	}
+	// if (mod_id > 0)
+	// {
+	// 	SetMyPriority(prev_priority_class);
+	// }
 }
 
 void CMessageManager::HandleForceDisconnect(CMessage *M)
@@ -788,9 +788,9 @@ void CMessageManager::HandleForceDisconnect(CMessage *M)
 void CMessageManager::HandleModuleDisconnect(CMessage *M)
 {
 	int prev_priority_class = GetMyPriority();
-	SetMyPriority(NORMAL_PRIORITY_CLASS);
+	//SetMyPriority(NORMAL_PRIORITY_CLASS);
 	DisconnectModule(M->src_mod_id);
-	SetMyPriority(prev_priority_class);
+	//SetMyPriority(prev_priority_class);
 }
 
 void CMessageManager::HandleModuleReady(CMessage *M)

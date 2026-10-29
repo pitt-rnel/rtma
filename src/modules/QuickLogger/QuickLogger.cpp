@@ -52,7 +52,7 @@ void CQuickLogger::MainFunction()
 		InitVariables( MID_QUICKLOGGER, 0);
 		ConnectToMMM( logger_status);
 		Subscribe( ALL_MESSAGE_TYPES);
-		if( SetMyPriority(NORMAL_PRIORITY_CLASS) == 0) throw MyCException( "SetMyPriority failed");
+		//if( SetMyPriority(NORMAL_PRIORITY_CLASS) == 0) throw MyCException( "SetMyPriority failed");
 		SendSignal( MT_LM_READY);
 		SendModuleReady(); //just so we have the PID
 
