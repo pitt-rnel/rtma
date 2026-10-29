@@ -773,6 +773,8 @@ void CMessageManager::HandleConnect(CMessage *M, UPipe *pSourcePipe)
 void CMessageManager::HandleConnectV2(CMessage *M, UPipe *pSourcePipe)
 {
 	MDF_CONNECT_V2 connect_v2;
+	if (M->num_data_bytes != sizeof(connect_v2))
+		return;
 	M->GetData((void *)&connect_v2);
 	int prev_priority_class = GetMyPriority();
 	//SetMyPriority(NORMAL_PRIORITY_CLASS);
