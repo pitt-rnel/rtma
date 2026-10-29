@@ -197,8 +197,8 @@ typedef struct {
 #define MT_CONNECT_V2 4
 typedef struct {
   int16_t logger_status;
-  int16_t daemon_status;
-  int16_t allow_multiple;
+  int16_t reserved;
+  int16_t reserved1;
   MODULE_ID mod_id;
   int32_t pid;
   char name[MAX_NAME_LEN];
@@ -213,13 +213,11 @@ typedef struct {
 
 #define MT_PING 29
 typedef struct {
-  int32_t uid;
   MODULE_ID dest_id;
 } MDF_PING;
 
 #define MT_PONG 30
 typedef struct {
-  int32_t uid;
   MODULE_ID src_id;
 } MDF_PONG;
 
@@ -227,7 +225,6 @@ typedef struct {
 
 #define MT_HELLO 32
 typedef struct {
-  int32_t uid;
   int32_t pid;
   MODULE_ID mod_id;
   uint16_t port;
@@ -237,7 +234,6 @@ typedef struct {
 
 #define MT_GOODBYE 33
 typedef struct {
-  int32_t uid;
   int32_t pid;
   MODULE_ID mod_id;
   uint16_t port;
