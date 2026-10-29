@@ -639,7 +639,7 @@ RTMA_Module::SendMessage( CMessage *M, UPipe *output_pipe, MODULE_ID dest_mod_id
 		if( output_pipe == NULL) return 0;
 
 		// Verify that the module & host ids are valid
-		if(dest_mod_id < 0 || dest_mod_id > MAX_MODULES)
+		if(dest_mod_id < 0 || dest_mod_id > MAX_MODULE_ID)
 		{
 			MyCString err("RTMA_Module::SendMessage: Got invalid dest_mod_id [");
 			err += MyCString(dest_mod_id) + "]";
