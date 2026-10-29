@@ -371,17 +371,15 @@ private:
 
 	MODULE_ID GetDynamicModuleId()
 	{
-		MODULE_ID curr_id = m_NextDynamicModId;
-
-		if (curr_id > MAX_MODULE_ID) {
-			printf("All dynamic IDs are in use.\n");
-			return 0;
+		for (int attempts = 0; attempts <= MAX_MODULE_ID - DYN_MOD_ID_START; ++attempts) {
+			MODULE_ID curr_id = m_NextDynamicModId;
+			m_NextDynamicModId = (curr_id == MAX_MODULE_ID)
+				? DYN_MOD_ID_START : curr_id + 1;
+			if (!ModuleIsConnected(curr_id))
+				return curr_id;
 		}
-		else {
-			// update offset to next available dynamic module ID
-			m_NextDynamicModId++;
-			return curr_id;
-		}
+		printf("All dynamic IDs are in use.\n");
+		return 0;
 	}
 
 	void
