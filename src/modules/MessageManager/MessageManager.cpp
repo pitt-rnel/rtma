@@ -341,7 +341,12 @@ void CMessageManager::DispatchMessage(CMessage *M)
 			}
 
 			CModuleRecord *mod = &m_ConnectedModules[uid];
-			SendMessage(M, mod);
+			try {
+				SendMessage(M, mod);
+			}
+			catch (UPipeClosedException&) {
+				DEBUG_TEXT("Failed to send MM message, destination module socket is closed/dead");
+			}
 			uid = SL->GetNextSubscriber();
 		}
 	}
