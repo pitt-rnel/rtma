@@ -35,9 +35,9 @@ Publications whose experiments utilized RTMA Messaging include:
 
 ## Prerequisites
 
-Bare minimum requirement is that you have a C++ compiler installed. On linux/mac, you also need to have qt-qmake (from qt4 or qt5)
-installed (in a future release, this requirement may be eliminated). If you'd like to have support for other languages, 
-see below further requirements:
+Bare minimum requirements are CMake 3.15 or newer and a C++11-capable compiler.
+RTMA supports MSVC on Windows and GCC or Clang on Linux and macOS. If you'd like to
+have support for other languages, see below for their separate requirements:
 
 #### Python
 - Version >= 2.6 (python3.7 preferred)
@@ -65,25 +65,25 @@ see below further requirements:
 
 Clone the repository and compile the source as follows:
 
-1. If planning to use the python interface, the makefile in `RTMA/lang/python` may need to be manually edited to correctly set variables (i.e. point to the correct python install location)
+1. In a terminal execute the following from the repository root:
+```shell
+cmake -S . -B build/cmake -DCMAKE_BUILD_TYPE=Release
+cmake --build build/cmake --parallel
+```
+To install in a desired prefix directory, run:
+```shell
+cmake --install build/cmake --prefix /desired/install/prefix
+```
 
-2. In a terminal execute the following:
-
-        cd RTMA/build
-        ./build_with_qmake.sh
-
-3. Create `RTMA` environment variable and set it to where your RTMA folder is (optional but can be used when building C++ modules)
-
-4. Copy `RTMA/lib/libRTMA.so` to `/usr/lib` or add `RTMA/lib` to `LD_LIBRARY_PATH` 
-    *  On older versions of MacOS, setting DYLD_LIBRARY_PATH may work. On recent versions of Mac (>= El Capitan), this no longer works due to System Integrity Protection (SIP). Instead, the .so file can be moved, copied, or hard linked via the `ln` command (e.g. `ln -s /path/to/original /path/to/link`) to standard library locations (~/lib, /usr/lib, or /usr/local/lib).
-    * Installing the library with a symlink (`ln -s`) to /usr/local/lib works well on Linux as well. You will likely need to run `sudo ldconfig` after linking the library so that the system recongnizes it.
+2. Create `RTMA` environment variable and set it to where your RTMA folder is (optional but can be used when building C++ modules)
 
 5. If you plan to use the matlab interface, start matlab and execute the following:
-
-        cd RTMA/lang/matlab
-        make
-        cd RTMA/src/modules/QuickLogger/LogReader
-        make
+```matlab
+cd RTMA/lang/matlab
+make
+cd RTMA/src/modules/QuickLogger/LogReader
+make
+```
 
 6. If you plan to use the python interface, append `RTMA/lang/python` to `PYTHONPATH` environment variable
         
@@ -92,7 +92,15 @@ Clone the repository and compile the source as follows:
 
 If you'd like to compile from source, clone the repository and follow these instructions:
 
-1. Build `RTMA/build/RTMA.sln` with Visual Studio (2005 or later)
+1. Generate and build a Visual Studio solution from the repository root:
+```shell
+cmake -S . -B build/cmake -G "Visual Studio 18 2026" -A x64
+cmake --build build/cmake --config Release
+```
+To install in a desired prefix directory, run:
+```shell
+cmake --install build/cmake --config Release --prefix C:\desired\install\prefix
+```
 
 2. Create `RTMA` environment variable and set it to where your RTMA folder is (optional, but can be used to build C++ modules)
 
@@ -104,11 +112,12 @@ If you'd like to compile from source, clone the repository and follow these inst
     * Add `%RTMA%\lang\python` to `PYTHONPATH` environment variable
 	
 4. If you plan to use the Matlab interface, start matlab and execute the following:
-    	
-        cd RTMA\lang\matlab
-        make
-        cd RTMA\src\modules\QuickLogger\LogReader
-        make
+```matlab
+cd RTMA\lang\matlab
+make
+cd RTMA\src\modules\QuickLogger\LogReader
+make
+```
     Note that 64-bit Windows mex files are tracked in the repo and this step is usually unecessary when running 64-bit Windows
 
 
@@ -152,44 +161,46 @@ Each message consists of a message type and an optional message body.
 The message type is an integer that should be selected to uniquely identify each message. 
 It is set with a `#define` statement and the name of the message needs to begin with `MT_`.
 Here is an example: 
-
-        #define MT_ROBOT_FEEDBACK               100
+```C
+#define MT_ROBOT_FEEDBACK               100
+```
         
 The message body is a `struct` composed of one or more data fields which can be standard [C data types](http://en.wikipedia.org/wiki/C_data_types) 
 and other structs. The struct has to have the same message name as the message type, and it needs to begin with `MDF_`. 
 Here is an example:
-        
-        typedef struct {
-          double    position;
-          double    velocity;
-          double    force;
-        } MDF_ROBOT_FEEDBACK;        
+```C
+typedef struct {
+  double    position;
+  double    velocity;
+  double    force;
+} MDF_ROBOT_FEEDBACK;
+```
 
 Here is a more complex example:
+```C
+typedef struct {
+    int     SerialNo;
+    int     Flags;
+    double  dt;
+} SAMPLE_HEADER;
 
-        typedef struct {
-            int     SerialNo;
-            int     Flags;
-            double  dt;
-        } SAMPLE_HEADER;
-
-        #define MAX_ROBOT_FEEDBACK_DIMS     10
-        typedef struct {
-          SAMPLE_HEADER sample_header;
-          double        position[MAX_ROBOT_FEEDBACK_DIMS];
-          double        velocity[MAX_ROBOT_FEEDBACK_DIMS];
-          double        force[MAX_ROBOT_FEEDBACK_DIMS];
-        } MDF_ROBOT_FEEDBACK;
-
+#define MAX_ROBOT_FEEDBACK_DIMS     10
+typedef struct {
+  SAMPLE_HEADER sample_header;
+  double        position[MAX_ROBOT_FEEDBACK_DIMS];
+  double        velocity[MAX_ROBOT_FEEDBACK_DIMS];
+  double        force[MAX_ROBOT_FEEDBACK_DIMS];
+} MDF_ROBOT_FEEDBACK;
+```
 The message body fields need to be manually padded for [data alignment](http://en.wikipedia.org/wiki/Data_alignment) as necessary. 
 The following is an example of how to define the fields for 64-bit alignment:
-
-        typedef struct {
-          int source_index;    		
-          int reserved;        		// for 64-bit alignment
-          double source_timestamp;
-        } MDF_RAW_SAMPLE_RESPONSE;
-
+```C
+typedef struct {
+  int source_index;    		
+  int reserved;        		// for 64-bit alignment
+  double source_timestamp;
+} MDF_RAW_SAMPLE_RESPONSE;
+```
 If you are not sure how to align message fields on your system, it is safe to use 64-bit alignment. 
 Even if your system is not 64-bit, or if you have a mixture of systems with different alignment requirements,
 this practice will ensure proper alignment.
