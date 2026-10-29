@@ -454,7 +454,9 @@ void RTMA_Logger::LogMessage(int level, const char *function, const char *file,
     const std::string name = state.FullName(m_NameSuffix);
     const std::string source_file = file ? file : "";
     const std::string source_function = function ? function : "";
-    const std::string source = fmt::format("{}:{}", Basename(source_file), line);
+    const std::string source =
+        source_file.empty() ? std::string()
+                            : fmt::format("{}:{}", Basename(source_file), line);
 
     if (state.console_enabled && level >= state.console_level) {
       try {

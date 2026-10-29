@@ -25,7 +25,7 @@ int TestChildOutlivesModule() {
     temp.Logger().SetConsoleEnabled(false);
     child.reset(new RTMA_Logger(temp.Logger().Child("kid")));
   }
-  child->info(RTMA_LOG_SOURCE, "logged after the module is gone");
+  child->info("logged after the module is gone");
   return child->GetLogName() == "Module 7.kid" ? 0 : 1;
 }
 
@@ -43,7 +43,7 @@ int TestFileRotation() {
 
   const std::string text(1000, 'x');
   for (int i = 0; i < 11000; ++i)
-    logger.info(RTMA_LOG_SOURCE, "{}", text);
+    logger.info("{}", text);
   logger.SetFileEnabled(false);
 
   const bool ok = FileExists(path) && FileExists(path + ".1") &&
@@ -64,7 +64,8 @@ int TestConsoleStreamAndTruncation() {
   logger.SetRTMAEnabled(false);
   logger.SetConsoleStream(capture);
   logger.SetConsoleColor(RTMA_COLOR_NEVER);
-  logger.info(RTMA_LOG_SOURCE, "{}", std::string(2000, 'y'));
+  logger.info("{}", std::string(2000, 'y'));
+  module.info("via module {}", 1);
   logger.SetConsoleStream(stderr);
 
   std::fflush(capture);
@@ -76,7 +77,15 @@ int TestConsoleStreamAndTruncation() {
     out.append(buffer, n);
   std::fclose(capture);
 
-  return out.size() >= 2000 && out.find('\x1b') == std::string::npos ? 0 : 1;
+  if (out.size() < 2000 || out.find('\x1b') != std::string::npos)
+    return 1;
+#ifdef RTMA_AUTO_SOURCE
+  // The module forwarder must report its caller, not RTMA.h.
+  if (out.find("public_api_test.cpp:") == std::string::npos ||
+      out.find("RTMA.h") != std::string::npos)
+    return 1;
+#endif
+  return 0;
 }
 
 int TestThreadedLogging() {
@@ -89,7 +98,7 @@ int TestThreadedLogging() {
   for (int t = 0; t < 4; ++t)
     threads.emplace_back([&logger]() {
       for (int i = 0; i < 200; ++i)
-        logger.info(RTMA_LOG_SOURCE, "message {}", i);
+        logger.info("message {}", i);
     });
   for (int i = 0; i < 200; ++i) {
     logger.SetAllLevels(i % 2 ? RTMA_LOG_DEBUG : RTMA_LOG_INFO);
@@ -124,13 +133,13 @@ int main() {
     return 1;
   } catch (const std::invalid_argument &) {
   }
-  module.info(RTMA_LOG_SOURCE, "client logger forwarding works");
+  module.info("client logger forwarding works");
   logger.SetLogFilename("rtma_public_api_test.log");
   logger.SetFileEnabled(true);
   logger.SetAllLevels(RTMA_LOG_DEBUG);
-  logger.debug(RTMA_LOG_SOURCE, "public API test {}", 1);
-  logger.warning(RTMA_LOG_SOURCE, "warning test");
-  logger.error(RTMA_LOG_SOURCE, "error test");
+  logger.debug("public API test {}", 1);
+  logger.warning("warning test");
+  logger.error("error test");
 
   try {
     logger.SetLogFilename("other.log");

@@ -262,41 +262,33 @@ public:
   const RTMA_Logger &Logger() const;
 
   template <typename... Args>
-  void debug(const char *function, const char *file, int line,
-             fmt::format_string<Args...> format, Args &&...args) {
-    Logger().debug(function, file, line, format, std::forward<Args>(args)...);
+  void debug(RTMA_LogFormatFor<Args...> format, Args &&...args) {
+    Logger().debug(format, std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  void info(const char *function, const char *file, int line,
-            fmt::format_string<Args...> format, Args &&...args) {
-    Logger().info(function, file, line, format, std::forward<Args>(args)...);
+  void info(RTMA_LogFormatFor<Args...> format, Args &&...args) {
+    Logger().info(format, std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  void warning(const char *function, const char *file, int line,
-               fmt::format_string<Args...> format, Args &&...args) {
-    Logger().warning(function, file, line, format,
-                     std::forward<Args>(args)...);
+  void warning(RTMA_LogFormatFor<Args...> format, Args &&...args) {
+    Logger().warning(format, std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  void warn(const char *function, const char *file, int line,
-            fmt::format_string<Args...> format, Args &&...args) {
-    Logger().warn(function, file, line, format, std::forward<Args>(args)...);
+  void warn(RTMA_LogFormatFor<Args...> format, Args &&...args) {
+    Logger().warn(format, std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  void error(const char *function, const char *file, int line,
-             fmt::format_string<Args...> format, Args &&...args) {
-    Logger().error(function, file, line, format, std::forward<Args>(args)...);
+  void error(RTMA_LogFormatFor<Args...> format, Args &&...args) {
+    Logger().error(format, std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  void critical(const char *function, const char *file, int line,
-                fmt::format_string<Args...> format, Args &&...args) {
-    Logger().critical(function, file, line, format,
-                      std::forward<Args>(args)...);
+  void critical(RTMA_LogFormatFor<Args...> format, Args &&...args) {
+    Logger().critical(format, std::forward<Args>(args)...);
   }
 };
 

@@ -38,79 +38,126 @@ public:
       : std::runtime_error(message) {}
 };
 
+// Define RTMA_NO_AUTO_SOURCE to force the no-location fallback (e.g. C++/CLI or MEX builds).
+#if defined(RTMA_NO_AUTO_SOURCE)
+#elif defined(__has_builtin)
+#if __has_builtin(__builtin_FILE) && __has_builtin(__builtin_FUNCTION) && \
+    __has_builtin(__builtin_LINE)
+#define RTMA_AUTO_SOURCE 1
+#endif
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#define RTMA_AUTO_SOURCE 1
+#elif defined(_MSC_VER) && _MSC_VER >= 1926
+#define RTMA_AUTO_SOURCE 1
+#endif
+
+#ifdef RTMA_AUTO_SOURCE
+#define RTMA_CALLER_FUNCTION __builtin_FUNCTION()
+#define RTMA_CALLER_FILE __builtin_FILE()
+#define RTMA_CALLER_LINE __builtin_LINE()
+#else
+#define RTMA_CALLER_FUNCTION ""
+#define RTMA_CALLER_FILE ""
+#define RTMA_CALLER_LINE 0
+#endif
+
+namespace rtma_detail {
+template <typename T> struct Identity { typedef T type; };
+} // namespace rtma_detail
+
+// Default arguments are evaluated where the format string is converted, i.e. at the
+// caller, which is why the format string is wrapped instead of trailing the args.
+template <typename... Args> struct RTMA_LogFormat {
+  template <typename S>
+  RTMA_LogFormat(const S &s, const char *caller_function = RTMA_CALLER_FUNCTION,
+                 const char *caller_file = RTMA_CALLER_FILE,
+                 int caller_line = RTMA_CALLER_LINE)
+      : format(s), function(caller_function), file(caller_file),
+        line(caller_line) {}
+
+  fmt::format_string<Args...> format;
+  const char *function;
+  const char *file;
+  int line;
+};
+
+#undef RTMA_CALLER_FUNCTION
+#undef RTMA_CALLER_FILE
+#undef RTMA_CALLER_LINE
+
+// Args are deduced from the log arguments only, never from the format string.
+template <typename... Args>
+using RTMA_LogFormatFor =
+    RTMA_LogFormat<typename rtma_detail::Identity<Args>::type...>;
+
 // Thread-safe, but RTMA output goes through RTMA_Module::SendMessage(), which is not.
+//
+// The level methods (info(), error(), ...) record the caller's function, file and line
+// automatically where the compiler provides __builtin_FILE() and friends; otherwise
+// (RTMA_AUTO_SOURCE undefined) they record no location. Log() always takes it explicitly.
 class RTMA_Logger {
 public:
   RTMA_Logger(RTMA_Module *module, const std::string &log_name,
               int level = RTMA_LOG_INFO);
 
   template <typename... Args>
-  void Debug(const char *function, const char *file, int line,
-             fmt::format_string<Args...> format, Args &&...args) {
-    Log(RTMA_LOG_DEBUG, function, file, line, format,
+  void Debug(RTMA_LogFormatFor<Args...> f, Args &&...args) {
+    Log(RTMA_LOG_DEBUG, f.function, f.file, f.line, f.format,
         std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  void Info(const char *function, const char *file, int line,
-            fmt::format_string<Args...> format, Args &&...args) {
-    Log(RTMA_LOG_INFO, function, file, line, format, std::forward<Args>(args)...);
-  }
-
-  template <typename... Args>
-  void Warning(const char *function, const char *file, int line,
-               fmt::format_string<Args...> format, Args &&...args) {
-    Log(RTMA_LOG_WARNING, function, file, line, format,
+  void Info(RTMA_LogFormatFor<Args...> f, Args &&...args) {
+    Log(RTMA_LOG_INFO, f.function, f.file, f.line, f.format,
         std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  void Error(const char *function, const char *file, int line,
-             fmt::format_string<Args...> format, Args &&...args) {
-    Log(RTMA_LOG_ERROR, function, file, line, format, std::forward<Args>(args)...);
-  }
-
-  template <typename... Args>
-  void Critical(const char *function, const char *file, int line,
-                fmt::format_string<Args...> format, Args &&...args) {
-    Log(RTMA_LOG_CRITICAL, function, file, line, format,
+  void Warning(RTMA_LogFormatFor<Args...> f, Args &&...args) {
+    Log(RTMA_LOG_WARNING, f.function, f.file, f.line, f.format,
         std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  void debug(const char *function, const char *file, int line,
-             fmt::format_string<Args...> format, Args &&...args) {
-    Debug(function, file, line, format, std::forward<Args>(args)...);
+  void Error(RTMA_LogFormatFor<Args...> f, Args &&...args) {
+    Log(RTMA_LOG_ERROR, f.function, f.file, f.line, f.format,
+        std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  void info(const char *function, const char *file, int line,
-            fmt::format_string<Args...> format, Args &&...args) {
-    Info(function, file, line, format, std::forward<Args>(args)...);
+  void Critical(RTMA_LogFormatFor<Args...> f, Args &&...args) {
+    Log(RTMA_LOG_CRITICAL, f.function, f.file, f.line, f.format,
+        std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  void warning(const char *function, const char *file, int line,
-               fmt::format_string<Args...> format, Args &&...args) {
-    Warning(function, file, line, format, std::forward<Args>(args)...);
+  void debug(RTMA_LogFormatFor<Args...> f, Args &&...args) {
+    Debug(f, std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  void warn(const char *function, const char *file, int line,
-            fmt::format_string<Args...> format, Args &&...args) {
-    Warning(function, file, line, format, std::forward<Args>(args)...);
+  void info(RTMA_LogFormatFor<Args...> f, Args &&...args) {
+    Info(f, std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  void error(const char *function, const char *file, int line,
-             fmt::format_string<Args...> format, Args &&...args) {
-    Error(function, file, line, format, std::forward<Args>(args)...);
+  void warning(RTMA_LogFormatFor<Args...> f, Args &&...args) {
+    Warning(f, std::forward<Args>(args)...);
   }
 
   template <typename... Args>
-  void critical(const char *function, const char *file, int line,
-                fmt::format_string<Args...> format, Args &&...args) {
-    Critical(function, file, line, format, std::forward<Args>(args)...);
+  void warn(RTMA_LogFormatFor<Args...> f, Args &&...args) {
+    Warning(f, std::forward<Args>(args)...);
+  }
+
+  template <typename... Args>
+  void error(RTMA_LogFormatFor<Args...> f, Args &&...args) {
+    Error(f, std::forward<Args>(args)...);
+  }
+
+  template <typename... Args>
+  void critical(RTMA_LogFormatFor<Args...> f, Args &&...args) {
+    Critical(f, std::forward<Args>(args)...);
   }
 
   template <typename... Args>
@@ -169,6 +216,7 @@ private:
   std::string m_NameSuffix;
 };
 
+// Only for the explicit Log(); the level methods capture the location themselves.
 #define RTMA_LOG_SOURCE __func__, __FILE__, __LINE__
 
 #endif
