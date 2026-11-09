@@ -252,9 +252,8 @@ else
     if( ~isvector( value)), error( 'Matrices are not yet supported, value must be scalar or vector'); end
     vector_length = length( value);
     if( vector_length > 1)
-        initializing_zeros = repmat('0,',[1 vector_length]);
-        initializing_zeros(end) = []; % Eliminate last comma
-        fprintf( f, [Indent 'public ' type '[] ' name ' = {' initializing_zeros '};\n']);
+        array_length = num2str(vector_length);
+        fprintf( f, [Indent 'public ' type '[] ' name ' = new ' type '[' array_length '];\n']);
     else
         fprintf( f, [Indent 'public ' type ' ' name ';\n']);
     end

@@ -64,8 +64,5 @@ if( status == 0); error( 'Could not connect to MessageManager'); end
 % Initialize RTMA runtime variables
 RTMA_runtime.ModuleID = ModuleID;
 RTMA_runtime.Connected = true;
-RTMA_runtime.EventLoop_CurrentState = {};
-RTMA_runtime.StateTimeout_TimerID = [];
 RTMA_runtime.Subscribed = {};
 RTMA_runtime.Paused = {};
-%RTMA_runtime.EventMap = [];

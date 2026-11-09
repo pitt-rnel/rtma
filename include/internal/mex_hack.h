@@ -17,17 +17,17 @@
 
 #include "mex.h"
 
-#define malloc( S)  MyAlloc( (S))
-#define free( P)    mxFree( (P))
+#define malloc(S) MyAlloc((S))
+#define free(P) mxFree((P))
 
 #include <new>
 
-void *MyAlloc( size_t s);
-void* operator new( size_t s); //throw(std::bad_alloc);
-void operator delete( void *p); //throw();
-void* operator new[]( size_t s); //throw(std::bad_alloc);
-void* operator new[]( size_t s, size_t n); //throw(std::bad_alloc);
-void operator delete[]( void *p); //throw();
+void *MyAlloc(size_t s);
+void *operator new(size_t s);             // throw(std::bad_alloc);
+void operator delete(void *p);            // throw();
+void *operator new[](size_t s);           // throw(std::bad_alloc);
+void *operator new[](size_t s, size_t n); // throw(std::bad_alloc);
+void operator delete[](void *p);          // throw();
 
 #endif //_MEX_HACK_H_INCLUDED_
 
