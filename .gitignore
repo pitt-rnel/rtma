@@ -7,6 +7,9 @@ Makefile
 *.qmake.cache
 *.qmake.stash
 
+# CMake build trees
+/build/cmake/
+
 #swig
 *_wrap.cxx
 
@@ -22,7 +25,7 @@ CMakeCache.txt
 CMakeFiles
 CMakeScripts
 Testing
-#Makefile
+Makefile
 cmake_install.cmake
 install_manifest.txt
 compile_commands.json
@@ -34,6 +37,13 @@ _deps
 *-prefix/
 
 # End of https://www.gitignore.io/api/cmake
+
+bin/
+lib/
+# Distributed 64-bit Windows release artifacts
+!bin/MessageManager.exe
+!bin/QuickLogger.exe
+!lib/RTMA.lib
 
 # Created by https://www.gitignore.io/api/visualstudiocode
 # Edit at https://www.gitignore.io/?templates=visualstudiocode
@@ -167,14 +177,14 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-#build/
+build/
 develop-eggs/
 dist/
 downloads/
 eggs/
 .eggs/
-#lib/
-#lib64/
+lib/
+lib64/
 parts/
 sdist/
 var/
@@ -744,8 +754,6 @@ Temporary Items
 # End of https://www.gitignore.io/api/labview
 
 ### exceptions
-!lib/*.lib
 !lang/labview/RTMA_LV_LIB64/*.lib
 !lang/labview/RTMA_LV_LIB64/*.dll
 !lang/python/*.lib
-!/bin/*.exe
