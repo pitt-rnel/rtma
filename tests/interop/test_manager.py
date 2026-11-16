@@ -367,3 +367,21 @@ def test_unknown_core_type_drops_client(manager):
     c.send(7, struct.pack("=iii", A, 0, 0))  # legacy SUBSCRIPTION_OPTION
     assert c.is_closed()
     assert manager.accepts_clients()
+
+
+@pytest.mark.parametrize("port", ["70000", "12x", ""])
+def test_cpp_manager_refuses_an_invalid_port(tmp_path, port):
+    import subprocess
+
+    from conftest import MM_BIN
+
+    if not MM_BIN.exists():
+        pytest.skip(f"C++ MessageManager not found at {MM_BIN}")
+    # It used to read past the port's digits, and wrap 70000 around to listen
+    # on 4464. Now it refuses the port and exits.
+    subprocess.run(
+        [str(MM_BIN), f"127.0.0.1:{port}"],
+        cwd=tmp_path,
+        capture_output=True,
+        timeout=5,
+    )

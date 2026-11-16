@@ -38,9 +38,8 @@ UPipeFactory::ServerType
 UPipeFactory::ParseServerAddress(const char *server_addr, char *server_name,
                                  short *port_no) {
   TRY {
-    int len = 0, i, start;
+    int len = 0, i;
     ServerType type = NamedPipe;
-    char str_port[5] = {0};
     bool directory_specified = false;
 
     len = (int)strlen(server_addr);
@@ -62,7 +61,7 @@ UPipeFactory::ParseServerAddress(const char *server_addr, char *server_name,
     }
 
     // copy name & terminating NULL
-    char tmp_server_name[1000] = {0};
+    char tmp_server_name[MAX_SERVER_ADDR_LENGTH + 1] = {0};
     strncpy(tmp_server_name, server_addr, i);
     tmp_server_name[i] = 0;
 
@@ -72,23 +71,19 @@ UPipeFactory::ParseServerAddress(const char *server_addr, char *server_name,
       *port_no = -1;
       break;
 
-    case Socket:
-      start = i; // location of ':'
-      i += 1;
-      while ((server_addr[i] != 0) && (i < len))
-        i++;
-      if ((server_addr[i] != 0) &&
-          (i == len - 1)) { // we should have a terminating NULL to the
-                            // string... if we don't- it's an error
+    case Socket: {
+      // The port is the rest of the string after ':', a number from 1 to
+      // 65535. It is returned as a short; a port above 32767 wraps around,
+      // and htons() recovers it.
+      const char *str_port = server_addr + i + 1;
+      char *end = NULL;
+      long port = strtol(str_port, &end, 10);
+      if (*str_port == 0 || *end != 0 || port < 1 || port > 65535)
         throw UPipeException(
-            "Invalid server name, missing terminating null character");
-        break;
-      } else { // the port is in the string between start & i-1
-        memcpy(str_port, server_addr + start + 1,
-               (static_cast<size_t>(i) - 1) - start);
-        *port_no = atoi(str_port);
-      }
+            "Invalid server name, the port must be a number from 1 to 65535");
+      *port_no = (short)(unsigned short)port;
       break;
+    }
     }
 
     // Prepend directory name to output if need be
@@ -139,7 +134,7 @@ UPipeServer *UPipeFactory::CreateServer(char *server_addr) {
     ServerType type = ParseServerAddress(server_addr, server_name, &port_no);
     std::cout << "server_addr = [" << server_addr << "]" << std::endl;
     printf("server_name = <%s>\n", server_name);
-    printf("port_no = %i\n", port_no);
+    printf("port_no = %u\n", (unsigned short)port_no);
     switch (type) {
     case NamedPipe: {
       // #ifdef _UNIX_C
