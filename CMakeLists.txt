@@ -122,6 +122,12 @@ if(BUILD_TESTING)
     add_executable(rtma_public_api_test tests/public_api_test.cpp)
     target_link_libraries(rtma_public_api_test PRIVATE RTMA Threads::Threads)
     add_test(NAME rtma_public_api COMMAND rtma_public_api_test)
+
+    # Compiling this checks the core type headers against pyrtma's core
+    # definitions. Regenerate it with tests/core_types/generate.py.
+    add_executable(rtma_core_types_test tests/core_types/core_types_test.cpp)
+    target_include_directories(rtma_core_types_test PRIVATE include)
+    add_test(NAME rtma_core_types COMMAND rtma_core_types_test)
 endif()
 
 install(TARGETS RTMA
