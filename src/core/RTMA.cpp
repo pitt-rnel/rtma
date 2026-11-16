@@ -720,11 +720,23 @@ int RTMA_Module::SendMessage(CMessage *M, UPipe *output_pipe,
       throw E;
     }
 
-    if (dest_host_id < 0 || dest_host_id > MAX_HOSTS) {
+    // ALL_HOSTS is valid too, as in pyrtma.
+    if (dest_host_id != HID_ALL_HOSTS &&
+        (dest_host_id < 0 || dest_host_id > MAX_HOSTS)) {
       MyCString err("RTMA_Module::SendMessage: Got invalid dest_host_id [");
       err += MyCString(dest_host_id) + "]";
       MyCException E(err);
       throw E;
+    }
+
+    // The message managers drop a module that sends more.
+    if (M->num_data_bytes < 0 || M->num_data_bytes > RTMA_MAX_DATA_BYTES) {
+      char err[200];
+      snprintf(err, sizeof(err),
+               "RTMA_Module::SendMessage: a message of %d data bytes is "
+               "larger than RTMA_MAX_DATA_BYTES (%d)",
+               M->num_data_bytes, RTMA_MAX_DATA_BYTES);
+      throw MyCException(err);
     }
 
     // Assume that msg_type, num_data_bytes, data - have been filled in

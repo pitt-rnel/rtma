@@ -272,7 +272,6 @@ def test_user_messages_carry_the_version_given(manager):
     assert msg.header.reserved == 0xFAE632B5
 
 
-@pytest.mark.client_gap("dest_host_id ALL_HOSTS is refused")
 def test_sends_to_all_hosts(manager):
     watcher = RawClient.connect(manager.port, 20)
     watcher.subscribe(MT_TEST_REQUEST)
@@ -283,12 +282,19 @@ def test_sends_to_all_hosts(manager):
     assert msg.header.dest_host_id == HID_ALL_HOSTS
 
 
-@pytest.mark.client_gap(
-    "an oversized message is sent, and the manager drops the client"
-)
 def test_refuses_to_send_an_oversized_message(manager):
     out = run(manager.port, "send", 31, RTMA_MAX_DATA_BYTES + 1, 0, 0)
     assert "RTMA_MAX_DATA_BYTES" in out.get("error", "")
+
+
+def test_sends_the_largest_message(manager):
+    watcher = RawClient.connect(manager.port, 20)
+    watcher.subscribe(MT_TEST_REQUEST)
+    out = run(manager.port, "send", 31, RTMA_MAX_DATA_BYTES, 0, 0)
+    assert "error" not in out
+    msg = watcher.wait_for(MT_TEST_REQUEST, 5)
+    assert msg is not None
+    assert len(msg.payload) == RTMA_MAX_DATA_BYTES
 
 
 # Against FakeManager ----------------------------------------------------
