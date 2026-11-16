@@ -183,8 +183,7 @@ private:
       if (!ModuleIsConnected(curr_id))
         return curr_id;
     }
-    printf("All dynamic IDs are in use.\n");
-    return 0;
+    return 0; // all dynamic IDs are in use
   }
 
   [[noreturn]] void DropSender(UPipe *pSourcePipe, const char *format, ...);
@@ -230,7 +229,7 @@ private:
                                short logger_status, int32_t pid,
                                const char *name);
   // Connects the module on pSourcePipe, sends its ACK and HELLO, and returns
-  // its record, or NULL if the connection is refused.
+  // its record. A refused module is dropped with DropSender().
 
   CModuleRecord *GetRecord(MODULE_ID module_id);
 

@@ -143,6 +143,15 @@ def test_unsubscribe_all_removes_every_subscription(pair):
 # Connecting -------------------------------------------------------------
 
 
+@pytest.mark.parametrize("mod_id", [-1, DYN_MOD_ID_START])
+def test_static_id_out_of_range_is_refused(manager, mod_id):
+    c = RawClient(manager.port)
+    c.mod_id = mod_id
+    c.send_connect()
+    assert not c.acked()
+    assert c.is_closed()
+
+
 def test_dynamic_ids_start_at_dyn_mod_id_start(manager):
     first = RawClient.connect(manager.port)
     second = RawClient.connect(manager.port)
@@ -150,7 +159,6 @@ def test_dynamic_ids_start_at_dyn_mod_id_start(manager):
     assert second.mod_id == DYN_MOD_ID_START + 1
 
 
-@pytest.mark.cpp_gap("static IDs in the dynamic range are accepted")
 def test_static_id_in_dynamic_range_is_refused(manager):
     c = RawClient(manager.port)
     c.mod_id = DYN_MOD_ID_START + 500
@@ -167,6 +175,7 @@ def test_duplicate_static_id_is_refused_without_goodbye(manager):
     dup.mod_id = 30
     dup.send_connect()
     assert not dup.acked()
+    assert dup.is_closed()
     goodbyes = [m for m in watcher.collect() if m.msg_type == MT_GOODBYE]
     assert goodbyes == []
 
@@ -200,12 +209,12 @@ def test_requests_apply_to_the_sending_connection(pair):
     assert consumer.user_types() == []
 
 
-@pytest.mark.cpp_gap("MAX_MODULES is not enforced")
 def test_connections_beyond_max_modules_are_refused(manager):
     clients = [RawClient.connect(manager.port) for _ in range(MAX_MODULES)]
     extra = RawClient(manager.port)
     extra.send_connect()
     assert not extra.acked()
+    assert extra.is_closed()
     for c in clients:
         c.close()
 

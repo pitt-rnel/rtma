@@ -509,22 +509,33 @@ CModuleRecord *CMessageManager::ConnectModule(UPipe *pSourcePipe,
                                              MODULE_ID requested_id,
                                              short logger_status, int32_t pid,
                                              const char *name) {
-  MODULE_ID module_id = requested_id;
-  if ((module_id > MAX_MODULE_ID) || (module_id < 0) ||
-      ModuleIsConnected(module_id))
-    return NULL; // something went wrong, don't allow the new connection
+  // A refused module is dropped before it takes an ID, so it gets no ACK,
+  // HELLO or GOODBYE, as in pyrtma's manager.
+  if (m_ConnectedModules.size() >= MAX_MODULES)
+    DropSender(pSourcePipe,
+               "The limit of %d modules (MAX_MODULES) is reached. Closing "
+               "connection.",
+               MAX_MODULES);
 
-  // get the next available module ID from "dynamic" pool
-  if (module_id == 0)
+  MODULE_ID module_id = requested_id;
+  if (module_id == 0) {
+    // get the next available module ID from "dynamic" pool
     module_id = GetDynamicModuleId();
-  if (module_id <= 0)
-    return NULL;
+    if (module_id <= 0)
+      DropSender(pSourcePipe, "All dynamic module IDs are in use.");
+  } else if (module_id < 1 || module_id >= DYN_MOD_ID_START) {
+    // DYN_MOD_ID_START is the first dynamic ID, so it can't be static.
+    DropSender(pSourcePipe,
+               "Invalid module ID %d. Static module IDs must be 1 to %d.",
+               module_id, DYN_MOD_ID_START - 1);
+  } else if (ModuleIsConnected(module_id)) {
+    DropSender(pSourcePipe, "Module ID %d is already in use. Closing connection.",
+               module_id);
+  }
 
   DEBUG_TEXT("Connecting module " << module_id << " on pipe " << pSourcePipe);
 
   auto insert_result = m_ConnectedModules.emplace(module_id, CModuleRecord{});
-  if (!insert_result.second)
-    return NULL;
 
   CModuleRecord *mod = &insert_result.first->second;
   mod->ModuleID = module_id;
