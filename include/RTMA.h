@@ -72,13 +72,13 @@ public:
   int num_data_bytes;
   int remaining_bytes;
   int is_dynamic;
-  int reserved;
+  uint32_t reserved; // The message definition's version (its HASH_ value), or 0
   char data[MAX_CONTIGUOUS_MESSAGE_DATA];
   char *large_data;
 
   CMessage();
   CMessage(MSG_TYPE mt);
-  CMessage(MSG_TYPE mt, void *pData, int num_bytes);
+  CMessage(MSG_TYPE mt, void *pData, int num_bytes, uint32_t version = 0);
   ~CMessage();
 
   void *GetDataPointer(void);
@@ -89,7 +89,12 @@ public:
 
   int AllocateData(int num_bytes);
 
-  int Set(MSG_TYPE mt, void *pData = NULL, int num_bytes = 0);
+  int Set(MSG_TYPE mt, void *pData = NULL, int num_bytes = 0,
+          uint32_t version = 0);
+  // version is the message definition's hash, the HASH_ define that pyrtma's
+  // compiler writes for each message, which pyrtma clients can check against
+  // their own definitions. 0 means no version; SendMessage() fills in the
+  // hash of a core message.
 
   int Receive(UPipe *input_pipe);
 

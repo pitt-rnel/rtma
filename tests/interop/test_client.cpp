@@ -2,6 +2,13 @@
 //
 //   rtma_test_client SERVER SCENARIO MOD_ID [ARGS...]
 //
+//   connect             stay connected until stdin closes
+//   echo COUNT          reply to COUNT messages of type 1001 with type 1002
+//   send BYTES DEST_MOD DEST_HOST [VERSION]
+//                       send one message of type 1001
+//   module_ready        send MODULE_READY, and stay until stdin closes
+//   read_once           read one message
+//
 // Each scenario prints key=value lines on stdout, which test_cpp_client.py
 // reads, and exits with status 0 unless something unexpected failed. Errors
 // that a scenario expects are reported as error=... lines.
@@ -103,13 +110,13 @@ int ScenarioEcho(RTMA_Module &module, char *server, int count) {
   return 0;
 }
 
-// Send one message to the module and host given.
+// Send one message to the module and host given, with the version given.
 int ScenarioSend(RTMA_Module &module, char *server, int bytes, int dest_mod,
-                 int dest_host) {
+                 int dest_host, uint32_t version) {
   if (!Connect(module, server))
     return 1;
   std::vector<char> data(bytes, 'x');
-  CMessage M(MT_TEST_REQUEST, data.data(), bytes);
+  CMessage M(MT_TEST_REQUEST, data.data(), bytes, version);
   try {
     module.SendMessage(&M, (MODULE_ID)dest_mod, (HOST_ID)dest_host);
     Print("sent");
@@ -169,7 +176,8 @@ int main(int argc, char *argv[]) {
       return ScenarioEcho(module, server, argc > 4 ? std::atoi(argv[4]) : 1);
     if (scenario == "send")
       return ScenarioSend(module, server, std::atoi(argv[4]), std::atoi(argv[5]),
-                          std::atoi(argv[6]));
+                          std::atoi(argv[6]),
+                          argc > 7 ? (uint32_t)std::strtoul(argv[7], NULL, 0) : 0);
     if (scenario == "module_ready")
       return ScenarioModuleReady(module, server);
     if (scenario == "read_once")

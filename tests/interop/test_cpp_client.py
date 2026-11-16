@@ -187,7 +187,6 @@ def test_announces_its_process_id_when_connecting(manager, running):
     assert Hello.parse(msg.payload).pid == int(out["pid"])
 
 
-@pytest.mark.client_gap("core messages are sent with version 0")
 def test_marks_core_messages_with_their_hash(manager, running):
     watcher = RawClient.connect(manager.port, 20)
     watcher.subscribe(MT_MODULE_READY)
@@ -198,6 +197,24 @@ def test_marks_core_messages_with_their_hash(manager, running):
     assert msg.header.reserved == HASH_MODULE_READY
 
 
+def test_pyrtma_accepts_its_core_messages_with_sync_check(manager, running):
+    pyrtma = pytest.importorskip("pyrtma")
+    import pyrtma.core_defs as cd
+
+    observer = pyrtma.Client(name="observer", definitions=cd)
+    observer.connect(f"127.0.0.1:{manager.port}")
+    try:
+        observer.subscribe([cd.MT_MODULE_READY])
+        time.sleep(0.2)
+        client = running(manager.port, "module_ready", 31)
+        client.wait_for("sent")
+        msg = observer.read_message(timeout=5, sync_check=True)
+        assert msg is not None
+        assert msg.header.src_mod_id == 31
+    finally:
+        observer.disconnect()
+
+
 def test_user_messages_have_no_version_by_default(manager):
     watcher = RawClient.connect(manager.port, 20)
     watcher.subscribe(MT_TEST_REQUEST)
@@ -205,6 +222,15 @@ def test_user_messages_have_no_version_by_default(manager):
     msg = watcher.wait_for(MT_TEST_REQUEST)
     assert msg is not None
     assert msg.header.reserved == 0
+
+
+def test_user_messages_carry_the_version_given(manager):
+    watcher = RawClient.connect(manager.port, 20)
+    watcher.subscribe(MT_TEST_REQUEST)
+    run(manager.port, "send", 31, 8, 0, 0, "0xfae632b5")
+    msg = watcher.wait_for(MT_TEST_REQUEST)
+    assert msg is not None
+    assert msg.header.reserved == 0xFAE632B5
 
 
 @pytest.mark.client_gap("dest_host_id ALL_HOSTS is refused")

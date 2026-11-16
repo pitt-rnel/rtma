@@ -2,6 +2,7 @@
 
 #include "MyCException.h"
 
+#include "CoreMessages.h"
 #include "Debug.h"
 
 #include <MyCString.h>
@@ -52,13 +53,13 @@ CMessage::CMessage(MSG_TYPE mt) {
   CATCH_and_THROW("CMessage::CMessage( MSG_TYPE mt)");
 }
 
-CMessage::CMessage(MSG_TYPE mt, void *pData, int num_bytes) {
+CMessage::CMessage(MSG_TYPE mt, void *pData, int num_bytes, uint32_t version) {
   TRY {
     large_data = NULL;
-    Set(mt, pData, num_bytes);
+    Set(mt, pData, num_bytes, version);
   }
-  CATCH_and_THROW(
-      "CMessage::CMessage( MSG_TYPE mt, void *pData, int num_bytes)");
+  CATCH_and_THROW("CMessage::CMessage( MSG_TYPE mt, void *pData, int "
+                  "num_bytes, uint32_t version)");
 }
 
 CMessage::~CMessage() {
@@ -140,7 +141,7 @@ int CMessage::AllocateData(int num_bytes) {
   CATCH_and_THROW("CMessage::AllocateData( int num_bytes)");
 }
 
-int CMessage::Set(MSG_TYPE mt, void *pData, int num_bytes) {
+int CMessage::Set(MSG_TYPE mt, void *pData, int num_bytes, uint32_t version) {
   TRY {
     msg_type = mt;
 
@@ -155,11 +156,12 @@ int CMessage::Set(MSG_TYPE mt, void *pData, int num_bytes) {
     num_data_bytes = 0;
     remaining_bytes = -1;
     is_dynamic = 0;
-    reserved = 0;
+    reserved = version;
 
     return SetData(pData, num_bytes);
   }
-  CATCH_and_THROW("CMessage::Set( MSG_TYPE mt, void *pData, int num_bytes)");
+  CATCH_and_THROW(
+      "CMessage::Set( MSG_TYPE mt, void *pData, int num_bytes, uint32_t version)");
 }
 
 #ifdef USE_DYNAMIC_DATA
@@ -309,6 +311,7 @@ CMessage::GetHeader(void) const {
     header.src_host_id = src_host_id;
     header.src_mod_id = src_mod_id;
     header.is_dynamic = is_dynamic;
+    header.reserved = reserved;
 
     return header;
   }
@@ -697,6 +700,10 @@ int RTMA_Module::SendMessage(CMessage *M, UPipe *output_pipe,
     M->src_mod_id = m_ModuleID;
     M->dest_host_id = dest_host_id;
     M->dest_mod_id = dest_mod_id;
+    // Core messages carry their definition's hash, as pyrtma's client sends
+    // them. Other messages keep the version they were given, if any.
+    if (M->reserved == 0)
+      M->reserved = CoreMessageHash(M->msg_type);
 
     int status = M->Send(output_pipe);
 
