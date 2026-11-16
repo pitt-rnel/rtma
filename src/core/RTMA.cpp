@@ -457,8 +457,7 @@ int RTMA_Module::ConnectToMMM(char *server_name, int logger_status,
 
       std::unique_ptr<CMessage> ack_msg(
           new CMessage()); // Use smart pointer for acknowledgment message
-      status =
-          WaitForAcknowledgement(1, ack_msg.get()); // Wait for up to 3 seconds
+      status = WaitForAcknowledgement(RTMA_CONNECT_TIMEOUT, ack_msg.get());
       if (status == 0) {
         throw MyCException(
             "Did not receive ACK from MessageManager upon CONNECT_V2");
@@ -645,6 +644,11 @@ int RTMA_Module::ResumeSubscription(MSG_TYPE MessageType)
   CATCH_and_THROW("RTMA_Module::ResumeSubscription( MSG_TYPE MessageType)");
 }
 
+bool RTMA_Module::IsOwnAck(const CMessage &M) const {
+  return M.msg_type == MT_ACKNOWLEDGE &&
+         (m_ModuleID == 0 || M.dest_mod_id == 0 || M.dest_mod_id == m_ModuleID);
+}
+
 int RTMA_Module::WaitForAcknowledgement(double timeout, CMessage *rcvMsg) {
   TRY {
     int ret = 0;
@@ -654,7 +658,7 @@ int RTMA_Module::WaitForAcknowledgement(double timeout, CMessage *rcvMsg) {
     if (timeout == -1) { // Wait forever
       do {
         ReadMessage(&M);
-      } while (M.msg_type != MT_ACKNOWLEDGE);
+      } while (!IsOwnAck(M));
 
       DEBUG_TEXT("Got ACK!");
       ret = 1; // return 1;
@@ -667,7 +671,7 @@ int RTMA_Module::WaitForAcknowledgement(double timeout, CMessage *rcvMsg) {
           break;
         if (status < 0)
           throw MyCException("Error while waiting for MT_ACKNOWLEDGE");
-        if (M.msg_type == MT_ACKNOWLEDGE) {
+        if (IsOwnAck(M)) {
           DEBUG_TEXT("Got ACK!");
           ret = 1; // return 1;
           break;

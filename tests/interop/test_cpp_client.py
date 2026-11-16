@@ -351,7 +351,6 @@ class FakeManager:
             raise self.error
 
 
-@pytest.mark.client_gap("takes the first ACK, even one addressed to another module")
 def test_static_id_waits_for_its_own_ack():
     def script(peer: Peer):
         peer.read()  # CONNECT
@@ -380,7 +379,6 @@ def test_dynamic_id_takes_the_first_ack():
     assert out["module_id"] == "10005"
 
 
-@pytest.mark.client_gap("waits 1 s for the ACK, where pyrtma's client waits 5 s")
 def test_waits_five_seconds_for_the_ack():
     def script(peer: Peer):
         peer.read()
@@ -393,6 +391,19 @@ def test_waits_five_seconds_for_the_ack():
     fake.close()
     assert "error" not in out
     assert out["module_id"] == "30"
+
+
+def test_gives_up_on_the_ack_after_five_seconds():
+    def script(peer: Peer):
+        peer.read()
+        time.sleep(8)
+
+    fake = FakeManager(script)
+    # The connect scenario reports a failure to connect and exits with 0.
+    out = run(fake.port, "connect", 30)
+    fake.close()
+    assert "Did not receive ACK" in out["error"]
+    assert 4.5 <= float(out["connect_seconds"]) < 7
 
 
 @pytest.mark.client_gap("stays connected after a message it can't read")

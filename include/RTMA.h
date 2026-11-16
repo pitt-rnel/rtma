@@ -45,6 +45,10 @@
 // announces a larger one, and CMessage::Receive refuses one.
 #define RTMA_MAX_DATA_BYTES (1024 * 1024)
 
+// Seconds ConnectToMMM() waits for the message manager's ACK, as pyrtma's
+// client does by default.
+#define RTMA_CONNECT_TIMEOUT 5.0
+
 /*#ifdef _UNIX_C
         #define THIS_MODULE_BASE_PRIORITY  0
         #define NORMAL_PRIORITY_CLASS      1
@@ -147,6 +151,13 @@ protected:
       double timeout = -1,
       CMessage *rcvMsg =
           NULL); // Waits for MT_ACKNOWLEDGE for up to timeout seconds
+  // Only an ACK for this module counts: with a static ID, one addressed to
+  // that ID or to 0. A logger is sent copies of other modules' ACKs, which are
+  // skipped. A module asking for a dynamic ID can't tell its own ACK by
+  // address, and takes the first; the manager sends it first on a new
+  // connection. Other messages are discarded.
+
+  bool IsOwnAck(const CMessage &M) const;
 
   int SendMessage(CMessage *M, UPipe *pOutputPipe, MODULE_ID dest_mod_id = 0,
                   HOST_ID dest_host_id = 0);
