@@ -379,7 +379,8 @@ void CMessageManager::DispatchMessage(CMessage *M) {
 
     CModuleRecord *mod = &mod_it->second;
     try {
-      SendMessage(M, mod);
+      // A broadcast has no destination, as in pyrtma's manager.
+      SendMessage(M, mod, 0);
     } catch (MyCException &) {
       // The module is removed when its socket reports the failure.
       DEBUG_TEXT("Failed to send MM message, destination module socket is closed/dead");
@@ -399,7 +400,7 @@ void CMessageManager::DispatchMessage(CMessage *M, CModuleRecord *dest_mod) {
   // A failed send is ignored here: the module is removed when its socket
   // reports the failure, and the module being handled isn't dropped for it.
   try {
-    SendMessage(M, dest_mod);
+    SendMessage(M, dest_mod, dest_mod->ModuleID);
   } catch (MyCException &) {
     DEBUG_TEXT("Failed to send MM message, destination module socket is closed/dead");
   }
@@ -453,7 +454,8 @@ void CMessageManager::DispatchSignalToAll(MSG_TYPE sig) {
   DispatchMessageToAll(&R);
 }
 
-int CMessageManager::SendMessage(CMessage *M, CModuleRecord *mod)
+int CMessageManager::SendMessage(CMessage *M, CModuleRecord *mod,
+                                 MODULE_ID dest_mod_id)
 // overloaded function for RTMA_Module::SendMessage()
 // Sends a message to a module, specifying the MessageManager itself as the
 // source module
@@ -468,7 +470,7 @@ int CMessageManager::SendMessage(CMessage *M, CModuleRecord *mod)
   M->recv_time = 0.0;
   M->src_host_id = HID_LOCAL_HOST;
   M->src_mod_id = MID_MESSAGE_MANAGER;
-  M->dest_mod_id = mod->ModuleID;
+  M->dest_mod_id = dest_mod_id;
 
   double timeout = 0; // By default use non-blocking write so MM does not get
                       // stuck on a frozen module
@@ -504,7 +506,7 @@ int CMessageManager::SendSignal(MSG_TYPE sig, CModuleRecord *dest_mod)
 // success
 {
   m_OutMsg.Set(sig);
-  return SendMessage(&m_OutMsg, dest_mod);
+  return SendMessage(&m_OutMsg, dest_mod, dest_mod->ModuleID);
 }
 
 CModuleRecord *CMessageManager::ConnectModule(UPipe *pSourcePipe,
@@ -569,9 +571,6 @@ void CMessageManager::DisconnectModule(MODULE_ID module_id) {
   CModuleRecord *mod = GetRecord(module_id);
   if (mod == NULL)
     return;
-
-  // Send ACK
-  SendAcknowledge(mod);
 
   // Make sure not to send anything to disconnected client
   RemoveAllSubscriptions(mod);
@@ -799,7 +798,7 @@ void CMessageManager::SendIntroductions(CModuleRecord *dest_mod) {
         mod->SetHello(&hello);
         // printf("Hello: %d\n", hello.mod_id);
         m_OutMsg.Set(MT_HELLO, &hello, sizeof(hello));
-        SendMessage(&m_OutMsg, dest_mod);
+        SendMessage(&m_OutMsg, dest_mod, dest_mod->ModuleID);
       }
     }
   }

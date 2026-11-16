@@ -283,7 +283,9 @@ private:
 
   void UpdateConnection(CMessage *m, CModuleRecord *mod);
 
-  int SendMessage(CMessage *m, CModuleRecord *dest_mod);
+  int SendMessage(CMessage *m, CModuleRecord *dest_mod, MODULE_ID dest_mod_id);
+  // Sends a message from the manager to dest_mod, with dest_mod_id in its
+  // header: the module's ID, or 0 for a broadcast.
 
   int SendSignal(MSG_TYPE sig, CModuleRecord *dest_mod);
   // dest_mod_id= module id that should be put in dest_mod_id in message header

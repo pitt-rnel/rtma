@@ -246,7 +246,6 @@ def test_connect_v2_after_connect_updates_name(manager):
     assert [m for m in module.collect() if m.msg_type == MT_ACKNOWLEDGE] == []
 
 
-@pytest.mark.cpp_gap("broadcast HELLO carries each recipient's ID as dest_mod_id")
 def test_broadcast_hello_has_no_destination(manager):
     watcher = RawClient.connect(manager.port, 20)
     watcher.subscribe(MT_HELLO)
@@ -284,6 +283,20 @@ def test_disconnect_announces_goodbye(manager):
     msg = watcher.wait_for(MT_GOODBYE)
     assert msg is not None
     assert Hello.parse(msg.payload).mod_id == 21
+
+
+def test_disconnect_is_not_acknowledged(manager):
+    logger = RawClient.connect(manager.port, 25, logger=True)
+    logger.subscribe(ALL_MESSAGE_TYPES)
+    leaving = RawClient.connect(manager.port, 21)
+    logger.collect()
+    leaving.send(MT_DISCONNECT)
+    seen = logger.collect()
+    assert MT_GOODBYE in [m.msg_type for m in seen]
+    acks = [
+        m for m in seen if m.msg_type == MT_ACKNOWLEDGE and m.header.dest_mod_id == 21
+    ]
+    assert acks == []
 
 
 def test_closed_connection_announces_goodbye(manager):
