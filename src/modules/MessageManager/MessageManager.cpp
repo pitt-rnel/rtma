@@ -87,11 +87,10 @@ void CMessageManager::MainLoop(char *cmd_line_options) {
 }
 
 CModuleRecord *CMessageManager::GetRecordByPipe(UPipe *pipe) {
-  for (auto &entry : m_ConnectedModules) {
-    if (entry.second.pModulePipe == pipe)
-      return &entry.second;
-  }
-  return NULL;
+  auto it = m_ModuleByPipe.find(pipe);
+  if (it == m_ModuleByPipe.end())
+    return NULL;
+  return GetRecord(it->second);
 }
 
 void CMessageManager::DropSender(UPipe *pSourcePipe, const char *format, ...) {
@@ -185,6 +184,7 @@ void CMessageManager::HandleDisconnect(UPipe *pModulePipe) {
       SendGoodbye(mod);
 
       // Delete module record
+      m_ModuleByPipe.erase(pModulePipe);
       CleanUpModuleRecord(mod);
       DEBUG_TEXT_(", disconnected module " << mod->ModuleID);
 
@@ -198,24 +198,36 @@ void CMessageManager::HandleDisconnect(UPipe *pModulePipe) {
 void CMessageManager::ProcessMessage(CMessage *M, UPipe *pSourcePipe) {
   DEBUG_TEXT_("Processing message... ");
 
+  // The sender is the module connected on this pipe, whatever the header's
+  // src_mod_id says. A module must connect before it does anything else.
+  CModuleRecord *src = GetRecordByPipe(pSourcePipe);
+  if (src == NULL && M->msg_type != MT_CONNECT &&
+      M->msg_type != MT_CONNECT_V2)
+    DropSender(pSourcePipe,
+               "Sent MT=%d before CONNECT; a module must connect first.",
+               M->msg_type);
+
   switch (M->msg_type) {
   case MT_CONNECT:
-    HandleConnect(M, pSourcePipe);
+    // A CONNECT from a connected module is ignored.
+    if (src == NULL)
+      HandleConnect(M, pSourcePipe);
     break;
 
   case MT_CONNECT_V2:
-    HandleConnectV2(M, pSourcePipe);
+    if (src == NULL)
+      HandleConnectV2(M, pSourcePipe);
     break;
 
   case MT_CLIENT_SET_NAME:
-    HandleSetName(M);
+    HandleSetName(M, src);
     break;
 
   case MT_PONG:
     break;
 
   case MT_INTRODUCE:
-    SendIntroductions(M->src_mod_id);
+    SendIntroductions(src);
     break;
 
   case MT_FORCE_DISCONNECT:
@@ -223,27 +235,31 @@ void CMessageManager::ProcessMessage(CMessage *M, UPipe *pSourcePipe) {
     break;
 
   case MT_DISCONNECT:
-    HandleModuleDisconnect(M);
+    DisconnectModule(src->ModuleID);
     break;
 
   case MT_MODULE_READY:
-    HandleModuleReady(M);
+    HandleModuleReady(M, src);
     break;
 
   case MT_SUBSCRIBE:
-    HandleSubscribe(M);
+    AddSubscription(src, SubscriptionType(M));
+    SendAcknowledge(src);
     break;
 
   case MT_UNSUBSCRIBE:
-    HandleUnsubscribe(M);
+    RemoveSubscription(src, SubscriptionType(M));
+    SendAcknowledge(src);
     break;
 
   case MT_PAUSE_SUBSCRIPTION:
-    HandlePauseSubscription(M);
+    PauseSubscription(src, SubscriptionType(M));
+    SendAcknowledge(src);
     break;
 
   case MT_RESUME_SUBSCRIPTION:
-    HandleResumeSubscription(M);
+    ResumeSubscription(src, SubscriptionType(M));
+    SendAcknowledge(src);
     break;
 
   default:
@@ -251,6 +267,14 @@ void CMessageManager::ProcessMessage(CMessage *M, UPipe *pSourcePipe) {
     return;
   }
   DEBUG_TEXT("Processed!");
+}
+
+MSG_TYPE CMessageManager::SubscriptionType(CMessage *M) {
+  // SUBSCRIBE, UNSUBSCRIBE, PAUSE_SUBSCRIPTION and RESUME_SUBSCRIPTION share
+  // this layout, and HandleData() has checked the size.
+  MDF_SUBSCRIBE data;
+  M->GetData(&data);
+  return data.msg_type;
 }
 
 void CMessageManager::SendHello(CModuleRecord *mod) {
@@ -284,17 +308,12 @@ void CMessageManager::SendPing(MODULE_ID mod_id) {
   }
 }
 
-void CMessageManager::HandleSetName(CMessage *M) {
+void CMessageManager::HandleSetName(CMessage *M, CModuleRecord *mod) {
   MDF_CLIENT_SET_NAME set_name;
-  if (M->num_data_bytes != sizeof(set_name))
-    return;
   M->GetData((void *)&set_name);
-  CModuleRecord *mod = GetRecord(M->src_mod_id);
-  if (mod != NULL) {
-    mod->SetName(&(set_name.name[0]));
-    // printf("SetName: %d -> %s\n", mod->ModuleID, mod->name);
-    SendHello(mod);
-  }
+  set_name.name[MAX_NAME_LEN - 1] = 0;
+  mod->SetName(&(set_name.name[0]));
+  SendHello(mod);
 }
 
 /*
@@ -486,85 +505,43 @@ int CMessageManager::SendSignal(MSG_TYPE sig, CModuleRecord *dest_mod)
   return SendMessage(&m_OutMsg, dest_mod);
 }
 
-MODULE_ID
-CMessageManager::ConnectModule(MODULE_ID module_id, UPipe *pSourcePipe,
-                               short logger_status, short daemon_status) {
+CModuleRecord *CMessageManager::ConnectModule(UPipe *pSourcePipe,
+                                             MODULE_ID requested_id,
+                                             short logger_status, int32_t pid,
+                                             const char *name) {
+  MODULE_ID module_id = requested_id;
+  if ((module_id > MAX_MODULE_ID) || (module_id < 0) ||
+      ModuleIsConnected(module_id))
+    return NULL; // something went wrong, don't allow the new connection
 
-  if ((module_id <= MAX_MODULE_ID) && (module_id >= 0) &&
-      !ModuleIsConnected(module_id)) {
-    if (pSourcePipe != NULL) {
-      // get the next available module ID from "dynamic" pool
-      if (module_id == 0)
-        module_id = GetDynamicModuleId();
+  // get the next available module ID from "dynamic" pool
+  if (module_id == 0)
+    module_id = GetDynamicModuleId();
+  if (module_id <= 0)
+    return NULL;
 
-      if (module_id > 0) {
-        DEBUG_TEXT("Connecting module " << module_id << " on pipe "
-                                        << pSourcePipe);
+  DEBUG_TEXT("Connecting module " << module_id << " on pipe " << pSourcePipe);
 
-        auto insert_result = m_ConnectedModules.emplace(module_id, CModuleRecord{});
-        if (!insert_result.second) {
-          return 0;
-        }
+  auto insert_result = m_ConnectedModules.emplace(module_id, CModuleRecord{});
+  if (!insert_result.second)
+    return NULL;
 
-        CModuleRecord *mod = &insert_result.first->second;
-        // Create a module record
-        mod->ModuleID = module_id;
-        mod->SetUPipe(pSourcePipe);
-        mod->LoggerStatus = logger_status;
-        mod->DaemonStatus = daemon_status;
+  CModuleRecord *mod = &insert_result.first->second;
+  mod->ModuleID = module_id;
+  mod->SetUPipe(pSourcePipe);
+  mod->LoggerStatus = logger_status;
+  mod->pid = pid;
+  if (name != NULL)
+    mod->SetName(name);
+  m_ModuleByPipe[pSourcePipe] = module_id;
 
-        SendAcknowledge(mod);
+  SendAcknowledge(mod);
 
-        // Notify that a client has connected
-        // Note: PID and Name will not be filled in
-        // Additional HELLO msgs will be sent with
-        // CLIENT_SET_NAME and MODULE_READY
-        SendHello(mod);
-      }
-    }
-  } else
-    module_id = 0; // something went wrong, don't allow the new connection
-
-  return module_id;
-}
-
-MODULE_ID
-CMessageManager::ConnectModuleV2(MODULE_ID module_id, UPipe *pSourcePipe,
-                                 MDF_CONNECT_V2 *data) {
-
-  if ((module_id <= MAX_MODULE_ID) && (module_id >= 0) &&
-      !ModuleIsConnected(module_id)) {
-    if (pSourcePipe != NULL) {
-      // get the next available module ID from "dynamic" pool
-      if (module_id == 0)
-        module_id = GetDynamicModuleId();
-
-      if (module_id > 0) {
-        DEBUG_TEXT("Connecting module " << module_id << " on pipe "
-                                        << pSourcePipe);
-
-        auto insert_result = m_ConnectedModules.emplace(module_id, CModuleRecord{});
-        if (!insert_result.second) {
-          return 0;
-        }
-
-        CModuleRecord *mod = &insert_result.first->second;
-        mod->ModuleID = module_id;
-        mod->SetUPipe(pSourcePipe);
-        mod->LoggerStatus = data->logger_status;
-        mod->pid = data->pid;
-        mod->SetName(&(data->name[0]));
-
-        SendAcknowledge(mod);
-
-        // Notify that a V2 client has connected
-        SendHello(mod);
-      }
-    }
-  } else
-    module_id = 0; // something went wrong, don't allow the new connection
-
-  return module_id;
+  // Notify that a client has connected. A module that connected with CONNECT
+  // has no name or PID yet; CLIENT_SET_NAME and MODULE_READY send further
+  // HELLOs with them.
+  SendHello(mod);
+  return mod;
 }
 
 CModuleRecord *CMessageManager::GetRecord(MODULE_ID module_id) {
@@ -590,6 +567,7 @@ void CMessageManager::DisconnectModule(MODULE_ID module_id) {
   SendGoodbye(mod);
 
   // Close module's pipe
+  m_ModuleByPipe.erase(mod->pModulePipe);
   UPipeAutoServer::_server->DisconnectClient(mod->pModulePipe);
 
   // Clean up module record
@@ -734,31 +712,19 @@ void CMessageManager::ResumeSubscription(CModuleRecord *mod,
 }
 
 void CMessageManager::HandleConnect(CMessage *M, UPipe *pSourcePipe) {
+  // CONNECT asks for the module ID in its header.
   MDF_CONNECT data;
-  memset(&data, 0, sizeof(data));
   M->GetData((void *)&data);
-  int prev_priority_class = GetMyPriority();
-  // SetMyPriority(NORMAL_PRIORITY_CLASS);
-  MODULE_ID mod_id = ConnectModule(M->src_mod_id, pSourcePipe,
-                                   data.logger_status, 0);
-  // printf("Connect: %d\n", mod_id);
-  // if (mod_id > 0) {
-  //   SetMyPriority(prev_priority_class);
-  // }
+  ConnectModule(pSourcePipe, M->src_mod_id, data.logger_status, 0, NULL);
 }
 
 void CMessageManager::HandleConnectV2(CMessage *M, UPipe *pSourcePipe) {
-  MDF_CONNECT_V2 connect_v2;
-  if (M->num_data_bytes != sizeof(connect_v2))
-    return;
-  M->GetData((void *)&connect_v2);
-  int prev_priority_class = GetMyPriority();
-  // SetMyPriority(NORMAL_PRIORITY_CLASS);
-  MODULE_ID mod_id = ConnectModuleV2(M->src_mod_id, pSourcePipe, &connect_v2);
-  // printf("ConnectV2: %d\n", mod_id);
-  // if (mod_id > 0) {
-  //   SetMyPriority(prev_priority_class);
-  // }
+  // CONNECT_V2 asks for the module ID in its data, as in pyrtma.
+  MDF_CONNECT_V2 data;
+  M->GetData((void *)&data);
+  data.name[MAX_NAME_LEN - 1] = 0;
+  ConnectModule(pSourcePipe, data.mod_id, data.logger_status, data.pid,
+                data.name);
 }
 
 void CMessageManager::HandleForceDisconnect(CMessage *M) {
@@ -768,69 +734,13 @@ void CMessageManager::HandleForceDisconnect(CMessage *M) {
   ShutdownModule(mod_id);
 }
 
-void CMessageManager::HandleModuleDisconnect(CMessage *M) {
-  int prev_priority_class = GetMyPriority();
-  // SetMyPriority(NORMAL_PRIORITY_CLASS);
-  DisconnectModule(M->src_mod_id);
-  // SetMyPriority(prev_priority_class);
-}
-
-void CMessageManager::HandleModuleReady(CMessage *M) {
+void CMessageManager::HandleModuleReady(CMessage *M, CModuleRecord *mod) {
   MDF_MODULE_READY module_ready;
   M->GetData(&module_ready);
+  mod->pid = module_ready.pid;
 
-  CModuleRecord *mod = GetRecord(M->src_mod_id);
-  if (mod != NULL) {
-    mod->pid = module_ready.pid;
-
-    // Notify that the module has joined and ready
-    SendHello(mod);
-  }
-}
-
-void CMessageManager::HandleSubscribe(CMessage *M) {
-  MSG_TYPE msg_type_to_subscribe;
-  M->GetData(&msg_type_to_subscribe);
-
-  CModuleRecord *mod = GetRecord(M->src_mod_id);
-  if (mod != NULL) {
-    AddSubscription(mod, msg_type_to_subscribe);
-    DEBUG_TEXT_(" Added subscription to msg type "
-                << msg_type_to_subscribe << " for module " << M->src_mod_id
-                << "... ");
-    SendAcknowledge(mod);
-  }
-}
-
-void CMessageManager::HandleUnsubscribe(CMessage *M) {
-  MSG_TYPE msg_type_to_unsubscribe;
-  M->GetData(&msg_type_to_unsubscribe);
-  CModuleRecord *mod = GetRecord(M->src_mod_id);
-  if (mod != NULL) {
-    RemoveSubscription(mod, msg_type_to_unsubscribe);
-    SendAcknowledge(mod);
-  }
-}
-
-void CMessageManager::HandlePauseSubscription(CMessage *M) {
-  MSG_TYPE msg_type_to_pause;
-  M->GetData(&msg_type_to_pause);
-  CModuleRecord *mod = GetRecord(M->src_mod_id);
-  if (mod != NULL) {
-    PauseSubscription(mod, msg_type_to_pause);
-    SendAcknowledge(mod);
-  }
-}
-
-void CMessageManager::HandleResumeSubscription(CMessage *M) {
-
-  MSG_TYPE msg_type_to_resume;
-  M->GetData(&msg_type_to_resume);
-  CModuleRecord *mod = GetRecord(M->src_mod_id);
-  if (mod != NULL) {
-    ResumeSubscription(mod, msg_type_to_resume);
-    SendAcknowledge(mod);
-  }
+  // Notify that the module has joined and ready
+  SendHello(mod);
 }
 
 void CMessageManager::SendAcknowledge(CModuleRecord *mod) {
@@ -841,9 +751,8 @@ void CMessageManager::SendAcknowledge(CModuleRecord *mod) {
   }
 }
 
-void CMessageManager::SendIntroductions(MODULE_ID mod_id) {
+void CMessageManager::SendIntroductions(CModuleRecord *dest_mod) {
   MDF_HELLO hello;
-  CModuleRecord *dest_mod = GetRecord(mod_id);
   if (dest_mod) {
     for (auto &entry : m_ConnectedModules) {
       CModuleRecord *mod = &entry.second;

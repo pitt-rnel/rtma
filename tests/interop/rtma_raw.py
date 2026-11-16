@@ -144,17 +144,23 @@ class RawClient:
         dest_host_id: int = 0,
         num_data_bytes: int | None = None,
         msg_count: int | None = None,
+        src_mod_id: int | None = None,
     ) -> None:
-        """Send one message. ``num_data_bytes`` can be set to lie about the size."""
+        """Send one message.
+
+        ``num_data_bytes`` and ``src_mod_id`` can be set to lie about the
+        size and the sender.
+        """
         size = len(payload) if num_data_bytes is None else num_data_bytes
         count = self.msg_count if msg_count is None else msg_count
+        src = self.mod_id if src_mod_id is None else src_mod_id
         header = HEADER.pack(
             msg_type,
             count,
             time.time(),
             0.0,
             0,
-            self.mod_id,
+            src,
             dest_host_id,
             dest_mod_id,
             size,

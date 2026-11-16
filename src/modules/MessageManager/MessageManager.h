@@ -168,6 +168,8 @@ public:
 private:
   MODULE_ID m_NextDynamicModId;
   std::unordered_map<MODULE_ID, CModuleRecord> m_ConnectedModules;
+  // The connected module on each pipe. A pipe that hasn't connected has none.
+  std::unordered_map<UPipe *, MODULE_ID> m_ModuleByPipe;
   // Only types with subscribers have an entry.
   std::unordered_map<MSG_TYPE, CSubscriberSet> m_Subscribers;
   CMessage m_OutMsg;
@@ -224,13 +226,11 @@ private:
   void DispatchSignalToAll(MSG_TYPE sig);
   // Dispatches a signal to each connected module (and each Logger module)
 
-  MODULE_ID
-  ConnectModule(MODULE_ID module_id, UPipe *pSourcePipe, short logger_status,
-                short daemon_status);
-
-  MODULE_ID
-  ConnectModuleV2(MODULE_ID module_id, UPipe *pSourcePipe,
-                  MDF_CONNECT_V2 *connect);
+  CModuleRecord *ConnectModule(UPipe *pSourcePipe, MODULE_ID requested_id,
+                               short logger_status, int32_t pid,
+                               const char *name);
+  // Connects the module on pSourcePipe, sends its ACK and HELLO, and returns
+  // its record, or NULL if the connection is refused.
 
   CModuleRecord *GetRecord(MODULE_ID module_id);
 
@@ -262,7 +262,7 @@ private:
 
   void SendAcknowledge(CModuleRecord *mod);
 
-  void SendIntroductions(MODULE_ID mod_id);
+  void SendIntroductions(CModuleRecord *dest_mod);
 
   void SendHello(CModuleRecord *mod);
 
@@ -270,21 +270,13 @@ private:
 
   void SendPing(MODULE_ID mod_id);
 
-  void HandleSetName(CMessage *m);
+  void HandleSetName(CMessage *m, CModuleRecord *mod);
 
   void HandleForceDisconnect(CMessage *m);
 
-  void HandleModuleDisconnect(CMessage *m);
+  void HandleModuleReady(CMessage *m, CModuleRecord *mod);
 
-  void HandleModuleReady(CMessage *m);
-
-  void HandleSubscribe(CMessage *m);
-
-  void HandleUnsubscribe(CMessage *m);
-
-  void HandlePauseSubscription(CMessage *m);
-
-  void HandleResumeSubscription(CMessage *m);
+  MSG_TYPE SubscriptionType(CMessage *m);
 
   void HandleConnect(CMessage *m, UPipe *pSourcePipe);
 

@@ -171,7 +171,6 @@ def test_duplicate_static_id_is_refused_without_goodbye(manager):
     assert goodbyes == []
 
 
-@pytest.mark.cpp_gap("messages are processed and forwarded before CONNECT")
 def test_message_before_connect_is_dropped(manager):
     consumer = RawClient.connect(manager.port, 20)
     consumer.subscribe(A)
@@ -180,6 +179,25 @@ def test_message_before_connect_is_dropped(manager):
     early.send(A, PAYLOAD)
     assert consumer.user_types() == []
     assert early.is_closed()
+
+
+def test_connect_from_connected_module_is_ignored(manager):
+    module = RawClient.connect(manager.port, 21)
+    module.send_connect()
+    assert not module.acked(0.5)
+    assert manager.accepts_clients()
+
+
+def test_requests_apply_to_the_sending_connection(pair):
+    # The manager knows a module by its connection, not by the header's
+    # src_mod_id.
+    consumer, producer = pair
+    producer.send(MT_SUBSCRIBE, MSG_TYPE.pack(A), src_mod_id=20)
+    assert producer.acked()
+    consumer.send(A, PAYLOAD)
+    assert producer.user_types() == [A]
+    producer.send(A, PAYLOAD)
+    assert consumer.user_types() == []
 
 
 @pytest.mark.cpp_gap("MAX_MODULES is not enforced")
