@@ -14,6 +14,10 @@ They cover:
   files read back directly and by pyrtma's `LogReader`.
 - `test_data_logger.py`: the pyrtma data logger through each manager,
   controlled with raw requests addressed to it.
+- `test_cpp_client.py`: the C++ client library, through `rtma_test_client`
+  (`test_client.cpp`), against each manager, and against a scripted fake
+  manager for cases a real one doesn't produce on demand, such as another
+  module's ACK arriving first.
 
 Every test that takes the `manager` fixture runs twice, once per manager,
 each started fresh on a free loopback port.
@@ -22,9 +26,11 @@ each started fresh on a free loopback port.
 
 - Python 3.10 or newer with pyrtma 4 importable, and pytest 8.4 or newer.
   pytest-timeout is optional.
-- The C++ MessageManager and QuickLogger, built as described in the
-  repository README. The tests look for them in `bin/`, or where the
-  `RTMA_MM_BIN` and `RTMA_QL_BIN` environment variables point.
+- The C++ MessageManager, QuickLogger and `rtma_test_client`, built as
+  described in the repository README; CMake builds `rtma_test_client` with
+  the tests (`BUILD_TESTING`, on by default). The tests look for them in
+  `bin/`, or where the `RTMA_MM_BIN`, `RTMA_QL_BIN` and
+  `RTMA_TEST_CLIENT_BIN` environment variables point.
 
 Without pyrtma every test is skipped. Without a C++ binary, the tests that
 need it are skipped and the pyrtma ones still run.
@@ -53,6 +59,7 @@ To test binaries somewhere else, such as a Debug build:
 ```
 set RTMA_MM_BIN=C:\path\to\MessageManager.exe
 set RTMA_QL_BIN=C:\path\to\QuickLogger.exe
+set RTMA_TEST_CLIENT_BIN=C:\path\to\rtma_test_client.exe
 ```
 
 Useful options:
@@ -74,8 +81,9 @@ there. Stop any message manager you have running before running them.
 
 ## Expected failures
 
-Tests marked `cpp_gap` are expected to fail on the C++ MessageManager, and
-`ql_gap` tests with the C++ QuickLogger, until those match pyrtma. The marks
+Tests marked `cpp_gap` are expected to fail on the C++ MessageManager,
+`ql_gap` tests with the C++ QuickLogger, and `client_gap` tests with the C++
+client library, until those match pyrtma. The marks
 are strict: a marked test that passes is reported as a failure, so a fix
 must remove its mark. A clean run shows only passes and expected failures
 (`x`).

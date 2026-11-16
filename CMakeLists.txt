@@ -129,6 +129,22 @@ if(BUILD_TESTING)
     target_include_directories(rtma_core_types_test PRIVATE
         include include/internal)
     add_test(NAME rtma_core_types COMMAND rtma_core_types_test)
+
+    # The interop tests drive the C++ client library with this; see
+    # tests/interop/README.md. It goes in bin/ beside the modules, where the
+    # tests look for it.
+    add_executable(rtma_test_client tests/interop/test_client.cpp)
+    target_include_directories(rtma_test_client PRIVATE include/internal)
+    target_link_libraries(rtma_test_client PRIVATE RTMA)
+    set_target_properties(rtma_test_client PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${RTMA_BINARY_OUTPUT_DIRECTORY}
+    )
+    foreach(configuration Debug Release RelWithDebInfo MinSizeRel)
+        string(TOUPPER ${configuration} configuration_upper)
+        set_target_properties(rtma_test_client PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY_${configuration_upper} ${RTMA_BINARY_OUTPUT_DIRECTORY}
+        )
+    endforeach()
 endif()
 
 install(TARGETS RTMA

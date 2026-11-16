@@ -41,6 +41,7 @@ def _binary(env: str, name: str) -> pathlib.Path:
 
 MM_BIN = _binary("RTMA_MM_BIN", "MessageManager")
 QL_BIN = _binary("RTMA_QL_BIN", "QuickLogger")
+CLIENT_BIN = _binary("RTMA_TEST_CLIENT_BIN", "rtma_test_client")
 
 
 def pytest_addoption(parser):
@@ -63,6 +64,11 @@ def pytest_configure(config):
         "ql_gap(reason): expected to fail with the C++ QuickLogger until it is "
         "fixed. Strict, like cpp_gap.",
     )
+    config.addinivalue_line(
+        "markers",
+        "client_gap(reason): expected to fail with the C++ client library until "
+        "it matches pyrtma's client. Strict, like cpp_gap.",
+    )
 
 
 def pytest_report_header(config):
@@ -71,6 +77,7 @@ def pytest_report_header(config):
         f"interop: {pyrtma} (python {sys.executable})",
         f"interop: MessageManager {MM_BIN} ({'found' if MM_BIN.exists() else 'NOT FOUND'})",
         f"interop: QuickLogger {QL_BIN} ({'found' if QL_BIN.exists() else 'NOT FOUND'})",
+        f"interop: test client {CLIENT_BIN} ({'found' if CLIENT_BIN.exists() else 'NOT FOUND'})",
     ]
 
 
@@ -91,11 +98,12 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(
                 pytest.mark.xfail(strict=True, reason=f"C++ MM gap: {gap.args[0]}")
             )
-        gap = item.get_closest_marker("ql_gap")
-        if gap:
-            item.add_marker(
-                pytest.mark.xfail(strict=True, reason=f"QuickLogger gap: {gap.args[0]}")
-            )
+        for name, label in (("ql_gap", "QuickLogger"), ("client_gap", "C++ client")):
+            gap = item.get_closest_marker(name)
+            if gap:
+                item.add_marker(
+                    pytest.mark.xfail(strict=True, reason=f"{label} gap: {gap.args[0]}")
+                )
 
 
 @pytest.hookimpl(wrapper=True)
