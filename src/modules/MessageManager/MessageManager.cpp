@@ -8,6 +8,7 @@
  */
 
 #include "MessageManager.h"
+#include "CoreMessageSizes.h"
 #include "Debug.h"
 #include <MyCException.h>
 #include <OS_defines.h>
@@ -137,6 +138,22 @@ void CMessageManager::HandleData(UPipe *pSourcePipe) {
   if (status < 0)
     DropSender(pSourcePipe, "Failed to read a message (status %d)", status);
   DEBUG_TEXT("Received message of type " << M.msg_type);
+
+  // Core messages must match their definitions, as in pyrtma's manager. A
+  // client whose core definitions don't match the manager's is dropped
+  // before its message is acted on or forwarded.
+  if (M.msg_type <= MAX_RTMA_MSG_TYPE) {
+    int expected = CoreMessageSize(M.msg_type);
+    if (expected < 0)
+      DropSender(pSourcePipe, "Unknown core message type MT=%d received.",
+                 M.msg_type);
+    if (M.num_data_bytes != expected)
+      DropSender(pSourcePipe,
+                 "MT=%d announced %d data bytes, but its core definition has "
+                 "%d. The client's core definitions don't match the "
+                 "manager's.",
+                 M.msg_type, M.num_data_bytes, expected);
+  }
 
   // Failures to send to other modules are caught where they are sent, so an
   // exception here is about this module's message: drop it, rather than

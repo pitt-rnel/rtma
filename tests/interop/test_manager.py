@@ -278,7 +278,6 @@ def test_oversized_payload_drops_client(manager):
     assert manager.accepts_clients()
 
 
-@pytest.mark.cpp_gap("a core message with the wrong size overruns the manager's stack")
 def test_core_message_with_wrong_size_drops_client(manager):
     c = RawClient.connect(manager.port, 21)
     c.send(MT_SUBSCRIBE, MSG_TYPE.pack(A) + b"\x41" * 4096)
@@ -286,7 +285,6 @@ def test_core_message_with_wrong_size_drops_client(manager):
     assert manager.accepts_clients()
 
 
-@pytest.mark.cpp_gap("an unknown core message type is forwarded")
 def test_unknown_core_type_drops_client(manager):
     c = RawClient.connect(manager.port, 21)
     c.send(7, struct.pack("=iii", A, 0, 0))  # legacy SUBSCRIPTION_OPTION

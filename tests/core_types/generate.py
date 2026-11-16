@@ -1,7 +1,9 @@
 """Generate core_types_test.cpp from pyrtma's core message definitions.
 
 The test asserts, at compile time, that the C++ headers define everything
-in pyrtma's core_defs YAML files with the same values and layouts:
+in pyrtma's core_defs YAML files with the same values and layouts, and, when
+it runs, that the message manager's CoreMessageSize() gives every core
+message type its size and -1 for every other type below 100:
 
     core_types.h          rtma_core.yaml
     quick_logger_types.h  quick_logger.yaml
@@ -25,6 +27,9 @@ from pyrtma.parser import MDF, SDF, Field, NativeType, Parser, TypeAlias
 
 HERE = pathlib.Path(__file__).resolve().parent
 OUTPUT = HERE / "core_types_test.cpp"
+
+# Message types up to this one are core types.
+MAX_RTMA_MSG_TYPE = 99
 
 # Each core definitions file, and the header that mirrors it.
 HEADERS = {
@@ -114,14 +119,40 @@ def generate() -> str:
         "",
         "#include <RTMA_types.h>",
         "",
+        '#include "CoreMessageSizes.h"',
+        "",
         "#include <cstddef>",
+        "#include <cstdio>",
         "#include <type_traits>",
     ]
     for src, header in HEADERS.items():
         lines += ["", f"// {header}: {src}.yaml", ""]
         lines += section(p, src)
-    lines += ["", "int main() { return 0; }", ""]
+    lines += ["", *main_function(p), ""]
     return "\n".join(lines)
+
+
+def main_function(p: Parser) -> list[str]:
+    """Check the message manager's core size table, CoreMessageSize()."""
+    sizes = {m.type_id: m.size for m in p.message_defs.values() if m.type_id <= MAX_RTMA_MSG_TYPE}
+    out = [
+        "static int failures = 0;",
+        "",
+        "static void check_size(int msg_type, int expected) {",
+        "  int actual = CoreMessageSize(msg_type);",
+        "  if (actual != expected) {",
+        '    std::printf("CoreMessageSize(%d) is %d, expected %d\\n", msg_type, actual, expected);',
+        "    ++failures;",
+        "  }",
+        "}",
+        "",
+        "int main() {",
+        "  // Every core message type, and -1 for every other type below 100.",
+    ]
+    for t in range(-1, MAX_RTMA_MSG_TYPE + 1):
+        out.append(f"  check_size({t}, {sizes.get(t, -1)});")
+    out += ["  return failures == 0 ? 0 : 1;", "}"]
+    return out
 
 
 def main() -> int:

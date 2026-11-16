@@ -14,6 +14,10 @@ per YAML file:
 `core_types_test.cpp` is generated from the YAML files. It holds a
 `static_assert` for every constant, alias, ID and hash, and for the size of
 every struct and message and the offset, type and length of every field.
+When it runs, it checks the message manager's core message size table,
+`CoreMessageSize()` in `src/modules/MessageManager/CoreMessageSizes.h`:
+every core message type must have its size, and every other type below 100
+must be unknown (-1).
 CTest builds it as `rtma_core_types_test`, so a header that drifts from the
 YAML fails the build.
 

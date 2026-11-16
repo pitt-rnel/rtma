@@ -5,7 +5,10 @@
 
 #include <RTMA_types.h>
 
+#include "CoreMessageSizes.h"
+
 #include <cstddef>
+#include <cstdio>
 #include <type_traits>
 
 // core_types.h: rtma_core.yaml
@@ -687,4 +690,118 @@ static_assert(std::is_same<std::remove_all_extents<decltype(MDF_DATA_LOG_TEST_20
 static_assert(std::rank<decltype(MDF_DATA_LOG_TEST_2048::raw)>::value == 1, "MDF_DATA_LOG_TEST_2048::raw rank");
 static_assert(std::extent<decltype(MDF_DATA_LOG_TEST_2048::raw)>::value == 2048, "MDF_DATA_LOG_TEST_2048::raw length");
 
-int main() { return 0; }
+static int failures = 0;
+
+static void check_size(int msg_type, int expected) {
+  int actual = CoreMessageSize(msg_type);
+  if (actual != expected) {
+    std::printf("CoreMessageSize(%d) is %d, expected %d\n", msg_type, actual, expected);
+    ++failures;
+  }
+}
+
+int main() {
+  // Every core message type, and -1 for every other type below 100.
+  check_size(-1, -1);
+  check_size(0, 0);
+  check_size(1, 0);
+  check_size(2, 0);
+  check_size(3, -1);
+  check_size(4, 44);
+  check_size(5, -1);
+  check_size(6, 8);
+  check_size(7, -1);
+  check_size(8, 64);
+  check_size(9, -1);
+  check_size(10, -1);
+  check_size(11, -1);
+  check_size(12, -1);
+  check_size(13, 4);
+  check_size(14, 0);
+  check_size(15, 4);
+  check_size(16, 4);
+  check_size(17, -1);
+  check_size(18, -1);
+  check_size(19, -1);
+  check_size(20, -1);
+  check_size(21, -1);
+  check_size(22, -1);
+  check_size(23, -1);
+  check_size(24, -1);
+  check_size(25, -1);
+  check_size(26, 4);
+  check_size(27, -1);
+  check_size(28, -1);
+  check_size(29, 2);
+  check_size(30, 2);
+  check_size(31, 0);
+  check_size(32, 72);
+  check_size(33, 72);
+  check_size(34, 32);
+  check_size(35, -1);
+  check_size(36, -1);
+  check_size(37, -1);
+  check_size(38, -1);
+  check_size(39, -1);
+  check_size(40, 1936);
+  check_size(41, 1936);
+  check_size(42, 1936);
+  check_size(43, 1936);
+  check_size(44, 1936);
+  check_size(45, 1936);
+  check_size(46, -1);
+  check_size(47, -1);
+  check_size(48, -1);
+  check_size(49, -1);
+  check_size(50, -1);
+  check_size(51, -1);
+  check_size(52, -1);
+  check_size(53, -1);
+  check_size(54, 32);
+  check_size(55, 0);
+  check_size(56, 260);
+  check_size(57, 0);
+  check_size(58, 0);
+  check_size(59, 0);
+  check_size(60, 0);
+  check_size(61, 0);
+  check_size(62, 32);
+  check_size(63, 56);
+  check_size(64, 708);
+  check_size(65, 32);
+  check_size(66, 32);
+  check_size(67, 32);
+  check_size(68, 0);
+  check_size(69, 4252);
+  check_size(70, 32);
+  check_size(71, 32);
+  check_size(72, 1056);
+  check_size(73, 32);
+  check_size(74, 32);
+  check_size(75, 32);
+  check_size(76, 32);
+  check_size(77, 0);
+  check_size(78, 608);
+  check_size(79, 2048);
+  check_size(80, -1);
+  check_size(81, -1);
+  check_size(82, 4);
+  check_size(83, -1);
+  check_size(84, -1);
+  check_size(85, 4);
+  check_size(86, 4);
+  check_size(87, -1);
+  check_size(88, -1);
+  check_size(89, -1);
+  check_size(90, -1);
+  check_size(91, -1);
+  check_size(92, -1);
+  check_size(93, -1);
+  check_size(94, -1);
+  check_size(95, -1);
+  check_size(96, 0);
+  check_size(97, -1);
+  check_size(98, -1);
+  check_size(99, -1);
+  return failures == 0 ? 0 : 1;
+}
