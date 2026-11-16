@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 }
 
 CMessageManager::CMessageManager() {
-  m_Version = "3.0bci";
+  m_Version = "4.0.0";
   m_NextDynamicModId = DYN_MOD_ID_START;
 
   InitializeAbsTime();
@@ -61,6 +61,7 @@ CMessageManager::~CMessageManager() {}
 
 void CMessageManager::MainLoop(char *cmd_line_options) {
   try {
+    printf("RTMA MessageManager %s\n", m_Version.GetContent());
     DEBUG_TEXT("Entering Main Loop");
 
     // Elevate process priority
