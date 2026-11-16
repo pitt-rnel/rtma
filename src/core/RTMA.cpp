@@ -327,10 +327,30 @@ RTMA_Module::RTMA_Module() {
   CATCH_and_THROW("RTMA_Module::RTMA_Module( )");
 }
 
-RTMA_Module::RTMA_Module(MODULE_ID ModuleID, HOST_ID HostID) {
-  TRY { InitVariables(ModuleID, HostID); }
-  CATCH_and_THROW(
-      "RTMA_Module::RTMA_Module( MODULE_ID ModuleID, HOST_ID HostID)");
+RTMA_Module::RTMA_Module(MODULE_ID ModuleID, HOST_ID HostID,
+                         const std::string &name) {
+  TRY {
+    InitVariables(ModuleID, HostID);
+    if (!name.empty())
+      SetModuleName(name);
+  }
+  CATCH_and_THROW("RTMA_Module::RTMA_Module( MODULE_ID ModuleID, HOST_ID "
+                  "HostID, const std::string &name)");
+}
+
+void RTMA_Module::SetModuleName(const std::string &name) {
+  TRY {
+    m_ModuleName = name.substr(0, MAX_NAME_LEN - 1);
+    if (!m_ModuleName.empty())
+      m_Logger->SetDefaultLogName(m_ModuleName);
+    if (m_Connected) {
+      MDF_CLIENT_SET_NAME data{};
+      strncpy(data.name, m_ModuleName.c_str(), sizeof(data.name) - 1);
+      CMessage M(MT_CLIENT_SET_NAME, &data, sizeof(data));
+      SendMessage(&M);
+    }
+  }
+  CATCH_and_THROW("RTMA_Module::SetModuleName( const std::string &name)");
 }
 
 void RTMA_Module::InitVariables(MODULE_ID ModuleID, HOST_ID HostID) {
@@ -412,23 +432,19 @@ int RTMA_Module::ConnectToMMM(char *server_name, int logger_status,
     _pipeClient = UPipeFactory::CreateClient(server_name);
     _MMpipe = _pipeClient->Connect();
 
-    MDF_CONNECT data{};
+    (void)daemon_status; // CONNECT_V2 has no daemon status
 
-    if (logger_status) {
-      data.logger_status = 1;
-    } else {
-      data.logger_status = 0;
-    }
-
-    if (daemon_status) {
-      data.daemon_status = 1;
-    } else {
-      data.daemon_status = 0;
-    }
+    // CONNECT_V2 carries the module's name and process ID, so the manager's
+    // first HELLO for it has them. Both message managers support it.
+    MDF_CONNECT_V2 data{};
+    data.logger_status = logger_status ? 1 : 0;
+    data.mod_id = m_ModuleID;
+    data.pid = m_Pid;
+    strncpy(data.name, m_ModuleName.c_str(), sizeof(data.name) - 1);
 
     m_MessageCount = 1;
     m_SelfMessageCount = 1;
-    CMessage M(MT_CONNECT, (void *)&data, sizeof(MDF_CONNECT));
+    CMessage M(MT_CONNECT_V2, (void *)&data, sizeof(data));
 
     try {
       SendMessage(&M);
@@ -439,14 +455,16 @@ int RTMA_Module::ConnectToMMM(char *server_name, int logger_status,
           WaitForAcknowledgement(1, ack_msg.get()); // Wait for up to 3 seconds
       if (status == 0) {
         throw MyCException(
-            "Did not receive ACK from MessageManager upon CONNECT");
+            "Did not receive ACK from MessageManager upon CONNECT_V2");
       }
 
       // save own module ID from ACK if asked to be assigned dynamic ID
       if (m_ModuleID == 0)
         m_ModuleID = ack_msg->dest_mod_id;
 
-      m_Logger->SetDefaultLogName("Module " + std::to_string(m_ModuleID));
+      m_Logger->SetDefaultLogName(m_ModuleName.empty()
+                                      ? "Module " + std::to_string(m_ModuleID)
+                                      : m_ModuleName);
 
       m_Connected = 1;
 

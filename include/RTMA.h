@@ -124,6 +124,7 @@ private:
   HOST_ID m_HostID;
   double m_StartTime;
   int m_Pid;
+  std::string m_ModuleName;
   std::unique_ptr<RTMA_Logger> m_Logger;
 
 #if (RTMA_PROFILE == TRUE)
@@ -164,7 +165,9 @@ public:
 
   RTMA_Module();
 
-  RTMA_Module(MODULE_ID ModuleID, HOST_ID HostID);
+  RTMA_Module(MODULE_ID ModuleID, HOST_ID HostID, const std::string &name = "");
+  // name is the module's name, which the message manager announces in HELLO
+  // and GOODBYE messages; see SetModuleName().
 
   ~RTMA_Module();
 
@@ -173,8 +176,19 @@ public:
 
   void InitVariables(MODULE_ID ModuleID, HOST_ID HostID);
 
+  void SetModuleName(const std::string &name);
+  // Sets the module's name, at most MAX_NAME_LEN - 1 characters; a longer one
+  // is cut. It is sent in CONNECT_V2 when connecting, and with
+  // CLIENT_SET_NAME if the module is already connected. The logger takes it as
+  // its default name.
+
+  const std::string &GetModuleName() const { return m_ModuleName; }
+
   int ConnectToMMM(int logger_status = 0, int read_dd_file = 0,
                    int daemon_status = 0);
+  // Connects with CONNECT_V2, which carries the module's name and process ID.
+  // daemon_status is unused: CONNECT_V2 has no such field, and no message
+  // manager acts on it.
   // Opens a read and a write connection to the Message Management Module on
   // localhost:7111
 

@@ -2,7 +2,8 @@
 //
 //   rtma_test_client SERVER SCENARIO MOD_ID [ARGS...]
 //
-//   connect             stay connected until stdin closes
+//   connect [NAME]      connect with NAME, and stay until stdin closes
+//   rename NAME         connect, then set the name, and stay
 //   echo COUNT          reply to COUNT messages of type 1001 with type 1002
 //   send BYTES DEST_MOD DEST_HOST [VERSION]
 //                       send one message of type 1001
@@ -75,6 +76,19 @@ int ScenarioConnect(RTMA_Module &module, char *server) {
   }
   module.DisconnectFromMMM();
   Print("disconnected");
+  return 0;
+}
+
+// Connect, then set the module's name, and stay until stdin closes.
+int ScenarioRename(RTMA_Module &module, char *server, const char *name) {
+  if (!Connect(module, server))
+    return 1;
+  module.SetModuleName(name);
+  Print("renamed");
+  std::string line;
+  while (std::getline(std::cin, line)) {
+  }
+  module.DisconnectFromMMM();
   return 0;
 }
 
@@ -170,8 +184,13 @@ int main(int argc, char *argv[]) {
   module.Logger().SetRTMAEnabled(false);
 
   try {
-    if (scenario == "connect")
+    if (scenario == "connect") {
+      if (argc > 4)
+        module.SetModuleName(argv[4]);
       return ScenarioConnect(module, server);
+    }
+    if (scenario == "rename")
+      return ScenarioRename(module, server, argv[4]);
     if (scenario == "echo")
       return ScenarioEcho(module, server, argc > 4 ? std::atoi(argv[4]) : 1);
     if (scenario == "send")

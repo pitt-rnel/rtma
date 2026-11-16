@@ -174,7 +174,6 @@ def test_reconnects_after_disconnecting(manager):
         assert "sent" in out
 
 
-@pytest.mark.client_gap("connects with CONNECT, which carries no process ID")
 def test_announces_its_process_id_when_connecting(manager, running):
     watcher = RawClient.connect(manager.port, 20)
     watcher.subscribe(MT_HELLO)
@@ -195,6 +194,39 @@ def test_marks_core_messages_with_their_hash(manager, running):
     msg = watcher.wait_for(MT_MODULE_READY, where=lambda m: m.header.src_mod_id == 31)
     assert msg is not None
     assert msg.header.reserved == HASH_MODULE_READY
+
+
+def hello_for(watcher: RawClient, mod_id: int) -> Hello:
+    msg = watcher.wait_for(
+        MT_HELLO, where=lambda m: Hello.parse(m.payload).mod_id == mod_id
+    )
+    assert msg is not None, f"no HELLO for module {mod_id}"
+    return Hello.parse(msg.payload)
+
+
+def test_announces_its_name_when_connecting(manager, running):
+    watcher = RawClient.connect(manager.port, 20)
+    watcher.subscribe(MT_HELLO)
+    client = running(manager.port, "connect", 31, "cpp-module")
+    client.wait_for("pid=")
+    assert hello_for(watcher, 31).name == "cpp-module"
+
+
+def test_setting_the_name_after_connecting_announces_it(manager, running):
+    watcher = RawClient.connect(manager.port, 20)
+    watcher.subscribe(MT_HELLO)
+    client = running(manager.port, "rename", 31, "renamed")
+    client.wait_for("renamed")
+    assert hello_for(watcher, 31).name == ""
+    assert hello_for(watcher, 31).name == "renamed"
+
+
+def test_a_long_name_is_cut(manager, running):
+    watcher = RawClient.connect(manager.port, 20)
+    watcher.subscribe(MT_HELLO)
+    client = running(manager.port, "connect", 31, "n" * 40)
+    client.wait_for("pid=")
+    assert hello_for(watcher, 31).name == "n" * 31
 
 
 def test_pyrtma_accepts_its_core_messages_with_sync_check(manager, running):
