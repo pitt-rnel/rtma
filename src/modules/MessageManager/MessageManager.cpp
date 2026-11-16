@@ -103,7 +103,7 @@ void CMessageManager::HandleDisconnect(UPipe *pModulePipe) {
     CModuleRecord *mod = &it->second;
     if (mod->pModulePipe == pModulePipe) {
       // Make sure not to send anything to disconnected client
-      RemoveSubscription(mod, ALL_MESSAGE_TYPES);
+      RemoveAllSubscriptions(mod);
 
       // Notify that the module has left
       SendGoodbye(mod);
@@ -232,60 +232,34 @@ void CMessageManager::HandleSetName(CMessage *M) {
  */
 void CMessageManager::DistributeMessage(CMessage *M) {
   DEBUG_TEXT("Distributing Message...");
-  int timing_set = 0;
 
-  CSubscriberList *SL = GetSubscriberList(M->msg_type);
-  if (SL != NULL) {
-    for (auto it = SL->begin(); it != SL->end(); ++it) {
-      MODULE_ID module_id = SL->GetModuleID(it);
-      auto mod_it = m_ConnectedModules.find(module_id);
-      if (mod_it == m_ConnectedModules.end()) {
-        DEBUG_TEXT("Skipping invalid subscriber module id " << module_id);
-        continue;
-      }
+  std::vector<MODULE_ID> subscribers;
+  GetSubscribers(M->msg_type, subscribers);
+  for (MODULE_ID module_id : subscribers) {
+    auto mod_it = m_ConnectedModules.find(module_id);
+    if (mod_it == m_ConnectedModules.end()) {
+      DEBUG_TEXT("Skipping invalid subscriber module id " << module_id);
+      continue;
+    }
+    CModuleRecord *mod = &mod_it->second;
 
-      /* the order of the code in this while loop is important
-         don't modify it unless you know what you're doing
-       */
-      CModuleRecord *mod = &mod_it->second;
+    // A message with a destination goes only there, and to logger modules.
+    if (M->dest_mod_id != 0 && mod->ModuleID != M->dest_mod_id &&
+        !mod->LoggerStatus)
+      continue;
 
-      int send_it = 0;
-      int has_specific_dest = (M->dest_mod_id == 0) ? 0 : 1;
-
-      if (has_specific_dest) {
-        // send only to the specific destination
-        if (mod->ModuleID == M->dest_mod_id)
-          send_it = 1;
-        else
-          send_it = 0;
+    DEBUG_TEXT_("Forwarding message to module " << mod->ModuleID << "... ");
+    try {
+      int status = ForwardMessage(M, mod);
+      if (status == 0) {
+        LogFailedMessage(M, mod->ModuleID);
+        DEBUG_TEXT("Failed to Forward Message!");
       } else {
-        // no specific destination address- so should be forwarded to all
-        // subscribers for this MT
-        send_it = 1;
+        DEBUG_TEXT("Forwarded!");
       }
-
-      // forward everything to logger modules
-      if (mod->LoggerStatus)
-        send_it = 1;
-
-      if (SL->IsPaused(it))
-        send_it = 0;
-
-      if (send_it) {
-        DEBUG_TEXT_("Forwarding message to module " << mod->ModuleID << "... ");
-        try {
-          int status = ForwardMessage(M, mod);
-          if (status == 0) {
-            LogFailedMessage(M, mod->ModuleID);
-            DEBUG_TEXT("Failed to Forward Message!");
-          } else {
-            DEBUG_TEXT("Forwarded!");
-          }
-        } catch (UPipeClosedException) {
-          DEBUG_TEXT("Failed to Forward Message, destination module socket is "
-                     "closed/dead");
-        }
-      }
+    } catch (UPipeClosedException &) {
+      DEBUG_TEXT("Failed to Forward Message, destination module socket is "
+                 "closed/dead");
     }
   }
   DEBUG_TEXT("Done distributing!");
@@ -296,24 +270,20 @@ void CMessageManager::DistributeMessage(CMessage *M) {
  * cares The message will be sent to all subscribed modules including loggers
  */
 void CMessageManager::DispatchMessage(CMessage *M) {
-  CSubscriberList *SL = GetSubscriberList(M->msg_type);
-  if (SL != NULL) {
-    // Send message to all subscribers
-    for (auto it = SL->begin(); it != SL->end(); ++it) {
-      MODULE_ID module_id = SL->GetModuleID(it);
-      auto mod_it = m_ConnectedModules.find(module_id);
-      if (mod_it == m_ConnectedModules.end()) {
-        DEBUG_TEXT("Skipping invalid subscriber module id " << module_id);
-        continue;
-      }
+  std::vector<MODULE_ID> subscribers;
+  GetSubscribers(M->msg_type, subscribers);
+  for (MODULE_ID module_id : subscribers) {
+    auto mod_it = m_ConnectedModules.find(module_id);
+    if (mod_it == m_ConnectedModules.end()) {
+      DEBUG_TEXT("Skipping invalid subscriber module id " << module_id);
+      continue;
+    }
 
-      CModuleRecord *mod = &mod_it->second;
-      try {
-        SendMessage(M, mod);
-      }
-      catch (UPipeClosedException&) {
-        DEBUG_TEXT("Failed to send MM message, destination module socket is closed/dead");
-      }
+    CModuleRecord *mod = &mod_it->second;
+    try {
+      SendMessage(M, mod);
+    } catch (UPipeClosedException &) {
+      DEBUG_TEXT("Failed to send MM message, destination module socket is closed/dead");
     }
   }
 }
@@ -324,30 +294,26 @@ void CMessageManager::DispatchMessage(CMessage *M) {
  *  The message will also be forwarded to all subscribed logger modules
  */
 void CMessageManager::DispatchMessage(CMessage *M, CModuleRecord *dest_mod) {
-  CSubscriberList *SL;
-
   // send the message to the module it is intended to, disregarding
   // subscriptions
   //(enables MM to send system message to modules)
   SendMessage(M, dest_mod);
 
   // CC all logger modules
-  SL = GetSubscriberList(M->msg_type);
-  if (SL != NULL) {
-    for (auto it = SL->begin(); it != SL->end(); ++it) {
-      MODULE_ID module_id = SL->GetModuleID(it);
-      auto mod_it = m_ConnectedModules.find(module_id);
-      if (mod_it == m_ConnectedModules.end()) {
-        DEBUG_TEXT("Skipping invalid subscriber module id " << module_id);
-        continue;
-      }
-
-      CModuleRecord *mod = &mod_it->second;
-      if (mod->LoggerStatus)
-        if (mod->ModuleID !=
-            dest_mod->ModuleID) // don't send to destination module again
-          ForwardMessage(M, mod);
+  std::vector<MODULE_ID> subscribers;
+  GetSubscribers(M->msg_type, subscribers);
+  for (MODULE_ID module_id : subscribers) {
+    auto mod_it = m_ConnectedModules.find(module_id);
+    if (mod_it == m_ConnectedModules.end()) {
+      DEBUG_TEXT("Skipping invalid subscriber module id " << module_id);
+      continue;
     }
+
+    CModuleRecord *mod = &mod_it->second;
+    if (mod->LoggerStatus)
+      if (mod->ModuleID !=
+          dest_mod->ModuleID) // don't send to destination module again
+        ForwardMessage(M, mod);
   }
 }
 
@@ -530,7 +496,7 @@ void CMessageManager::DisconnectModule(MODULE_ID module_id) {
   SendAcknowledge(mod);
 
   // Make sure not to send anything to disconnected client
-  RemoveSubscription(mod, ALL_MESSAGE_TYPES);
+  RemoveAllSubscriptions(mod);
 
   // Notify that the module has left
   SendGoodbye(mod);
@@ -589,94 +555,94 @@ void CMessageManager::ShutdownAllModules(int shutdown_RTMA,
   }
 }
 
+void CMessageManager::AddSubscriber(CModuleRecord *mod,
+                                    MSG_TYPE message_type) {
+  m_Subscribers[message_type].insert(mod->ModuleID);
+  mod->subs.insert(message_type);
+}
+
+void CMessageManager::DropSubscriber(CModuleRecord *mod,
+                                     MSG_TYPE message_type) {
+  auto it = m_Subscribers.find(message_type);
+  if (it != m_Subscribers.end()) {
+    it->second.erase(mod->ModuleID);
+    if (it->second.empty())
+      m_Subscribers.erase(it);
+  }
+  mod->subs.erase(message_type);
+}
+
+void CMessageManager::RemoveAllSubscriptions(CModuleRecord *mod) {
+  if (mod == NULL)
+    return;
+  std::vector<MSG_TYPE> types(mod->subs.begin(), mod->subs.end());
+  for (MSG_TYPE mt : types)
+    DropSubscriber(mod, mt);
+}
+
+void CMessageManager::GetSubscribers(MSG_TYPE message_type,
+                                     std::vector<MODULE_ID> &ids) const {
+  ids.clear();
+  auto it = m_Subscribers.find(message_type);
+  if (it != m_Subscribers.end())
+    ids.insert(ids.end(), it->second.begin(), it->second.end());
+  if (message_type != ALL_MESSAGE_TYPES) {
+    it = m_Subscribers.find(ALL_MESSAGE_TYPES);
+    if (it != m_Subscribers.end())
+      ids.insert(ids.end(), it->second.begin(), it->second.end());
+  }
+}
+
+// Subscriptions work as in pyrtma's manager. ALL_MESSAGE_TYPES replaces a
+// module's individual subscriptions, and while it is in place, individual
+// SUBSCRIBE and UNSUBSCRIBE requests are ignored. Unsubscribing from
+// ALL_MESSAGE_TYPES removes every subscription.
 void CMessageManager::AddSubscription(CModuleRecord *mod,
                                       MSG_TYPE message_type) {
-  MSG_TYPE mt;
+  if (mod == NULL)
+    return;
 
-  if (mod != NULL) {
-    if (((message_type < 0) || (message_type >= MAX_MESSAGE_TYPES)) &&
-        (message_type != ALL_MESSAGE_TYPES)) {
-      // send MDF_FAIL_SUBSCRIBE instead of ACK so the module's subscribe
-      // function will fail
-      MDF_FAIL_SUBSCRIBE data{};
-      data.mod_id = mod->ModuleID;
-      data.msg_type = message_type;
-      CMessage R(MT_FAIL_SUBSCRIBE, (void *)&data, sizeof(data));
-      DispatchMessage(&R, mod);
-      return;
-    }
+  if (((message_type < 0) || (message_type >= MAX_MESSAGE_TYPES)) &&
+      (message_type != ALL_MESSAGE_TYPES)) {
+    // send MDF_FAIL_SUBSCRIBE instead of ACK so the module's subscribe
+    // function will fail
+    MDF_FAIL_SUBSCRIBE data{};
+    data.mod_id = mod->ModuleID;
+    data.msg_type = message_type;
+    CMessage R(MT_FAIL_SUBSCRIBE, (void *)&data, sizeof(data));
+    DispatchMessage(&R, mod);
+    return;
+  }
 
-    MODULE_ID module_id = mod->ModuleID;
-    switch (message_type) {
-    case ALL_MESSAGE_TYPES:
-      for (mt = 0; mt < MAX_MESSAGE_TYPES; mt++) {
-        CSubscriberList *list = GetSubscriberList(mt);
-        if (!list->IsSubscribed(module_id))
-          list->AddSubscriber(module_id);
-      }
-      break;
-    default:
-      CSubscriberList *list = GetSubscriberList(message_type);
-      if (!list->IsSubscribed(module_id))
-        list->AddSubscriber(module_id);
-    }
+  if (message_type == ALL_MESSAGE_TYPES) {
+    RemoveAllSubscriptions(mod);
+    AddSubscriber(mod, ALL_MESSAGE_TYPES);
+  } else if (!mod->SubAll()) {
+    AddSubscriber(mod, message_type);
   }
 }
 
 void CMessageManager::RemoveSubscription(CModuleRecord *mod,
                                          MSG_TYPE message_type) {
-  MSG_TYPE mt;
-
-  if (mod != NULL) {
-    MODULE_ID module_id = mod->ModuleID;
-    switch (message_type) {
-    case ALL_MESSAGE_TYPES:
-      for (mt = 0; mt < MAX_MESSAGE_TYPES; mt++) {
-        GetSubscriberList(mt)->RemoveSubscriber(module_id);
-      }
-      break;
-    default:
-      GetSubscriberList(message_type)->RemoveSubscriber(module_id);
-    }
-  }
-}
-
-void CMessageManager::PauseSubscription(CModuleRecord *mod,
-                                        MSG_TYPE message_type) {
-  MSG_TYPE mt;
-
   if (mod == NULL)
     return;
 
-  MODULE_ID module_id = mod->ModuleID;
-  switch (message_type) {
-  case ALL_MESSAGE_TYPES:
-    for (mt = 0; mt < MAX_MESSAGE_TYPES; mt++) {
-      GetSubscriberList(mt)->PauseSubscriber(module_id);
-    }
-    break;
-  default:
-    GetSubscriberList(message_type)->PauseSubscriber(module_id);
-  }
+  if (message_type == ALL_MESSAGE_TYPES)
+    RemoveAllSubscriptions(mod);
+  else if (!mod->SubAll())
+    DropSubscriber(mod, message_type);
+}
+
+// As in pyrtma's manager, a paused subscription is removed, and resuming
+// subscribes again. Clients keep track of what they paused.
+void CMessageManager::PauseSubscription(CModuleRecord *mod,
+                                        MSG_TYPE message_type) {
+  RemoveSubscription(mod, message_type);
 }
 
 void CMessageManager::ResumeSubscription(CModuleRecord *mod,
                                          MSG_TYPE message_type) {
-  MSG_TYPE mt;
-
-  if (mod == NULL)
-    return;
-
-  MODULE_ID module_id = mod->ModuleID;
-  switch (message_type) {
-  case ALL_MESSAGE_TYPES:
-    for (mt = 0; mt < MAX_MESSAGE_TYPES; mt++) {
-      GetSubscriberList(mt)->ResumeSubscriber(module_id);
-    }
-    break;
-  default:
-    GetSubscriberList(message_type)->ResumeSubscriber(module_id);
-  }
+  AddSubscription(mod, message_type);
 }
 
 void CMessageManager::HandleConnect(CMessage *M, UPipe *pSourcePipe) {
@@ -777,25 +743,6 @@ void CMessageManager::HandleResumeSubscription(CMessage *M) {
     ResumeSubscription(mod, msg_type_to_resume);
     SendAcknowledge(mod);
   }
-}
-
-CSubscriberList *CMessageManager::GetSubscriberList(MSG_TYPE message_type) {
-  if (message_type >= MAX_MESSAGE_TYPES || message_type < 0)
-    return &m_EmptySubscriberList;
-
-  auto it = m_SubscribersToMessageType.find(message_type);
-  if (it == m_SubscribersToMessageType.end())
-    return &m_EmptySubscriberList;
-
-  return &it->second;
-}
-
-bool CMessageManager::IsModuleSubscribed(MODULE_ID module_id,
-                                         MSG_TYPE message_type) {
-  if (message_type >= MAX_MESSAGE_TYPES || message_type < 0)
-    return false;
-
-  return GetSubscriberList(message_type)->IsSubscribed(module_id);
 }
 
 void CMessageManager::SendAcknowledge(CModuleRecord *mod) {

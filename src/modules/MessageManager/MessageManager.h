@@ -2,7 +2,6 @@
 #define _MESSAGEMANAGER_H_
 
 #include "RTMA.h"
-#include "bit_operations.h"
 #include <MyCString.h>
 #include <OS_defines.h>
 #include <RTMA_types.h>
@@ -12,6 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 #ifdef _WINDOWS_C
 #include <Windows.h>
@@ -33,6 +34,9 @@ public:
   int32_t pid;
   char *addr;
   char *name;
+  // Message types this module subscribes to. ALL_MESSAGE_TYPES replaces the
+  // individual types, as in pyrtma's manager.
+  std::unordered_set<MSG_TYPE> subs;
 
   CModuleRecord() {
     name = NULL;
@@ -142,64 +146,17 @@ public:
     port = 0;
 
     pid = 0;
+    subs.clear();
   }
+
+  bool SubAll() const { return subs.count(ALL_MESSAGE_TYPES) != 0; }
 
   ~CModuleRecord() { Reset(); }
 };
 
-constexpr auto SUBSCRIBER_FLAG_PAUSE = 0x01;
-
-class CSubscriberList {
-public:
-  struct Subscriber {
-    int flags;
-  };
-
-private:
-  std::unordered_map<MODULE_ID, Subscriber> m_Subscribers;
-
-public:
-  CSubscriberList() {}
-
-  void AddSubscriber(MODULE_ID module_id) {
-    m_Subscribers.emplace(module_id, Subscriber{});
-  }
-
-  void RemoveSubscriber(MODULE_ID module_id) {
-    m_Subscribers.erase(module_id);
-  }
-
-  void PauseSubscriber(MODULE_ID module_id) {
-    auto item = m_Subscribers.find(module_id);
-    if (item != m_Subscribers.end()) {
-      set_flag_bits(item->second.flags, SUBSCRIBER_FLAG_PAUSE);
-    }
-  }
-
-  void ResumeSubscriber(MODULE_ID module_id) {
-    auto item = m_Subscribers.find(module_id);
-    if (item != m_Subscribers.end()) {
-      clear_flag_bits(item->second.flags, SUBSCRIBER_FLAG_PAUSE);
-    }
-  }
-
-  using const_iterator = std::unordered_map<MODULE_ID, Subscriber>::const_iterator;
-
-  // Iterator access for range-based iteration
-  const_iterator begin() const { return m_Subscribers.begin(); }
-  const_iterator end() const { return m_Subscribers.end(); }
-
-  // Helper methods to access iterator data
-  MODULE_ID GetModuleID(const_iterator it) const { return it->first; }
-
-  bool IsPaused(const_iterator it) const {
-    return check_flag_bits(it->second.flags, SUBSCRIBER_FLAG_PAUSE);
-  }
-
-  bool IsSubscribed(MODULE_ID module_id) const {
-    return m_Subscribers.find(module_id) != m_Subscribers.end();
-  }
-};
+// Module IDs subscribed to one message type. The key ALL_MESSAGE_TYPES holds
+// the modules subscribed to every type; they hold no other subscriptions.
+typedef std::unordered_set<MODULE_ID> CSubscriberSet;
 
 class CMessageManager : public UPipeAutoServer {
 public:
@@ -211,8 +168,8 @@ public:
 private:
   MODULE_ID m_NextDynamicModId;
   std::unordered_map<MODULE_ID, CModuleRecord> m_ConnectedModules;
-  std::unordered_map<MSG_TYPE, CSubscriberList> m_SubscribersToMessageType;
-  CSubscriberList m_EmptySubscriberList;
+  // Only types with subscribers have an entry.
+  std::unordered_map<MSG_TYPE, CSubscriberSet> m_Subscribers;
   CMessage m_OutMsg;
   MyCString m_Version;
 
@@ -286,9 +243,15 @@ private:
 
   void ResumeSubscription(CModuleRecord *mod, MSG_TYPE msg_type_to_resume);
 
-  CSubscriberList *GetSubscriberList(MSG_TYPE message_type);
+  void AddSubscriber(CModuleRecord *mod, MSG_TYPE message_type);
 
-  bool IsModuleSubscribed(MODULE_ID module_id, MSG_TYPE message_type);
+  void DropSubscriber(CModuleRecord *mod, MSG_TYPE message_type);
+
+  void RemoveAllSubscriptions(CModuleRecord *mod);
+
+  void GetSubscribers(MSG_TYPE message_type, std::vector<MODULE_ID> &ids) const;
+  // The modules subscribed to message_type or to ALL_MESSAGE_TYPES. A copy,
+  // so that sending to them can't invalidate it.
 
   void SendAcknowledge(CModuleRecord *mod);
 

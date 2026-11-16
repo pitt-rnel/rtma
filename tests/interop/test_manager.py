@@ -47,7 +47,6 @@ def pair(manager):
 # Routing ----------------------------------------------------------------
 
 
-@pytest.mark.cpp_gap("every subscriber is sent every message type")
 def test_routes_only_subscribed_types(pair):
     consumer, producer = pair
     consumer.subscribe(A)
@@ -94,7 +93,6 @@ def test_forwarded_header_is_unchanged(pair):
     assert msg.payload == PAYLOAD
 
 
-@pytest.mark.cpp_gap("pausing one type pauses every type")
 def test_pause_affects_only_that_type(pair):
     consumer, producer = pair
     consumer.subscribe(A, C)
@@ -123,7 +121,6 @@ def test_subscribe_all_receives_every_type(pair):
     assert consumer.user_types() == [A, B]
 
 
-@pytest.mark.cpp_gap("unsubscribing a type while subscribed to all types removes it")
 def test_individual_unsubscribe_is_ignored_while_subscribed_to_all(pair):
     consumer, producer = pair
     consumer.subscribe(A)
