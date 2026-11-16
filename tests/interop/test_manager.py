@@ -390,3 +390,56 @@ def test_cpp_manager_refuses_an_invalid_port(tmp_path, port):
     assert "the port must be a number from 1 to 65535" in proc.stderr
     trace = (tmp_path / "exception_trace.txt").read_text(errors="replace")
     assert "the port must be a number from 1 to 65535" in trace
+
+
+def _cpp_only(kind):
+    from conftest import MM_BIN
+
+    if kind != "cpp":
+        pytest.skip("checks the C++ MessageManager's listening socket")
+    if not MM_BIN.exists():
+        pytest.skip(f"C++ MessageManager not found at {MM_BIN}")
+    return MM_BIN
+
+
+def test_cpp_manager_listens_while_old_connections_are_in_time_wait(
+    manager_kind, tmp_path
+):
+    import socket
+
+    from conftest import Manager, free_port
+
+    _cpp_only(manager_kind)
+    # A manager that closes connections first, as both managers do once their
+    # modules disconnect, leaves its side of each in TIME_WAIT for a while
+    # after it stops. A listener closes one here, as such a manager would.
+    port = free_port()
+    listener = socket.create_server(("127.0.0.1", port))
+    client = socket.create_connection(("127.0.0.1", port))
+    conn, _ = listener.accept()
+    conn.close()
+    assert client.recv(1) == b""
+    client.close()
+    listener.close()
+
+    mm = Manager("cpp", port, tmp_path)  # raises if it can't listen
+    try:
+        assert mm.accepts_clients()
+    finally:
+        mm.stop()
+
+
+def test_cpp_manager_refuses_a_second_manager_on_its_port(manager, tmp_path):
+    import subprocess
+
+    mm_bin = _cpp_only(manager.kind)
+    proc = subprocess.run(
+        [str(mm_bin), f"127.0.0.1:{manager.port}"],
+        cwd=tmp_path,  # where it writes exception_trace.txt
+        capture_output=True,
+        text=True,
+        timeout=5,
+    )
+    assert proc.returncode == 1
+    assert "Cannot bind" in proc.stderr
+    assert manager.accepts_clients()
