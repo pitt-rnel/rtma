@@ -70,9 +70,9 @@ void CQuickLogger::MainFunction(char *server) {
 
     // Get connected
     int logger_status = 1;
-    RTMA_Logger *logger = &Logger();
-    InitVariables(MID_QUICKLOGGER, 0);
-    logger->SetLogName("Quicklogger");
+    InitVariables(MID_QUICK_LOGGER, 0);
+    // The name the managers announce it by, and its log name.
+    SetModuleName("QuickLogger");
     ConnectToMMM(server, logger_status);
     Subscribe(ALL_MESSAGE_TYPES);
     //if (SetMyPriority(NORMAL_PRIORITY_CLASS) == 0)

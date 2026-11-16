@@ -124,6 +124,23 @@ def test_quicklogger_bounds_the_pathname_length(ctl, quicklogger, tmp_path, leng
     assert quicklogger.alive()
 
 
+def test_quicklogger_announces_its_name(manager, tmp_path):
+    from conftest import start_quicklogger
+    from rtma_raw import MT_HELLO, Hello
+
+    watcher = RawClient.connect(manager.port, 20)
+    watcher.subscribe(MT_HELLO)
+    ql = start_quicklogger(manager.port, tmp_path, f"127.0.0.1:{manager.port}")
+    try:
+        msg = watcher.wait_for(
+            MT_HELLO, where=lambda m: Hello.parse(m.payload).mod_id == MID_QUICKLOGGER
+        )
+        assert msg is not None
+        assert Hello.parse(msg.payload).name == "QuickLogger"
+    finally:
+        ql.stop()
+
+
 def test_quicklogger_exits_on_lm_exit(ctl, quicklogger):
     ctl.send(MT_LM_EXIT, dest_mod_id=MID_QUICKLOGGER)
     quicklogger.proc.wait(5)
