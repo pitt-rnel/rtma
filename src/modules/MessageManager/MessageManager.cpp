@@ -43,7 +43,10 @@ int main(int argc, char *argv[])
   } catch (MyCException &E) {
     E.AddToStack("MM WinMain- aborting");
     E.ReportToFile();
-    return 0;
+    MyCString err("MessageManager: fatal error:");
+    E.AppendTraceToString(err);
+    fprintf(stderr, "%s\n", err.GetContent());
+    return 1;
   }
 }
 

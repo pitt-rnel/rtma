@@ -379,9 +379,12 @@ def test_cpp_manager_refuses_an_invalid_port(tmp_path, port):
         pytest.skip(f"C++ MessageManager not found at {MM_BIN}")
     # It used to read past the port's digits, and wrap 70000 around to listen
     # on 4464. Now it refuses the port and exits.
-    subprocess.run(
+    proc = subprocess.run(
         [str(MM_BIN), f"127.0.0.1:{port}"],
         cwd=tmp_path,
         capture_output=True,
+        text=True,
         timeout=5,
     )
+    assert proc.returncode == 1
+    assert "the port must be a number from 1 to 65535" in proc.stderr
