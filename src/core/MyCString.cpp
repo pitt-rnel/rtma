@@ -130,7 +130,11 @@ MyCString::~MyCString() {
 }
 
 ostream &operator<<(ostream &out, const MyCString &str) {
-  out << str.GetContent();
+  // An empty MyCString has no content. Streaming a null char* is undefined:
+  // MSVC's library crashes, and libstdc++'s fails the stream, which drops
+  // everything written after it.
+  if (str.GetContent() != NULL)
+    out << str.GetContent();
   return out;
 }
 

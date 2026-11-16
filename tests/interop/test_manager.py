@@ -388,3 +388,5 @@ def test_cpp_manager_refuses_an_invalid_port(tmp_path, port):
     )
     assert proc.returncode == 1
     assert "the port must be a number from 1 to 65535" in proc.stderr
+    trace = (tmp_path / "exception_trace.txt").read_text(errors="replace")
+    assert "the port must be a number from 1 to 65535" in trace
