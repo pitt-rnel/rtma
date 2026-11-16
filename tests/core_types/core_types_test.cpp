@@ -5,7 +5,7 @@
 
 #include <RTMA_types.h>
 
-#include "CoreMessageSizes.h"
+#include "CoreMessages.h"
 
 #include <cstddef>
 #include <cstdio>
@@ -692,116 +692,121 @@ static_assert(std::extent<decltype(MDF_DATA_LOG_TEST_2048::raw)>::value == 2048,
 
 static int failures = 0;
 
-static void check_size(int msg_type, int expected) {
-  int actual = CoreMessageSize(msg_type);
-  if (actual != expected) {
-    std::printf("CoreMessageSize(%d) is %d, expected %d\n", msg_type, actual, expected);
+static void check(int msg_type, int size, uint32_t hash) {
+  if (CoreMessageSize(msg_type) != size) {
+    std::printf("CoreMessageSize(%d) is %d, expected %d\n", msg_type,
+                CoreMessageSize(msg_type), size);
+    ++failures;
+  }
+  if (CoreMessageHash(msg_type) != hash) {
+    std::printf("CoreMessageHash(%d) is 0x%08x, expected 0x%08x\n", msg_type,
+                (unsigned)CoreMessageHash(msg_type), (unsigned)hash);
     ++failures;
   }
 }
 
 int main() {
-  // Every core message type, and -1 for every other type below 100.
-  check_size(-1, -1);
-  check_size(0, 0);
-  check_size(1, 0);
-  check_size(2, 0);
-  check_size(3, -1);
-  check_size(4, 44);
-  check_size(5, -1);
-  check_size(6, 8);
-  check_size(7, -1);
-  check_size(8, 64);
-  check_size(9, -1);
-  check_size(10, -1);
-  check_size(11, -1);
-  check_size(12, -1);
-  check_size(13, 4);
-  check_size(14, 0);
-  check_size(15, 4);
-  check_size(16, 4);
-  check_size(17, -1);
-  check_size(18, -1);
-  check_size(19, -1);
-  check_size(20, -1);
-  check_size(21, -1);
-  check_size(22, -1);
-  check_size(23, -1);
-  check_size(24, -1);
-  check_size(25, -1);
-  check_size(26, 4);
-  check_size(27, -1);
-  check_size(28, -1);
-  check_size(29, 2);
-  check_size(30, 2);
-  check_size(31, 0);
-  check_size(32, 72);
-  check_size(33, 72);
-  check_size(34, 32);
-  check_size(35, -1);
-  check_size(36, -1);
-  check_size(37, -1);
-  check_size(38, -1);
-  check_size(39, -1);
-  check_size(40, 1936);
-  check_size(41, 1936);
-  check_size(42, 1936);
-  check_size(43, 1936);
-  check_size(44, 1936);
-  check_size(45, 1936);
-  check_size(46, -1);
-  check_size(47, -1);
-  check_size(48, -1);
-  check_size(49, -1);
-  check_size(50, -1);
-  check_size(51, -1);
-  check_size(52, -1);
-  check_size(53, -1);
-  check_size(54, 32);
-  check_size(55, 0);
-  check_size(56, 260);
-  check_size(57, 0);
-  check_size(58, 0);
-  check_size(59, 0);
-  check_size(60, 0);
-  check_size(61, 0);
-  check_size(62, 32);
-  check_size(63, 56);
-  check_size(64, 708);
-  check_size(65, 32);
-  check_size(66, 32);
-  check_size(67, 32);
-  check_size(68, 0);
-  check_size(69, 4252);
-  check_size(70, 32);
-  check_size(71, 32);
-  check_size(72, 1056);
-  check_size(73, 32);
-  check_size(74, 32);
-  check_size(75, 32);
-  check_size(76, 32);
-  check_size(77, 0);
-  check_size(78, 608);
-  check_size(79, 2048);
-  check_size(80, -1);
-  check_size(81, -1);
-  check_size(82, 4);
-  check_size(83, -1);
-  check_size(84, -1);
-  check_size(85, 4);
-  check_size(86, 4);
-  check_size(87, -1);
-  check_size(88, -1);
-  check_size(89, -1);
-  check_size(90, -1);
-  check_size(91, -1);
-  check_size(92, -1);
-  check_size(93, -1);
-  check_size(94, -1);
-  check_size(95, -1);
-  check_size(96, 0);
-  check_size(97, -1);
-  check_size(98, -1);
-  check_size(99, -1);
+  // Every core message type, and -1 and 0 for every other type below 100.
+  check(-1, -1, 0x00000000u);
+  check(0, 0, 0x095e0546u);
+  check(1, 0, 0x82fc702du);
+  check(2, 0, 0xb725b581u);
+  check(3, -1, 0x00000000u);
+  check(4, 44, 0xec9f6e4bu);
+  check(5, -1, 0x00000000u);
+  check(6, 8, 0xd9c42f25u);
+  check(7, -1, 0x00000000u);
+  check(8, 64, 0x2ede9f3eu);
+  check(9, -1, 0x00000000u);
+  check(10, -1, 0x00000000u);
+  check(11, -1, 0x00000000u);
+  check(12, -1, 0x00000000u);
+  check(13, 4, 0xf4fdcff3u);
+  check(14, 0, 0xd0126bf9u);
+  check(15, 4, 0xd4d36cf2u);
+  check(16, 4, 0x1eb9ad72u);
+  check(17, -1, 0x00000000u);
+  check(18, -1, 0x00000000u);
+  check(19, -1, 0x00000000u);
+  check(20, -1, 0x00000000u);
+  check(21, -1, 0x00000000u);
+  check(22, -1, 0x00000000u);
+  check(23, -1, 0x00000000u);
+  check(24, -1, 0x00000000u);
+  check(25, -1, 0x00000000u);
+  check(26, 4, 0xfd0e0311u);
+  check(27, -1, 0x00000000u);
+  check(28, -1, 0x00000000u);
+  check(29, 2, 0xe0f77418u);
+  check(30, 2, 0x00800232u);
+  check(31, 0, 0x6f4769e8u);
+  check(32, 72, 0x62c8ac68u);
+  check(33, 72, 0xa3afbd32u);
+  check(34, 32, 0x603e34feu);
+  check(35, -1, 0x00000000u);
+  check(36, -1, 0x00000000u);
+  check(37, -1, 0x00000000u);
+  check(38, -1, 0x00000000u);
+  check(39, -1, 0x00000000u);
+  check(40, 1936, 0x3766ee8bu);
+  check(41, 1936, 0x84847fc2u);
+  check(42, 1936, 0x90e927c3u);
+  check(43, 1936, 0x755854d8u);
+  check(44, 1936, 0x2b1cb124u);
+  check(45, 1936, 0xaa3a1188u);
+  check(46, -1, 0x00000000u);
+  check(47, -1, 0x00000000u);
+  check(48, -1, 0x00000000u);
+  check(49, -1, 0x00000000u);
+  check(50, -1, 0x00000000u);
+  check(51, -1, 0x00000000u);
+  check(52, -1, 0x00000000u);
+  check(53, -1, 0x00000000u);
+  check(54, 32, 0x2da5b6a1u);
+  check(55, 0, 0x35dd547bu);
+  check(56, 260, 0x67637e79u);
+  check(57, 0, 0x66e84ae5u);
+  check(58, 0, 0x20c1e922u);
+  check(59, 0, 0x0d1a3e77u);
+  check(60, 0, 0x68ec4aabu);
+  check(61, 0, 0xf9d7e2bfu);
+  check(62, 32, 0x6b13e892u);
+  check(63, 56, 0x5ce37a06u);
+  check(64, 708, 0xa90bcee9u);
+  check(65, 32, 0x4473eef7u);
+  check(66, 32, 0xd3110ef2u);
+  check(67, 32, 0x0d497a31u);
+  check(68, 0, 0x91598f0au);
+  check(69, 4252, 0xeae8779du);
+  check(70, 32, 0xe73fb9e1u);
+  check(71, 32, 0x541af8e5u);
+  check(72, 1056, 0x8d5f717fu);
+  check(73, 32, 0x43da6ed3u);
+  check(74, 32, 0xd6a54f5fu);
+  check(75, 32, 0xef6bb58fu);
+  check(76, 32, 0x66f28be7u);
+  check(77, 0, 0x1eb32bebu);
+  check(78, 608, 0x75fc60cfu);
+  check(79, 2048, 0x6f24b1d1u);
+  check(80, -1, 0x00000000u);
+  check(81, -1, 0x00000000u);
+  check(82, 4, 0x335c7bbfu);
+  check(83, -1, 0x00000000u);
+  check(84, -1, 0x00000000u);
+  check(85, 4, 0xf58f6ef5u);
+  check(86, 4, 0x5be0ec3fu);
+  check(87, -1, 0x00000000u);
+  check(88, -1, 0x00000000u);
+  check(89, -1, 0x00000000u);
+  check(90, -1, 0x00000000u);
+  check(91, -1, 0x00000000u);
+  check(92, -1, 0x00000000u);
+  check(93, -1, 0x00000000u);
+  check(94, -1, 0x00000000u);
+  check(95, -1, 0x00000000u);
+  check(96, 0, 0x4863b960u);
+  check(97, -1, 0x00000000u);
+  check(98, -1, 0x00000000u);
+  check(99, -1, 0x00000000u);
   return failures == 0 ? 0 : 1;
 }

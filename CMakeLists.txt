@@ -127,7 +127,7 @@ if(BUILD_TESTING)
     # definitions. Regenerate it with tests/core_types/generate.py.
     add_executable(rtma_core_types_test tests/core_types/core_types_test.cpp)
     target_include_directories(rtma_core_types_test PRIVATE
-        include src/modules/MessageManager)
+        include include/internal)
     add_test(NAME rtma_core_types COMMAND rtma_core_types_test)
 endif()
 

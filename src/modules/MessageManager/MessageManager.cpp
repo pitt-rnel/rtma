@@ -8,7 +8,7 @@
  */
 
 #include "MessageManager.h"
-#include "CoreMessageSizes.h"
+#include "CoreMessages.h"
 #include "Debug.h"
 #include <MyCException.h>
 #include <OS_defines.h>

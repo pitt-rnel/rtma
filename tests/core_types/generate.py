@@ -2,8 +2,9 @@
 
 The test asserts, at compile time, that the C++ headers define everything
 in pyrtma's core_defs YAML files with the same values and layouts, and, when
-it runs, that the message manager's CoreMessageSize() gives every core
-message type its size and -1 for every other type below 100:
+it runs, that CoreMessageSize() and CoreMessageHash() in
+include/internal/CoreMessages.h give every core message type its size and
+hash, and -1 and 0 for every other type below 100:
 
     core_types.h          rtma_core.yaml
     quick_logger_types.h  quick_logger.yaml
@@ -119,7 +120,7 @@ def generate() -> str:
         "",
         "#include <RTMA_types.h>",
         "",
-        '#include "CoreMessageSizes.h"',
+        '#include "CoreMessages.h"',
         "",
         "#include <cstddef>",
         "#include <cstdio>",
@@ -133,24 +134,33 @@ def generate() -> str:
 
 
 def main_function(p: Parser) -> list[str]:
-    """Check the message manager's core size table, CoreMessageSize()."""
-    sizes = {m.type_id: m.size for m in p.message_defs.values() if m.type_id <= MAX_RTMA_MSG_TYPE}
+    """Check the core message tables, CoreMessageSize() and CoreMessageHash()."""
+    core = {m.type_id: m for m in p.message_defs.values() if m.type_id <= MAX_RTMA_MSG_TYPE}
     out = [
         "static int failures = 0;",
         "",
-        "static void check_size(int msg_type, int expected) {",
-        "  int actual = CoreMessageSize(msg_type);",
-        "  if (actual != expected) {",
-        '    std::printf("CoreMessageSize(%d) is %d, expected %d\\n", msg_type, actual, expected);',
+        "static void check(int msg_type, int size, uint32_t hash) {",
+        "  if (CoreMessageSize(msg_type) != size) {",
+        '    std::printf("CoreMessageSize(%d) is %d, expected %d\\n", msg_type,',
+        "                CoreMessageSize(msg_type), size);",
+        "    ++failures;",
+        "  }",
+        "  if (CoreMessageHash(msg_type) != hash) {",
+        '    std::printf("CoreMessageHash(%d) is 0x%08x, expected 0x%08x\\n", msg_type,',
+        "                (unsigned)CoreMessageHash(msg_type), (unsigned)hash);",
         "    ++failures;",
         "  }",
         "}",
         "",
         "int main() {",
-        "  // Every core message type, and -1 for every other type below 100.",
+        "  // Every core message type, and -1 and 0 for every other type below 100.",
     ]
     for t in range(-1, MAX_RTMA_MSG_TYPE + 1):
-        out.append(f"  check_size({t}, {sizes.get(t, -1)});")
+        m = core.get(t)
+        if m is None:
+            out.append(f"  check({t}, -1, 0x00000000u);")
+        else:
+            out.append(f"  check({t}, {m.size}, 0x{m.hash[:8]}u);")
     out += ["  return failures == 0 ? 0 : 1;", "}"]
     return out
 
