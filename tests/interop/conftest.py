@@ -175,6 +175,12 @@ class Manager(Process):
                 "--log-level",
                 "WARN",
             ]
+            if port == QUICKLOGGER_PORT:
+                # Clients wait for the manager to close the connection when
+                # they disconnect, which leaves the manager's side of each in
+                # TIME_WAIT. -d sets SO_REUSEADDR, so the next test's manager
+                # can listen on the same fixed port.
+                cmd.append("-d")
         super().__init__(f"{kind} manager", cmd, tmp / f"{kind}_manager.log", tmp)
         self._wait_listening()
 

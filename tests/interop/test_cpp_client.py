@@ -175,7 +175,9 @@ def test_connects_again_after_disconnecting(manager, mod_id):
 
 
 def test_reconnects_after_disconnecting(manager):
-    for _ in range(2):
+    # Each process disconnects and the next connects at once with the same
+    # static ID, which the manager refuses if it still has the first.
+    for _ in range(10):
         out = run(manager.port, "send", 31, 8, 0, 0)
         assert out["module_id"] == "31"
         assert "sent" in out

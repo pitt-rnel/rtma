@@ -49,6 +49,10 @@
 // client does by default.
 #define RTMA_CONNECT_TIMEOUT 5.0
 
+// Seconds DisconnectFromMMM() waits, at most, for the message manager to
+// close its end of the connection, as pyrtma's client does.
+#define RTMA_DISCONNECT_WAIT 0.1
+
 /*#ifdef _UNIX_C
         #define THIS_MODULE_BASE_PRIORITY  0
         #define NORMAL_PRIORITY_CLASS      1

@@ -527,8 +527,21 @@ int RTMA_Module::DisconnectFromMMM(void) {
         // Try to disconnect cleanly at RTMA level
         SendSignal(MT_DISCONNECT); // this could go to a dead pipe- but it won't
                                    // be blocking
+
+        // Wait briefly for the manager to close its end, as pyrtma's client
+        // does, usually about a millisecond. Until it has, the manager still
+        // has this module's ID, and refuses a module connecting with it, such
+        // as this one connecting again. Messages still arriving are
+        // discarded.
+        double deadline = GetAbsTime() + RTMA_DISCONNECT_WAIT;
+        CMessage M;
+        for (;;) {
+          double remaining = deadline - GetAbsTime();
+          if (remaining <= 0 || M.Receive(_MMpipe, remaining) <= 0)
+            break;
+        }
       } catch (...) {
-        // If clean disconnect fails then we must be already disconnected
+        // The manager closed the connection, or it had failed already
       }
     }
 
