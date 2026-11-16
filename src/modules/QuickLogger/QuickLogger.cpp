@@ -92,7 +92,9 @@ void CQuickLogger::MainFunction(char *server) {
       while (1) {
         ReadMessage(&M);
         debug("Received Message (msg_type = {})", M.msg_type);
-        int saved = _MessageBufrr.SaveMessage(&M);
+        // While logging is paused, messages aren't added to the log; the
+        // control messages below are still acted on.
+        int saved = _logging ? _MessageBufrr.SaveMessage(&M) : 0;
         if (saved != 0) {
           if (saved == -1) { // msg count overflow
             warning(

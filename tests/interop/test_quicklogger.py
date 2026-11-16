@@ -79,7 +79,6 @@ def test_pyrtma_log_reader_reads_quicklogger_file(ctl, tmp_path):
     assert cd.MT_SAVE_MESSAGE_LOG in types
 
 
-@pytest.mark.ql_gap("messages are still buffered while logging is paused")
 def test_quicklogger_pause_stops_logging(ctl, tmp_path):
     ctl.send(MT_PAUSE_MESSAGE_LOGGING)
     ctl.send(USER_TYPE, b"\x01" * 36)
