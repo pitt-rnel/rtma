@@ -7,6 +7,8 @@ the C++ MessageManager doesn't match it yet.
 from __future__ import annotations
 
 import struct
+import threading
+import time
 
 import pytest
 
@@ -18,6 +20,7 @@ from rtma_raw import (
     MT_ACKNOWLEDGE,
     MT_CONNECT_V2,
     MT_DISCONNECT,
+    MT_FORCE_DISCONNECT,
     MT_GOODBYE,
     MT_HELLO,
     MT_INTRODUCE,
@@ -306,6 +309,40 @@ def test_closed_connection_announces_goodbye(manager):
     msg = watcher.wait_for(MT_GOODBYE)
     assert msg is not None
     assert Hello.parse(msg.payload).mod_id == 21
+
+
+def test_force_disconnect_of_a_busy_module(manager):
+    if manager.kind == "pyrtma":
+        pytest.skip("pyrtma's manager doesn't implement FORCE_DISCONNECT")
+    watcher = RawClient.connect(manager.port, 20)
+    watcher.subscribe(MT_GOODBYE)
+    ctl = RawClient.connect(manager.port, 30)
+    # The busy module's pipe often has data in the same select() as the
+    # FORCE_DISCONNECT that deletes it, which the manager used to read after
+    # deleting it.
+    for _ in range(30):
+        victim = RawClient.connect(manager.port, 40)
+        stop = threading.Event()
+
+        def spam():
+            try:
+                while not stop.is_set():
+                    victim.send(A, PAYLOAD)
+            except OSError:
+                pass
+
+        sender = threading.Thread(target=spam)
+        sender.start()
+        time.sleep(0.002)
+        ctl.send(MT_FORCE_DISCONNECT, struct.pack("=i", 40))
+        goodbye = watcher.wait_for(
+            MT_GOODBYE, where=lambda m: Hello.parse(m.payload).mod_id == 40
+        )
+        stop.set()
+        sender.join()
+        victim.close()
+        assert goodbye is not None
+    assert manager.accepts_clients()
 
 
 # Malformed input --------------------------------------------------------
