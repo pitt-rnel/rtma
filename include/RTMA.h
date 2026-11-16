@@ -137,6 +137,9 @@ private:
   RTMA_MSG_HEADER m_ProfileData[MAX_PROFILED_MSGS];
 #endif
 
+  void CloseConnection(void);
+  // Closes the connection without sending DISCONNECT, as when it is lost.
+
   int NBReadMessage(CMessage *M);
   // Non block read: returns -1 if there was no message in the pipe, or the
   // number of bytes read
@@ -266,7 +269,8 @@ public:
   // timeout seconds or till message available. If timeout is 0, then does not
   // block, reads message only if immediately available. Returns 1 if message
   // was read, 0 if no message available, and throws MyCException if there was
-  // an error.
+  // an error. A lost connection, or a message that can't be read, closes the
+  // connection before throwing, so IsConnected() returns 0 afterwards.
 
   int WaitForSignal(MSG_TYPE SigType, int blocking = 1);
   // Waits for SigType message: if blocking- will not return until the requested

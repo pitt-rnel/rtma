@@ -406,7 +406,6 @@ def test_gives_up_on_the_ack_after_five_seconds():
     assert 4.5 <= float(out["connect_seconds"]) < 7
 
 
-@pytest.mark.client_gap("stays connected after a message it can't read")
 def test_disconnects_after_a_message_it_cannot_read():
     def script(peer: Peer):
         peer.read()
@@ -414,6 +413,19 @@ def test_disconnects_after_a_message_it_cannot_read():
         # A header announcing more than RTMA_MAX_DATA_BYTES, and no payload.
         peer.send(MT_TEST_REQUEST, size=2 * RTMA_MAX_DATA_BYTES)
         time.sleep(2)
+
+    fake = FakeManager(script)
+    out = run(fake.port, "read_once", 30)
+    fake.close()
+    assert "error" in out
+    assert out["connected"] == "0"
+
+
+def test_disconnects_when_the_manager_closes_the_connection():
+    def script(peer: Peer):
+        peer.read()
+        peer.send(MT_ACKNOWLEDGE, dest_mod_id=30)
+        time.sleep(0.2)  # then close the connection
 
     fake = FakeManager(script)
     out = run(fake.port, "read_once", 30)

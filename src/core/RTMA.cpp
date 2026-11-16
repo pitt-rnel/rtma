@@ -532,6 +532,14 @@ int RTMA_Module::DisconnectFromMMM(void) {
       }
     }
 
+    CloseConnection();
+    return 1;
+  }
+  CATCH_and_THROW("RTMA_Module::DisconnectFromMMM( void)");
+}
+
+void RTMA_Module::CloseConnection(void) {
+  TRY {
     if (_pipeClient != NULL) {
       try {
         // Try to disconnect cleanly at Pipe level
@@ -552,9 +560,8 @@ int RTMA_Module::DisconnectFromMMM(void) {
     m_Connected = 0;
     _pipeClient = NULL;
     _MMpipe = NULL;
-    return 1;
   }
-  CATCH_and_THROW("RTMA_Module::DisconnectFromMMM( void)");
+  CATCH_and_THROW("RTMA_Module::CloseConnection( void)");
 }
 
 int RTMA_Module::IsConnected(void) {
@@ -816,9 +823,33 @@ int RTMA_Module::ReadMessage(CMessage *M, double timeout) {
   TRY {
     int status;
 
-    status = M->Receive(_MMpipe, timeout);
-    if (status < 0)
-      throw MyCException("Failed to read message");
+    // A connection that fails, or a message that can't be read, which leaves
+    // the rest of the stream unreadable, is treated as a lost connection, as
+    // in pyrtma's client: the connection is closed, and the error raised.
+    try {
+      status = M->Receive(_MMpipe, timeout);
+    } catch (UPipeSignalException &) {
+      throw; // interrupted by a signal; the read can be retried
+    } catch (UPipeException &) {
+      CloseConnection();
+      throw;
+    }
+    if (status < 0) {
+      char err[256];
+      if (status == -3)
+        snprintf(err, sizeof(err),
+                 "Failed to read message: MT=%d announced %d data bytes; it "
+                 "must be 0 to RTMA_MAX_DATA_BYTES (%d). Disconnected.",
+                 M->msg_type, M->num_data_bytes, RTMA_MAX_DATA_BYTES);
+      else if (status == -4)
+        snprintf(err, sizeof(err), "Failed to read message: not connected");
+      else
+        snprintf(err, sizeof(err),
+                 "Failed to read message (status %d). Disconnected.", status);
+      M->Set(-1); // leave no half-read message behind
+      CloseConnection();
+      throw MyCException(err);
+    }
 
     M->recv_time = GetAbsTime();
 
