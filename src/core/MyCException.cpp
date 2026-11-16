@@ -56,7 +56,7 @@ void MyCException::ReportToFile(const char *file_name) {
   ofstream ReportFile;
   MyCString time;
 
-  if (file_name != NULL)
+  if (file_name == NULL || file_name[0] == 0)
     ReportFile.open(MYCEXCEPTION_STACK_FILE_NAME, ios::app);
   else
     ReportFile.open(file_name, ios::app);
