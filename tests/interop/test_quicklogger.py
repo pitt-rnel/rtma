@@ -89,6 +89,41 @@ def test_quicklogger_pause_stops_logging(ctl, tmp_path):
     assert payloads(out) == [b"\x02" * 36]
 
 
+MT_RTMA_LOG_ERROR = 42
+
+
+def send_save(ctl: RawClient, path, length=None) -> None:
+    name = str(path).encode()
+    ctl.send(
+        MT_SAVE_MESSAGE_LOG,
+        SAVE_MESSAGE_LOG.pack(name, len(name) if length is None else length),
+    )
+
+
+def test_quicklogger_keeps_running_when_a_save_fails(ctl, quicklogger, tmp_path):
+    ctl.subscribe(MT_RTMA_LOG_ERROR)
+    kept = b"\x05" * 36
+    ctl.send(USER_TYPE, kept)
+    send_save(ctl, tmp_path / "missing" / "ql.bin")
+    error = ctl.wait_for(MT_RTMA_LOG_ERROR, 5.0)
+    assert error is not None
+    assert b"Failed to save the message log" in error.payload
+    assert quicklogger.alive()
+    # The log is kept for the next save.
+    out = tmp_path / "ql.bin"
+    save_log(ctl, out)
+    assert kept in payloads(out)
+
+
+@pytest.mark.parametrize("length", [100000, -5])
+def test_quicklogger_bounds_the_pathname_length(ctl, quicklogger, tmp_path, length):
+    out = tmp_path / "ql.bin"
+    send_save(ctl, out, length)
+    assert ctl.wait_for(MT_MESSAGE_LOG_SAVED, 5.0) is not None
+    assert out.exists()
+    assert quicklogger.alive()
+
+
 def test_quicklogger_exits_on_lm_exit(ctl, quicklogger):
     ctl.send(MT_LM_EXIT, dest_mod_id=MID_QUICKLOGGER)
     quicklogger.proc.wait(5)

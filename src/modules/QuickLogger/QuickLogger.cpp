@@ -111,11 +111,30 @@ void CQuickLogger::MainFunction(char *server) {
           _MessageBufrr.SaveMessage(&M);
         }
         switch (M.msg_type) {
-        case MT_SAVE_MESSAGE_LOG:
+        case MT_SAVE_MESSAGE_LOG: {
+          if (M.num_data_bytes != (int)sizeof(FilenameData)) {
+            error("SAVE_MESSAGE_LOG has {} data bytes, not {}; ignored",
+                  M.num_data_bytes, sizeof(FilenameData));
+            break;
+          }
           M.GetData(&FilenameData);
-          FilenameData.pathname[FilenameData.pathname_length] =
-              0; // Make sure string is zero-terminated
-          _MessageBufrr.SaveDatafile(FilenameData.pathname);
+          // The path is its first pathname_length characters, up to a null,
+          // and at most MAX_LOGGER_FILENAME_LENGTH - 1 of them.
+          int length = FilenameData.pathname_length;
+          if (length < 0 || length > MAX_LOGGER_FILENAME_LENGTH - 1)
+            length = MAX_LOGGER_FILENAME_LENGTH - 1;
+          FilenameData.pathname[length] = 0;
+          // A file that can't be written, such as one in a folder that
+          // doesn't exist, is reported, and the log is kept for the next
+          // SAVE_MESSAGE_LOG; it used to stop QuickLogger.
+          try {
+            _MessageBufrr.SaveDatafile(FilenameData.pathname);
+          } catch (MyCException &E) {
+            error("Failed to save the message log to '{}': {}",
+                  FilenameData.pathname,
+                  E.GetNumTraceLevels() > 0 ? E.GetTrace(0) : "");
+            break;
+          }
           SendSignal(MT_MESSAGE_LOG_SAVED);
           info("Saved Data to '{}'", FilenameData.pathname);
           info("    Num messages: {}",
@@ -124,6 +143,7 @@ void CQuickLogger::MainFunction(char *server) {
                _MessageBufrr.GetNumDataBytes());
           _MessageBufrr.ClearBuffer();
           break;
+        }
         case MT_PAUSE_MESSAGE_LOGGING:
           info("Logging paused!");
           _logging = false;
