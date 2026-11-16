@@ -33,7 +33,9 @@ public:
   CQuickLogger();
   ~CQuickLogger();
 
-  void MainFunction(void);
+  void MainFunction(char *server);
+  // Connects to the message manager at server, host:port, and logs until
+  // LM_EXIT.
 
 private:
   void DumpBuffer(char *Filename);

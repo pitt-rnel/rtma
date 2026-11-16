@@ -23,8 +23,7 @@ REPO = HERE.parents[1]
 EXE = ".exe" if os.name == "nt" else ""
 KINDS = ("pyrtma", "cpp")
 
-# QuickLogger always connects to localhost:7111, so its manager has to listen
-# there.
+# Where QuickLogger connects when it is given no address.
 QUICKLOGGER_PORT = 7111
 MT_LM_READY = 96
 
@@ -231,42 +230,55 @@ def manager(request, manager_kind, tmp_path):
     mm.stop()
 
 
-@pytest.fixture
-def quicklogger_manager(request, manager_kind, tmp_path):
-    """A manager on port 7111, where QuickLogger connects."""
-    _require(manager_kind)
-    if not QL_BIN.exists():
-        pytest.skip(f"QuickLogger not found at {QL_BIN}; set RTMA_QL_BIN")
-    if port_in_use(QUICKLOGGER_PORT):
-        pytest.skip(
-            f"port {QUICKLOGGER_PORT} is in use; QuickLogger can only use that port"
-        )
-    mm = Manager(manager_kind, QUICKLOGGER_PORT, tmp_path)
-    yield mm
-    _report_logs(request, mm)
-    mm.stop()
-
-
-@pytest.fixture
-def quicklogger(request, quicklogger_manager, tmp_path):
-    """The C++ QuickLogger, connected and subscribed.
+def start_quicklogger(port: int, tmp_path: pathlib.Path, *args: str) -> Process:
+    """Start the C++ QuickLogger, and wait until it is recording.
 
     QuickLogger sends LM_READY after its SUBSCRIBE, and the manager handles a
     connection's messages in order, so LM_READY means it is recording.
+
+    Args:
+        port: The manager's port, for watching for LM_READY.
+        tmp_path: Where its log goes.
+        args: Its arguments; with none, it connects to localhost:7111.
     """
-    watcher = RawClient.connect(quicklogger_manager.port, 31)
+    if not QL_BIN.exists():
+        pytest.skip(f"QuickLogger not found at {QL_BIN}; set RTMA_QL_BIN")
+    watcher = RawClient.connect(port, 31)
     watcher.subscribe(MT_LM_READY)
-    ql = Process("QuickLogger", [str(QL_BIN)], tmp_path / "quicklogger.log", tmp_path)
+    ql = Process(
+        "QuickLogger", [str(QL_BIN), *args], tmp_path / "quicklogger.log", tmp_path
+    )
     try:
         ready = watcher.wait_for(
             MT_LM_READY, 15.0, where=lambda m: m.header.src_mod_id == 5
         )
-        assert ready is not None, f"QuickLogger sent no LM_READY:\n{ql.log_tail()}"
+        if ready is None:
+            ql.stop()
+            raise AssertionError(f"QuickLogger sent no LM_READY:\n{ql.log_tail()}")
     finally:
         watcher.close()
+    return ql
+
+
+@pytest.fixture
+def quicklogger(request, manager, tmp_path):
+    """The C++ QuickLogger, connected to ``manager`` and recording."""
+    ql = start_quicklogger(manager.port, tmp_path, f"127.0.0.1:{manager.port}")
     yield ql
     _report_logs(request, ql)
     ql.stop()
+
+
+@pytest.fixture
+def default_port_manager(request, manager_kind, tmp_path):
+    """A manager on port 7111, where QuickLogger connects by default."""
+    _require(manager_kind)
+    if port_in_use(QUICKLOGGER_PORT):
+        pytest.skip(f"port {QUICKLOGGER_PORT} is in use")
+    mm = Manager(manager_kind, QUICKLOGGER_PORT, tmp_path)
+    yield mm
+    _report_logs(request, mm)
+    mm.stop()
 
 
 @pytest.fixture

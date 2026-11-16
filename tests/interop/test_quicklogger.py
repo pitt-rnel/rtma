@@ -46,8 +46,8 @@ def read_ql_file(path) -> list[tuple[Header, bytes]]:
 
 
 @pytest.fixture
-def ctl(quicklogger, quicklogger_manager):
-    c = RawClient.connect(quicklogger_manager.port, 30)
+def ctl(quicklogger, manager):
+    c = RawClient.connect(manager.port, 30)
     c.subscribe(MT_MESSAGE_LOG_SAVED)
     c.send(MT_RESET_MESSAGE_LOG)
     yield c
@@ -93,3 +93,26 @@ def test_quicklogger_pause_stops_logging(ctl, tmp_path):
 def test_quicklogger_exits_on_lm_exit(ctl, quicklogger):
     ctl.send(MT_LM_EXIT, dest_mod_id=MID_QUICKLOGGER)
     quicklogger.proc.wait(5)
+
+
+def test_quicklogger_connects_to_localhost_7111_by_default(
+    default_port_manager, tmp_path
+):
+    from conftest import start_quicklogger
+
+    ql = start_quicklogger(default_port_manager.port, tmp_path)
+    ql.stop()
+
+
+def test_quicklogger_refuses_extra_arguments(tmp_path):
+    import subprocess
+
+    from conftest import QL_BIN
+
+    if not QL_BIN.exists():
+        pytest.skip(f"QuickLogger not found at {QL_BIN}")
+    proc = subprocess.run(
+        [str(QL_BIN), "127.0.0.1:1", "extra"], capture_output=True, text=True, timeout=5
+    )
+    assert proc.returncode == 2
+    assert "usage: QuickLogger [SERVER]" in proc.stdout

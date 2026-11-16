@@ -11,6 +11,7 @@
 #include <RTMA_types.h>
 #include <UPipe.h>
 #include <cstdio>
+#include <cstring>
 #include <ctime>
 #include <iostream>
 #include <ostream>
@@ -21,12 +22,24 @@
 
 CQuickLogger QL;
 
-int main(void) {
-  try {
-    // std::cout << "[main] QuickLogger started..." << std::endl;
+// QuickLogger [SERVER]
+//
+// SERVER is the message manager's address, host:port, as for
+// RTMA_Module::ConnectToMMM(). The default is localhost:7111.
+int main(int argc, char *argv[]) {
+  if (argc > 2 || (argc == 2 && (strcmp(argv[1], "-h") == 0 ||
+                                 strcmp(argv[1], "--help") == 0))) {
+    std::cout << "usage: QuickLogger [SERVER]\n\n"
+                 "SERVER is the message manager's address, host:port. The "
+                 "default is " DEFAULT_PIPE_SERVER_NAME_FOR_MODULES ".\n";
+    return argc > 2 ? 2 : 0;
+  }
+  char default_server[] = DEFAULT_PIPE_SERVER_NAME_FOR_MODULES;
+  char *server = argc == 2 ? argv[1] : default_server;
 
+  try {
     // Run the module
-    QL.MainFunction();
+    QL.MainFunction(server);
   } catch (MyCException &E) {
     MyCString err("QuickLogger: main():");
     E.AppendTraceToString(err);
@@ -49,7 +62,7 @@ CQuickLogger::CQuickLogger() {
 
 CQuickLogger::~CQuickLogger() {}
 
-void CQuickLogger::MainFunction() {
+void CQuickLogger::MainFunction(char *server) {
   TRY {
     CMessage M;
     MDF_SAVE_MESSAGE_LOG FilenameData;
@@ -60,7 +73,7 @@ void CQuickLogger::MainFunction() {
     RTMA_Logger *logger = &Logger();
     InitVariables(MID_QUICKLOGGER, 0);
     logger->SetLogName("Quicklogger");
-    ConnectToMMM(logger_status);
+    ConnectToMMM(server, logger_status);
     Subscribe(ALL_MESSAGE_TYPES);
     //if (SetMyPriority(NORMAL_PRIORITY_CLASS) == 0)
     //  throw MyCException("SetMyPriority failed");
@@ -146,7 +159,7 @@ void CQuickLogger::MainFunction() {
                          "QuickLoggerDump.bin");
     }
   }
-  CATCH_and_THROW("void CQuickLogger::MainFunction()");
+  CATCH_and_THROW("void CQuickLogger::MainFunction(char *server)");
 }
 
 void CQuickLogger::DumpBuffer(char *Filename) {
