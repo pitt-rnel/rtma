@@ -217,7 +217,8 @@ int CMessage::Receive(UPipe *input_pipe, double timeout)
     if (nbytes_read < nbytes_to_read)
       return -2;
     total_bytes_read = nbytes_read;
-    if (num_data_bytes < 0)
+    // The payload isn't read, so the stream can't be read any further.
+    if (num_data_bytes < 0 || num_data_bytes > RTMA_MAX_DATA_BYTES)
       return -3;
     if (num_data_bytes > 0) {
       void *pData = (void *)&data[0];

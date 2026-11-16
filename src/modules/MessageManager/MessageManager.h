@@ -185,6 +185,13 @@ private:
     return 0;
   }
 
+  [[noreturn]] void DropSender(UPipe *pSourcePipe, const char *format, ...);
+  // Logs why the module on pSourcePipe is dropped, and throws
+  // UPipeClosedException, so that UPipeAutoServer::Run() disconnects it and
+  // HandleDisconnect() sends its GOODBYE. Only for the pipe being handled.
+
+  CModuleRecord *GetRecordByPipe(UPipe *pipe);
+
   void HandleData(UPipe *pClientPipe);
   // Override of abstract base class method. Gets called whenever data is ready
   // on any input pipe.

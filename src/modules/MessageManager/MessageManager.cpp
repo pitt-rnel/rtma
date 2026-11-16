@@ -15,6 +15,7 @@
 #include <RTMA_types.h>
 #include <Timing.h>
 #include <UPipe.h>
+#include <cstdarg>
 #include <cstdio>
 #include <string.h>
 #include <vector>
@@ -84,15 +85,73 @@ void CMessageManager::MainLoop(char *cmd_line_options) {
   }
 }
 
+CModuleRecord *CMessageManager::GetRecordByPipe(UPipe *pipe) {
+  for (auto &entry : m_ConnectedModules) {
+    if (entry.second.pModulePipe == pipe)
+      return &entry.second;
+  }
+  return NULL;
+}
+
+void CMessageManager::DropSender(UPipe *pSourcePipe, const char *format, ...) {
+  char reason[512];
+  va_list args;
+  va_start(args, format);
+  vsnprintf(reason, sizeof(reason), format, args);
+  va_end(args);
+
+  CModuleRecord *mod = GetRecordByPipe(pSourcePipe);
+  char addr[MAX_NAME_LEN] = "";
+  uint16_t port = 0;
+  try {
+    pSourcePipe->GetIpAddress(addr, &port, sizeof(addr));
+  } catch (...) {
+  }
+  if (mod != NULL)
+    fprintf(stderr, "DROPPING - module %d (%s:%u) - %s\n", mod->ModuleID,
+            addr, port, reason);
+  else
+    fprintf(stderr, "DROPPING - %s:%u - %s\n", addr, port, reason);
+  throw UPipeClosedException(reason);
+}
+
 void CMessageManager::HandleData(UPipe *pSourcePipe) {
   SetMyPriority(THIS_MODULE_BASE_PRIORITY);
   DEBUG_TEXT_("Receiving message from pipe " << pSourcePipe << "... ");
   CMessage M;
-  M.Receive(pSourcePipe);
+  int status;
+  try {
+    status = M.Receive(pSourcePipe);
+  } catch (UPipeClosedException &) {
+    throw;
+  } catch (MyCException &E) {
+    MyCString err;
+    E.AppendTraceToString(err);
+    DropSender(pSourcePipe, "Failed to read a message: %s", err.GetContent());
+  }
+  if (status == -3)
+    DropSender(pSourcePipe,
+               "Invalid num_data_bytes (%d) for MT=%d; it must be 0 to %d. "
+               "Header may be corrupted.",
+               M.num_data_bytes, M.msg_type, RTMA_MAX_DATA_BYTES);
+  if (status < 0)
+    DropSender(pSourcePipe, "Failed to read a message (status %d)", status);
   DEBUG_TEXT("Received message of type " << M.msg_type);
 
-  ProcessMessage(&M, pSourcePipe);
-  DistributeMessage(&M);
+  // Failures to send to other modules are caught where they are sent, so an
+  // exception here is about this module's message: drop it, rather than
+  // stop the manager.
+  try {
+    ProcessMessage(&M, pSourcePipe);
+    DistributeMessage(&M);
+  } catch (UPipeClosedException &) {
+    throw;
+  } catch (MyCException &E) {
+    MyCString err;
+    E.AppendTraceToString(err);
+    DropSender(pSourcePipe, "Unexpected error while handling MT=%d: %s",
+               M.msg_type, err.GetContent());
+  }
   SetMyPriority(NORMAL_PRIORITY_CLASS);
 }
 
@@ -257,7 +316,8 @@ void CMessageManager::DistributeMessage(CMessage *M) {
       } else {
         DEBUG_TEXT("Forwarded!");
       }
-    } catch (UPipeClosedException &) {
+    } catch (MyCException &) {
+      // The module is removed when its socket reports the failure.
       DEBUG_TEXT("Failed to Forward Message, destination module socket is "
                  "closed/dead");
     }
@@ -282,7 +342,8 @@ void CMessageManager::DispatchMessage(CMessage *M) {
     CModuleRecord *mod = &mod_it->second;
     try {
       SendMessage(M, mod);
-    } catch (UPipeClosedException &) {
+    } catch (MyCException &) {
+      // The module is removed when its socket reports the failure.
       DEBUG_TEXT("Failed to send MM message, destination module socket is closed/dead");
     }
   }
@@ -297,7 +358,13 @@ void CMessageManager::DispatchMessage(CMessage *M, CModuleRecord *dest_mod) {
   // send the message to the module it is intended to, disregarding
   // subscriptions
   //(enables MM to send system message to modules)
-  SendMessage(M, dest_mod);
+  // A failed send is ignored here: the module is removed when its socket
+  // reports the failure, and the module being handled isn't dropped for it.
+  try {
+    SendMessage(M, dest_mod);
+  } catch (MyCException &) {
+    DEBUG_TEXT("Failed to send MM message, destination module socket is closed/dead");
+  }
 
   // CC all logger modules
   std::vector<MODULE_ID> subscribers;
@@ -310,10 +377,14 @@ void CMessageManager::DispatchMessage(CMessage *M, CModuleRecord *dest_mod) {
     }
 
     CModuleRecord *mod = &mod_it->second;
-    if (mod->LoggerStatus)
-      if (mod->ModuleID !=
-          dest_mod->ModuleID) // don't send to destination module again
+    if (mod->LoggerStatus && mod->ModuleID != dest_mod->ModuleID) {
+      // don't send to destination module again
+      try {
         ForwardMessage(M, mod);
+      } catch (MyCException &) {
+        DEBUG_TEXT("Failed to copy MM message to logger, socket is closed/dead");
+      }
+    }
   }
 }
 

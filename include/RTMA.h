@@ -41,6 +41,10 @@
   ":7111" // MessageManager accepts connections from any incoming interface by
           // default
 
+// Largest message payload, in bytes. Both message managers drop a client that
+// announces a larger one, and CMessage::Receive refuses one.
+#define RTMA_MAX_DATA_BYTES (1024 * 1024)
+
 /*#ifdef _UNIX_C
         #define THIS_MODULE_BASE_PRIORITY  0
         #define NORMAL_PRIORITY_CLASS      1

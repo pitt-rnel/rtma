@@ -271,7 +271,6 @@ def test_closed_connection_announces_goodbye(manager):
 # Malformed input --------------------------------------------------------
 
 
-@pytest.mark.cpp_gap("an oversized payload is accepted")
 def test_oversized_payload_drops_client(manager):
     c = RawClient.connect(manager.port, 21)
     c.send(A, b"", num_data_bytes=2 * 1024 * 1024)
