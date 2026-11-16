@@ -121,6 +121,7 @@ private:
   UPipeClient *_pipeClient;
   UPipe *_MMpipe;
   MODULE_ID m_ModuleID;
+  bool m_DynamicID; // asks for a dynamic ID each time it connects
   HOST_ID m_HostID;
   double m_StartTime;
   int m_Pid;

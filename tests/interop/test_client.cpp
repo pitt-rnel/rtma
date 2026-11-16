@@ -4,6 +4,7 @@
 //
 //   connect [NAME]      connect with NAME, and stay until stdin closes
 //   rename NAME         connect, then set the name, and stay
+//   connect_twice       connect, disconnect, and connect again
 //   echo COUNT          reply to COUNT messages of type 1001 with type 1002
 //   send BYTES DEST_MOD DEST_HOST [VERSION]
 //                       send one message of type 1001
@@ -76,6 +77,18 @@ int ScenarioConnect(RTMA_Module &module, char *server) {
   }
   module.DisconnectFromMMM();
   Print("disconnected");
+  return 0;
+}
+
+// Connect, disconnect, and connect again.
+int ScenarioConnectTwice(RTMA_Module &module, char *server) {
+  if (!Connect(module, server))
+    return 1;
+  module.DisconnectFromMMM();
+  if (!Connect(module, server))
+    return 0;
+  module.DisconnectFromMMM();
+  Print("reconnected");
   return 0;
 }
 
@@ -189,6 +202,8 @@ int main(int argc, char *argv[]) {
         module.SetModuleName(argv[4]);
       return ScenarioConnect(module, server);
     }
+    if (scenario == "connect_twice")
+      return ScenarioConnectTwice(module, server);
     if (scenario == "rename")
       return ScenarioRename(module, server, argv[4]);
     if (scenario == "echo")

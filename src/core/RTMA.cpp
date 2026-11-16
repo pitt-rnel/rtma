@@ -358,6 +358,7 @@ void RTMA_Module::InitVariables(MODULE_ID ModuleID, HOST_ID HostID) {
     _pipeClient = NULL;
     _MMpipe = NULL;
     m_ModuleID = ModuleID;
+    m_DynamicID = (ModuleID == 0);
     m_HostID = HostID;
     m_MessageCount = 0;
     m_SelfMessageCount = 0;
@@ -433,6 +434,11 @@ int RTMA_Module::ConnectToMMM(char *server_name, int logger_status,
     _MMpipe = _pipeClient->Connect();
 
     (void)daemon_status; // CONNECT_V2 has no daemon status
+
+    // A module that was given a dynamic ID asks for one again: the ID it had
+    // is in the dynamic range, which the managers refuse as a static ID.
+    if (m_DynamicID)
+      m_ModuleID = 0;
 
     // CONNECT_V2 carries the module's name and process ID, so the manager's
     // first HELLO for it has them. Both message managers support it.

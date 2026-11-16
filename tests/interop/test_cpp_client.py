@@ -167,6 +167,13 @@ def test_exchanges_messages(manager):
     assert reply.payload == payload
 
 
+@pytest.mark.parametrize("mod_id", [0, 31])
+def test_connects_again_after_disconnecting(manager, mod_id):
+    out = run(manager.port, "connect_twice", mod_id)
+    assert "error" not in out
+    assert "reconnected" in out
+
+
 def test_reconnects_after_disconnecting(manager):
     for _ in range(2):
         out = run(manager.port, "send", 31, 8, 0, 0)
