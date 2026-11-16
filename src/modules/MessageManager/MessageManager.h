@@ -281,6 +281,8 @@ private:
 
   void HandleConnectV2(CMessage *m, UPipe *PSourcePipe);
 
+  void UpdateConnection(CMessage *m, CModuleRecord *mod);
+
   int SendMessage(CMessage *m, CModuleRecord *dest_mod);
 
   int SendSignal(MSG_TYPE sig, CModuleRecord *dest_mod);

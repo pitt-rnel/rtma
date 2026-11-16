@@ -191,6 +191,7 @@ def test_message_before_connect_is_dropped(manager):
 
 
 def test_connect_from_connected_module_is_ignored(manager):
+    # Unlike CONNECT_V2, which updates the name.
     module = RawClient.connect(manager.port, 21)
     module.send_connect()
     assert not module.acked(0.5)
@@ -230,7 +231,6 @@ def test_connect_v2_name_is_announced(manager):
     assert Hello.parse(msg.payload).name == "v2-module"
 
 
-@pytest.mark.cpp_gap("CONNECT_V2 from a connected module is ignored")
 def test_connect_v2_after_connect_updates_name(manager):
     watcher = RawClient.connect(manager.port, 20)
     watcher.subscribe(MT_HELLO)

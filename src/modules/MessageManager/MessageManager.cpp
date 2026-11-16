@@ -209,7 +209,7 @@ void CMessageManager::ProcessMessage(CMessage *M, UPipe *pSourcePipe) {
 
   switch (M->msg_type) {
   case MT_CONNECT:
-    // A CONNECT from a connected module is ignored.
+    // A CONNECT from a connected module carries nothing new.
     if (src == NULL)
       HandleConnect(M, pSourcePipe);
     break;
@@ -217,6 +217,8 @@ void CMessageManager::ProcessMessage(CMessage *M, UPipe *pSourcePipe) {
   case MT_CONNECT_V2:
     if (src == NULL)
       HandleConnectV2(M, pSourcePipe);
+    else
+      UpdateConnection(M, src);
     break;
 
   case MT_CLIENT_SET_NAME:
@@ -736,6 +738,32 @@ void CMessageManager::HandleConnectV2(CMessage *M, UPipe *pSourcePipe) {
   data.name[MAX_NAME_LEN - 1] = 0;
   ConnectModule(pSourcePipe, data.mod_id, data.logger_status, data.pid,
                 data.name);
+}
+
+// Clients used to send both CONNECT and CONNECT_V2, in either order, for
+// managers that didn't support CONNECT_V2. The first one connects the module
+// and is acknowledged. A CONNECT_V2 after that updates the module's name and
+// process ID, and a HELLO announces them; no ACK is sent, because the client
+// waits for only one. The module ID and logger status can't change while the
+// module is connected, so a different request is logged and ignored. This is
+// what pyrtma's manager does.
+void CMessageManager::UpdateConnection(CMessage *M, CModuleRecord *mod) {
+  MDF_CONNECT_V2 data;
+  M->GetData((void *)&data);
+  data.name[MAX_NAME_LEN - 1] = 0;
+  if (data.mod_id != 0 && data.mod_id != mod->ModuleID)
+    fprintf(stderr,
+            "WARNING - module %d - Already connected; ignoring the requested "
+            "ID %d.\n",
+            mod->ModuleID, data.mod_id);
+  if ((data.logger_status != 0) != (mod->LoggerStatus != 0))
+    fprintf(stderr,
+            "WARNING - module %d - Already connected; ignoring the change of "
+            "logger status to %d.\n",
+            mod->ModuleID, data.logger_status);
+  mod->SetName(data.name);
+  mod->pid = data.pid;
+  SendHello(mod);
 }
 
 void CMessageManager::HandleForceDisconnect(CMessage *M) {
