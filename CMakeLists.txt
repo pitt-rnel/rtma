@@ -79,6 +79,16 @@ target_link_libraries(RTMA
     PUBLIC fmt::fmt
 )
 
+if(MSVC)
+    # Since Visual Studio 2022 17.10, std::mutex's constructor is constexpr and
+    # needs a matching msvcp140.dll; code built with it crashes on its first
+    # lock when an older msvcp140.dll is loaded, as in hosts that ship their
+    # own, such as MATLAB. This keeps the logger's mutex working with any
+    # msvcp140.dll, for programs and libraries that link RTMA.lib into such a
+    # host.
+    target_compile_definitions(RTMA PRIVATE _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
+endif()
+
 if(WIN32)
     target_link_libraries(RTMA PRIVATE ws2_32)
 
