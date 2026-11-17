@@ -144,7 +144,6 @@ def test_module_that_stops_reading_gets_failed_messages(manager):
     assert struct.unpack_from("=i", failed.payload, FAILED_MESSAGE.size)[0] == A
 
 
-@pytest.mark.cpp_gap("FAILED_MESSAGE is sent for log messages, or the manager stops")
 def test_no_failed_message_for_log_messages(manager):
     watcher = RawClient.connect(manager.port, 30)
     watcher.subscribe(MT_FAILED_MESSAGE, B)

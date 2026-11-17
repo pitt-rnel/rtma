@@ -850,9 +850,20 @@ void CMessageManager::SendIntroductions(CModuleRecord *dest_mod) {
 }
 
 void CMessageManager::SendFailedMessage(CMessage *M, MODULE_ID dest_mod_id) {
-  // No report of a failed report.
-  if (M->msg_type == MT_FAILED_MESSAGE)
+  // No report of a failed report, or of a log message, which modules send
+  // freely.
+  switch (M->msg_type) {
+  case MT_FAILED_MESSAGE:
+  case MT_RTMA_LOG:
+  case MT_RTMA_LOG_CRITICAL:
+  case MT_RTMA_LOG_ERROR:
+  case MT_RTMA_LOG_WARNING:
+  case MT_RTMA_LOG_INFO:
+  case MT_RTMA_LOG_DEBUG:
     return;
+  default:
+    break;
+  }
   MDF_FAILED_MESSAGE data;
   memset(&data, 0, sizeof(data));
   data.dest_mod_id = dest_mod_id;
