@@ -209,7 +209,6 @@ def test_every_logger_is_sent_other_modules_acks(manager):
 # Destinations -------------------------------------------------------------
 
 
-@pytest.mark.cpp_gap("a message with an invalid destination is sent to loggers")
 @pytest.mark.parametrize("dest", [{"dest_mod_id": -5}, {"dest_host_id": 99}])
 def test_message_with_invalid_destination_is_not_forwarded(manager, dest):
     logger = RawClient.connect(manager.port, 25, logger=True)

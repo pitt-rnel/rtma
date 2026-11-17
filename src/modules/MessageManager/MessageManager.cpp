@@ -741,6 +741,20 @@ void CMessageManager::Deliver(CModuleRecord *mod, const std::string &wire, CMess
 }
 
 void CMessageManager::DistributeMessage(CMessage *M) {
+  // Messages to invalid destinations aren't forwarded, as in pyrtma's
+  // manager. ALL_HOSTS is a valid host.
+  if (M->dest_mod_id < 0 || M->dest_mod_id > MAX_MODULE_ID) {
+    Log("ERROR", "Got invalid dest_mod_id [%d] from module %d; not forwarded.",
+        M->dest_mod_id, M->src_mod_id);
+    return;
+  }
+  if (M->dest_host_id != HID_ALL_HOSTS &&
+      (M->dest_host_id < 0 || M->dest_host_id > MAX_HOSTS)) {
+    Log("ERROR", "Got invalid dest_host_id [%d] from module %d; not forwarded.",
+        M->dest_host_id, M->src_mod_id);
+    return;
+  }
+
   std::vector<MODULE_ID> subscribers;
   GetSubscribers(M->msg_type, subscribers);
   if (subscribers.empty())
