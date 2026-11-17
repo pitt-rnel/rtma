@@ -43,21 +43,6 @@ QL_BIN = _binary("RTMA_QL_BIN", "QuickLogger")
 CLIENT_BIN = _binary("RTMA_TEST_CLIENT_BIN", "rtma_test_client")
 
 
-def pytest_addoption(parser):
-    parser.addoption(
-        "--matlab",
-        nargs="?",
-        const="matlab",
-        default=None,
-        help="Run the MATLAB tests, with this MATLAB executable (default: matlab on PATH).",
-    )
-    parser.addoption(
-        "--managers",
-        default=",".join(KINDS),
-        help="Comma-separated message managers to test: pyrtma, cpp. Default: both.",
-    )
-
-
 def pytest_configure(config):
     config.addinivalue_line(
         "markers",
