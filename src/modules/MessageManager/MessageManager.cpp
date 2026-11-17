@@ -813,16 +813,16 @@ void CMessageManager::SendAcknowledge(CModuleRecord *mod) {
   M.reserved = CoreMessageHash(MT_ACKNOWLEDGE);
   std::string wire = Wire(&M);
   Deliver(mod, wire, &M);
-  // Loggers subscribed to ACKNOWLEDGE are sent a copy, except the
+  // Every logger is sent a copy, as in pyrtma's manager, except the
   // requester: a logger sent its own ACK twice would take the copy as the
   // reply to its next request.
   std::vector<MODULE_ID> loggers;
-  GetSubscribers(MT_ACKNOWLEDGE, loggers);
+  for (auto &entry : m_ConnectedModules)
+    if (entry.second.LoggerStatus && entry.first != mod->ModuleID)
+      loggers.push_back(entry.first);
   for (MODULE_ID id : loggers) {
-    if (id == mod->ModuleID)
-      continue;
     CModuleRecord *logger = GetRecord(id);
-    if (logger != NULL && logger->LoggerStatus && !logger->conn->closing)
+    if (logger != NULL && !logger->conn->closing)
       SendToLogger(logger, wire);
   }
 }

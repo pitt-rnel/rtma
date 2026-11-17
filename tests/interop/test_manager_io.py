@@ -3,8 +3,7 @@
 A manager serves every client from one thread, so one client must not hold
 up the others: a client that stops partway through sending a message, a
 module that stops reading, and a logger that reads slowly. pyrtma's manager
-is the reference; tests marked cpp_gap describe where the C++ manager
-doesn't match it yet.
+is the reference.
 """
 
 from __future__ import annotations
@@ -192,9 +191,6 @@ def test_slow_logger_is_sent_every_message(manager):
     assert got == list(range(1, count + 1))
 
 
-@pytest.mark.cpp_gap(
-    "only loggers subscribed to ACKNOWLEDGE are sent other modules' ACKs"
-)
 def test_every_logger_is_sent_other_modules_acks(manager):
     logger = RawClient.connect(manager.port, 25, logger=True)
     module = RawClient.connect(manager.port, 21)
