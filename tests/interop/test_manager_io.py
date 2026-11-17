@@ -65,7 +65,6 @@ def stop_reading(client: RawClient) -> None:
 # Stalled senders --------------------------------------------------------
 
 
-@pytest.mark.cpp_gap("a client that sends part of a message stops the manager")
 def test_stalled_sender_does_not_hold_up_others(manager):
     consumer = RawClient.connect(manager.port, 20)
     consumer.subscribe(A)
@@ -79,7 +78,6 @@ def test_stalled_sender_does_not_hold_up_others(manager):
     assert msg.header.src_mod_id == 22
 
 
-@pytest.mark.cpp_gap("a client that stops partway through a message is never dropped")
 def test_stalled_sender_is_dropped(manager):
     watcher = RawClient.connect(manager.port, 20)
     watcher.subscribe(MT_GOODBYE)
