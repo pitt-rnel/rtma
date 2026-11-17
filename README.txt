@@ -10,4 +10,5 @@ include - include files for the C++ API
 lang    - API-s for other languages
 lib     - library files for the C++ API
 src     - source code for C++ API and executable modules
-tests   - build tests
+tests   - tests of the C++ API, the message definitions, and
+          interoperability with pyrtma (see tests/interop/README.md)
