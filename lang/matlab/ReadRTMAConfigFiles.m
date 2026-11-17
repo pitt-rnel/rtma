@@ -63,6 +63,17 @@ function RTMA = ReadRTMAConfigFiles( RTMA_BaseDir, varargin)
         RTMA.MTN_by_MT{message_type_id+1,1} = message_name;
     end
 
+    % Messages without data (signals) get an empty struct as their data
+    % format, as pyrtma's compiler gives them, so both kinds of definitions
+    % give the bindings the same templates. SendSignal tells a signal by its
+    % struct having no fields.
+    message_names = fieldnames( RTMA.MT);
+    for i = 1 : length( message_names)
+        if( isempty( RTMA.MDF) || ~isfield( RTMA.MDF, message_names{i}))
+            RTMA.MDF.(message_names{i}) = struct();
+        end
+    end
+
     % Create a lookup table to get Message Data Format by Message Type ID
     RTMA.MDF_by_MT = cell( size( RTMA.MTN_by_MT));
     message_names = fieldnames( RTMA.MDF);
@@ -84,6 +95,25 @@ function RTMA = ReadRTMAConfigFiles( RTMA_BaseDir, varargin)
         RTMA.mex_opcode = MatlabRTMA_h.defines;
     end
     
+    % Message definition hashes, from the HASH_<NAME> defines, as pyrtma's
+    % compiler gives them: RTMA.hash.<NAME>, a string of 8 hex digits.
+    % SendMessage and SendSignal send them as the message's version.
+    RTMA.hash = [];
+    define_names = fieldnames( h.defines);
+    for i = 1 : length( define_names)
+        define_name = define_names{i};
+        if( strncmp( define_name, 'HASH_', 5))
+            value = h.defines.(define_name);
+            if( ischar( value) || isstring( value))
+                value = lower( char( value));
+                if( strncmp( value, '0x', 2)), value = value(3:end); end
+            else
+                value = sprintf( '%08x', value);
+            end
+            RTMA.hash.(define_name(6:end)) = string( value);
+        end
+    end
+
     % Put the raw parsed h-file content in the RTMA struct as well in case
     % we want to access some of the non-RTMA-specific defines
     RTMA.defines = h.defines;
