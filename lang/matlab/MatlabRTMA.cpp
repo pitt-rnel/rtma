@@ -85,6 +85,17 @@ void mexFunction(
       HostAddressLength = mxGetNumberOfElements(input_arg[2]);
       logger_status = (int)mxGetScalar(input_arg[3]);
       TheModule.InitVariables(ModuleID, 0);
+      // An optional fifth argument is the module's name, a char array, sent
+      // in CONNECT_V2. Without it, the module has no name.
+      if (num_input_args > 4 && !mxIsEmpty(input_arg[4])) {
+        if (!mxIsChar(input_arg[4]))
+          Error("the module name must be a char array");
+        char *name = mxArrayToString(input_arg[4]);
+        TheModule.SetModuleName(name);
+        mxFree(name);
+      } else {
+        TheModule.SetModuleName("");
+      }
       try {
         if (HostAddressLength > 0) {
           // Convert unicode matlab string to regular character string
@@ -178,7 +189,10 @@ void mexFunction(
       if (TheModule.IsConnected()) {
         MessageType = (MSG_TYPE)mxGetScalar(input_arg[1]);
         pData = SerializeData(input_arg[2], &NumDataBytes);
-        M.Set(MessageType, pData, (int)NumDataBytes);
+        // An optional sixth argument is the message definition's version,
+        // its hash; 0 or absent means none.
+        M.Set(MessageType, pData, (int)NumDataBytes,
+              num_input_args > 5 ? (uint32_t)mxGetScalar(input_arg[5]) : 0);
         DestModID = (MODULE_ID)mxGetScalar(input_arg[3]);
         DestHostID = (HOST_ID)mxGetScalar(input_arg[4]);
         status = TheModule.SendMessage(&M, DestModID, DestHostID);
@@ -199,7 +213,9 @@ void mexFunction(
         MessageType = (MSG_TYPE)mxGetScalar(input_arg[1]);
         DestModID = (MODULE_ID)mxGetScalar(input_arg[2]);
         DestHostID = (HOST_ID)mxGetScalar(input_arg[3]);
-        M.Set(MessageType);
+        // An optional fifth argument is the signal definition's version.
+        M.Set(MessageType, NULL, 0,
+              num_input_args > 4 ? (uint32_t)mxGetScalar(input_arg[4]) : 0);
         status = TheModule.SendMessage(&M, DestModID, DestHostID);
       } else {
         status = 0;

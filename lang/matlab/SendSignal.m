@@ -22,5 +22,5 @@ MessageType = EnsureNumericMessageType( MessageType);
 DestModuleID = EnsureNumericModuleID( DestModuleID);
 DestHostID = EnsureNumericModuleID( DestHostID);
 
-[status, send_time, msg_count] = MatlabRTMA( RTMA.mex_opcode.SEND_SIGNAL, MessageType, DestModuleID, DestHostID);
+[status, send_time, msg_count] = MatlabRTMA( RTMA.mex_opcode.SEND_SIGNAL, MessageType, DestModuleID, DestHostID, GetHash_by_MT( MessageType));
 if( status == 0); error( 'Could not send signal'); end
