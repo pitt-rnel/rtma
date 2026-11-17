@@ -13,7 +13,8 @@
 //   one whose connection can't take it now misses it, and FAILED_MESSAGE
 //   reports that. What a connection takes of a message is finished later,
 //   when it can take more, so a message is never cut short.
-// - Loggers are waited for, so they miss nothing.
+// - Loggers are waited for, so they miss nothing; with a logger timeout, a
+//   logger that takes no data for that long is dropped.
 // - A module dropped while messages are being sent, because a send failed,
 //   leaves the routing tables at once; its GOODBYE is sent and its socket
 //   closed after the current message.

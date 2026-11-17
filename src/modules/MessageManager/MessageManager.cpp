@@ -64,12 +64,59 @@ const double kSelectTimeout = 0.1;
 // keep the others waiting.
 const size_t kReadBudget = 4 * 1024 * 1024;
 
+bool ParseSeconds(const char *text, double &seconds) {
+  char *end = NULL;
+  seconds = strtod(text, &end);
+  return end != text && *end == 0 && seconds > 0;
+}
+
+int Usage(const char *problem) {
+  if (problem)
+    fprintf(stderr, "MessageManager: %s\n", problem);
+  fprintf(problem ? stderr : stdout,
+          "usage: MessageManager [SERVER] [--stall-timeout SECONDS | "
+          "--no-stall-timeout] [--logger-timeout SECONDS]\n\n"
+          "SERVER is host:port, or :port for every interface; the default "
+          "is " DEFAULT_PIPE_SERVER_NAME_FOR_MM ".\n"
+          "--stall-timeout  drop a client that stops partway through a "
+          "message for this long (default 5)\n"
+          "--no-stall-timeout  never drop such a client\n"
+          "--logger-timeout  drop a logger that takes no data for this long "
+          "(default: wait as long as it takes)\n");
+  return problem ? 2 : 0;
+}
+
 } // namespace
 
 int main(int argc, char *argv[]) {
-  const char *server = (argc > 1) ? argv[1] : DEFAULT_PIPE_SERVER_NAME_FOR_MM;
+  const char *server = DEFAULT_PIPE_SERVER_NAME_FOR_MM;
+  double stall_timeout = 5.0;
+  double logger_timeout = -1.0;
+  bool server_given = false;
+  for (int i = 1; i < argc; i++) {
+    std::string arg = argv[i];
+    if (arg == "-h" || arg == "--help")
+      return Usage(NULL);
+    if (arg == "--no-stall-timeout") {
+      stall_timeout = -1.0;
+    } else if (arg == "--stall-timeout" || arg == "--logger-timeout") {
+      double seconds;
+      if (i + 1 >= argc || !ParseSeconds(argv[i + 1], seconds))
+        return Usage((arg + " needs a number of seconds greater than 0").c_str());
+      (arg == "--stall-timeout" ? stall_timeout : logger_timeout) = seconds;
+      i++;
+    } else if (!server_given && arg.compare(0, 2, "--") != 0) {
+      server = argv[i];
+      server_given = true;
+    } else {
+      return Usage(("unexpected argument " + arg).c_str());
+    }
+  }
+
   try {
     CMessageManager MM;
+    MM.stall_timeout = stall_timeout;
+    MM.logger_timeout = logger_timeout;
     MM.MainLoop(server);
     return 0;
   } catch (MyCException &E) {

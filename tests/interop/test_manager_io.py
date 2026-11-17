@@ -213,3 +213,81 @@ def test_message_with_invalid_destination_is_not_forwarded(manager, dest):
     logger.collect()
     producer.send(A, b"\x08" * 8, **dest)
     assert [m.msg_type for m in logger.collect(0.5) if m.msg_type == A] == []
+
+
+# Options -----------------------------------------------------------------
+# Both managers take --stall-timeout, --no-stall-timeout and
+# --logger-timeout.
+
+
+@pytest.fixture
+def manager_with(request, manager_kind, tmp_path):
+    """Starts a manager of each kind with the given options."""
+    from conftest import Manager, _report_logs, _require, free_port
+
+    _require(manager_kind)
+    started = []
+
+    def start(*args):
+        mm = Manager(manager_kind, free_port(), tmp_path, args)
+        started.append(mm)
+        return mm
+
+    yield start
+    for mm in started:
+        _report_logs(request, mm)
+        mm.stop()
+
+
+def test_stall_timeout_option(manager_with):
+    manager = manager_with("--stall-timeout", "1")
+    watcher = RawClient.connect(manager.port, 20)
+    watcher.subscribe(MT_GOODBYE)
+    stalled = RawClient.connect(manager.port, 21)
+    stalled.sock.sendall(HEADER.pack(A, 1, 0.0, 0.0, 0, 21, 0, 0, 8, 0, 0, 0)[:20])
+    start = time.monotonic()
+    goodbye = watcher.wait_for(
+        MT_GOODBYE, 4.0, where=lambda m: Hello.parse(m.payload).mod_id == 21
+    )
+    assert goodbye is not None
+    assert 0.5 <= time.monotonic() - start < 4.0
+
+
+def test_logger_timeout_option(manager_with):
+    manager = manager_with("--logger-timeout", "1")
+    watcher = RawClient.connect(manager.port, 20)
+    watcher.subscribe(MT_GOODBYE)
+    logger = RawClient.connect(manager.port, 25, logger=True)
+    stop_reading(logger)
+    logger.subscribe(A)
+    producer = RawClient.connect(manager.port, 22)
+    flood(producer, A, 1024 * 1024, 4.0)
+    goodbye = watcher.wait_for(
+        MT_GOODBYE, 5.0, where=lambda m: Hello.parse(m.payload).mod_id == 25
+    )
+    assert goodbye is not None
+    assert manager.accepts_clients()
+
+
+def test_cpp_manager_usage(tmp_path):
+    import subprocess
+
+    from conftest import MM_BIN
+
+    if not MM_BIN.exists():
+        pytest.skip(f"C++ MessageManager not found at {MM_BIN}")
+    run = lambda *args: subprocess.run(
+        [str(MM_BIN), *args], cwd=tmp_path, capture_output=True, text=True, timeout=5
+    )
+    shown = run("--help")
+    assert shown.returncode == 0
+    assert "usage: MessageManager [SERVER]" in shown.stdout
+    for bad in (
+        ["--stall-timeout"],
+        ["--logger-timeout", "0"],
+        ["--bogus"],
+        [":1", ":2"],
+    ):
+        refused = run(*bad)
+        assert refused.returncode == 2, bad
+        assert "usage: MessageManager" in refused.stderr

@@ -149,7 +149,7 @@ class Process:
 class Manager(Process):
     """A message manager listening on ``127.0.0.1:port``."""
 
-    def __init__(self, kind: str, port: int, tmp: pathlib.Path):
+    def __init__(self, kind: str, port: int, tmp: pathlib.Path, args: tuple = ()):
         self.kind = kind
         self.port = port
         if kind == "cpp":
@@ -172,6 +172,7 @@ class Manager(Process):
                 # TIME_WAIT. -d sets SO_REUSEADDR, so the next test's manager
                 # can listen on the same fixed port.
                 cmd.append("-d")
+        cmd += list(args)
         super().__init__(f"{kind} manager", cmd, tmp / f"{kind}_manager.log", tmp)
         self._wait_listening()
 
