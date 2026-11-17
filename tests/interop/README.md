@@ -14,6 +14,11 @@ They cover:
   files read back directly and by pyrtma's `LogReader`.
 - `test_data_logger.py`: the pyrtma data logger through each manager,
   controlled with raw requests addressed to it.
+- `test_matlab.py`: the MATLAB bindings, as a module run with `matlab -batch`
+  (`matlab/matlab_client.m`), with definitions pyrtma compiles from
+  `matlab/interop.defs`. Opt-in, since MATLAB is slow to start: run pytest
+  with `--matlab`, or `--matlab=PATH_TO_MATLAB`. It needs the mex built
+  from this repository with `lang/matlab/make.m`.
 - `test_cpp_client.py`: the C++ client library, through `rtma_test_client`
   (`test_client.cpp`), against each manager, and against a scripted fake
   manager for cases a real one doesn't produce on demand, such as another
@@ -76,6 +81,7 @@ set RTMA_TEST_CLIENT_BIN=C:\path\to\rtma_test_client.exe
 Useful options:
 
 - `--managers cpp` or `--managers pyrtma` tests one manager only.
+- `--matlab` also runs the MATLAB tests.
 - `-k quicklogger` runs the tests whose names match.
 - `-rxX` lists expected failures and unexpected passes in the summary.
 
