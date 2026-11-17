@@ -36,14 +36,31 @@ end
 
 if debug;   fprintf('Reading header...'); end  %#ok<*UNRCH>
 
-% Read the message header
-if( blocking) % If infinitely blocking, then keep doing reads with timeout to allow Ctrl-C
-    Message = [];
-    while( isempty( Message))
-        Message = MatlabRTMA( RTMA.mex_opcode.READ_MESSAGE_HDR, RTMA.MESSAGE_HEADER, .2);
+% Read message headers until one of a type the loaded definitions define.
+% A message of another type can't be decoded, so it is discarded with a
+% warning, once per type, and reading goes on with the time that is left.
+start = tic;
+while( true)
+    if( blocking) % If infinitely blocking, then keep doing reads with timeout to allow Ctrl-C
+        Message = [];
+        while( isempty( Message))
+            Message = MatlabRTMA( RTMA.mex_opcode.READ_MESSAGE_HDR, RTMA.MESSAGE_HEADER, .2);
+        end
+    else % If non-blocking or specified timeout, then use timeout value directly
+        Message = MatlabRTMA( RTMA.mex_opcode.READ_MESSAGE_HDR, RTMA.MESSAGE_HEADER, timeout);
     end
-else % If non-blocking or specified timeout, then use timeout value directly
-    Message = MatlabRTMA( RTMA.mex_opcode.READ_MESSAGE_HDR, RTMA.MESSAGE_HEADER, timeout);
+    if( isempty( Message)), break; end
+
+    MessageTypeName = GetMTN_by_MT( Message.msg_type);
+    if( ~isempty( MessageTypeName)), break; end
+
+    WarnUnknownType( Message.msg_type);
+    Message = [];
+    if( ~blocking)
+        timeout = max( 0, timeout - toc( start));
+        start = tic;
+        if( timeout == 0), break; end
+    end
 end
 
 if debug;   fprintf('done\n'); end
@@ -62,12 +79,7 @@ else
         if( ischar( DataTemplate) && strncmp( 'VARIABLE_LENGTH_ARRAY', DataTemplate, 21))
             Message.data = DataTemplate;
         else
-%             try
-                Message.data = MatlabRTMA( RTMA.mex_opcode.READ_MESSAGE_DATA, DataTemplate);
-%             catch
-%                 disp('ReadMessage: Error while reading message: Message=');
-%                 Message
-%             end
+            Message.data = MatlabRTMA( RTMA.mex_opcode.READ_MESSAGE_DATA, DataTemplate);
         end
     else
         Message.data = [];
@@ -75,13 +87,20 @@ else
 
     if debug,   fprintf('data transfered...'), end
     
-    % Replace numeric Message Type ID with a string Message Type Name
-    % if one is available (i.e. it is a registered message)
-    MessageTypeName = GetMTN_by_MT( Message.msg_type);
-    if( isempty( MessageTypeName))
-        error(['ReadMessage: failed to find MTN for message type ' num2str(Message.msg_type)]);
-    end        
+    % Replace numeric Message Type ID with its string Message Type Name
     Message.msg_type = MessageTypeName;
     if debug,   fprintf('done\n'), end
 end
 
+
+function WarnUnknownType( msg_type)
+
+persistent warned;
+if( isempty( warned)), warned = []; end
+if( ~any( warned == msg_type))
+    warned(end+1) = msg_type;
+    warning( 'ReadMessage:UnknownMessageType', ...
+        ['ReadMessage: discarding a message of type %d, which the loaded ' ...
+         'message definitions don''t define. Further messages of this type ' ...
+         'are discarded without a warning.'], msg_type);
+end
