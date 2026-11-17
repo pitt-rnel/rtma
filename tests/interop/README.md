@@ -37,22 +37,33 @@ need it are skipped and the pyrtma ones still run.
 
 ## Running
 
-From the repository root, on Linux or macOS:
+Install pytest and pyrtma 4 in the Python environment you test with, for
+example a conda environment, and activate it:
 
 ```
 python -m pip install "pytest>=8.4" pytest-timeout
 python -m pip install -e /path/to/pyrtma      # or pyrtma from a wheel
-cmake -S . -B build && cmake --build build
-python -m pytest tests/interop
 ```
 
-On Windows, after building with `build_msvc_2026.bat` or CMake:
+Then, from the repository root, build and run every test, CTest and pytest.
+On Linux or macOS:
 
 ```
-py -m pip install "pytest>=8.4" pytest-timeout
-py -m pip install -e C:\path\to\pyrtma
-py -m pytest tests\interop
+./make.sh
+./run_tests.sh
 ```
+
+On Windows:
+
+```
+build_msvc_2026.bat
+run_tests.bat
+```
+
+The scripts run CTest on `build/cmake`, then `python -m pytest tests`, which
+includes these tests and `tests/core_types`. Arguments go to pytest, such as
+`run_tests.bat -k quicklogger`. To run only these tests, run
+`python -m pytest tests/interop`.
 
 To test binaries somewhere else, such as a Debug build:
 

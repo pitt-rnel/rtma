@@ -3,8 +3,11 @@
 # CRLF in the working tree.
 * text=auto
 
-# Windows batch files are checked out with CRLF everywhere, as cmd.exe expects.
+# Windows batch files are checked out with CRLF everywhere, as cmd.exe expects,
+# and shell scripts with LF everywhere, as bash expects, including Git Bash or
+# WSL on a Windows checkout with core.autocrlf=true.
 *.bat text eol=crlf
+*.sh text eol=lf
 
 # Binaries committed to the repository.
 *.exe binary
