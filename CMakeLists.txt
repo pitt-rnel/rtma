@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(RTMA VERSION 1.0.0 LANGUAGES CXX)
+project(RTMA VERSION 4.0.0 LANGUAGES CXX)
 
 include(CMakePackageConfigHelpers)
 include(CTest)
@@ -109,6 +109,8 @@ if(RTMA_BUILD_MODULES)
     add_executable(MessageManager src/modules/MessageManager/MessageManager.cpp)
     target_include_directories(MessageManager PRIVATE include/internal)
     target_link_libraries(MessageManager PRIVATE RTMA)
+    # The manager prints its version at startup.
+    target_compile_definitions(MessageManager PRIVATE RTMA_VERSION="${PROJECT_VERSION}")
     set_target_properties(MessageManager PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${RTMA_BINARY_OUTPUT_DIRECTORY}
     )

@@ -9,6 +9,11 @@
 
 #include "MessageManager.h"
 #include "CoreMessages.h"
+
+// Defined by CMake from the project's version.
+#ifndef RTMA_VERSION
+#define RTMA_VERSION "unknown"
+#endif
 #include "Debug.h"
 #include <MyCException.h>
 #include <OS_defines.h>
@@ -51,7 +56,7 @@ int main(int argc, char *argv[])
 }
 
 CMessageManager::CMessageManager() {
-  m_Version = "4.0.0";
+  m_Version = RTMA_VERSION;
   m_NextDynamicModId = DYN_MOD_ID_START;
 
   InitializeAbsTime();
