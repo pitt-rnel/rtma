@@ -126,7 +126,9 @@ Socket Listen(const char *server_name) {
   setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
 #endif
 
-  if (bind(s, (sockaddr *)&address, sizeof(address)) != 0) {
+  // ::bind, not bind: MyCException.h has "using namespace std", and libc++
+  // takes an unqualified bind(...) for std::bind.
+  if (::bind(s, (sockaddr *)&address, sizeof(address)) != 0) {
     std::string error = LastError();
     Close(s);
     throw MyCException(("Cannot bind to server port, the error is: " + error).c_str());
