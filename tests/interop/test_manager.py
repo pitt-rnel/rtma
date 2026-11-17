@@ -311,9 +311,9 @@ def test_closed_connection_announces_goodbye(manager):
     assert Hello.parse(msg.payload).mod_id == 21
 
 
-def test_force_disconnect_of_a_busy_module(manager):
-    if manager.kind == "pyrtma":
-        pytest.skip("pyrtma's manager doesn't implement FORCE_DISCONNECT")
+def test_force_disconnect_of_a_busy_module(cpp_manager):
+    # Only the C++ manager implements FORCE_DISCONNECT.
+    manager = cpp_manager
     watcher = RawClient.connect(manager.port, 20)
     watcher.subscribe(MT_GOODBYE)
     ctl = RawClient.connect(manager.port, 30)
@@ -370,13 +370,10 @@ def test_unknown_core_type_drops_client(manager):
 
 
 @pytest.mark.parametrize("port", ["70000", "12x", ""])
-def test_cpp_manager_refuses_an_invalid_port(tmp_path, port):
+def test_cpp_manager_refuses_an_invalid_port(request, tmp_path, port):
     import subprocess
 
-    from conftest import MM_BIN
-
-    if not MM_BIN.exists():
-        pytest.skip(f"C++ MessageManager not found at {MM_BIN}")
+    MM_BIN = _cpp_binary(request)
     # It used to read past the port's digits, and wrap 70000 around to listen
     # on 4464. Now it refuses the port and exits.
     proc = subprocess.run(
@@ -392,24 +389,24 @@ def test_cpp_manager_refuses_an_invalid_port(tmp_path, port):
     assert "the port must be a number from 1 to 65535" in trace
 
 
-def _cpp_only(kind):
+def _cpp_binary(request):
     from conftest import MM_BIN
 
-    if kind != "cpp":
-        pytest.skip("checks the C++ MessageManager's listening socket")
+    if "cpp" not in request.config.getoption("--managers").split(","):
+        pytest.skip("--managers leaves out cpp")
     if not MM_BIN.exists():
         pytest.skip(f"C++ MessageManager not found at {MM_BIN}")
     return MM_BIN
 
 
-def test_cpp_manager_listens_while_old_connections_are_in_time_wait(
-    manager_kind, tmp_path
-):
+def test_cpp_manager_listens_while_old_connections_are_in_time_wait(request, tmp_path):
+    # pyrtma's manager sets SO_REUSEADDR only with -d, so this is the C++
+    # manager's alone.
     import socket
 
     from conftest import Manager, free_port
 
-    _cpp_only(manager_kind)
+    _cpp_binary(request)
     # A manager that closes connections first, as both managers do once their
     # modules disconnect, leaves its side of each in TIME_WAIT for a while
     # after it stops. A listener closes one here, as such a manager would.
@@ -429,17 +426,39 @@ def test_cpp_manager_listens_while_old_connections_are_in_time_wait(
         mm.stop()
 
 
-def test_cpp_manager_refuses_a_second_manager_on_its_port(manager, tmp_path):
+def _second_manager_command(manager):
+    """The command line of another manager of the same kind on its port."""
+    import sys
+
+    from conftest import MM_BIN
+
+    if manager.kind == "cpp":
+        return [str(MM_BIN), f"127.0.0.1:{manager.port}"]
+    return [
+        sys.executable,
+        "-m",
+        "pyrtma.manager",
+        "-a",
+        "127.0.0.1",
+        "-p",
+        str(manager.port),
+        "--log-level",
+        "WARN",
+    ]
+
+
+def test_second_manager_on_a_port_in_use_exits(manager, tmp_path):
     import subprocess
 
-    mm_bin = _cpp_only(manager.kind)
     proc = subprocess.run(
-        [str(mm_bin), f"127.0.0.1:{manager.port}"],
-        cwd=tmp_path,  # where it writes exception_trace.txt
+        _second_manager_command(manager),
+        cwd=tmp_path,  # where the C++ manager writes exception_trace.txt
         capture_output=True,
         text=True,
-        timeout=5,
+        timeout=30,
     )
-    assert proc.returncode == 1
-    assert "Cannot bind" in proc.stderr
+    assert proc.returncode != 0
+    if manager.kind == "cpp":
+        assert proc.returncode == 1
+        assert "Cannot bind" in proc.stderr
     assert manager.accepts_clients()

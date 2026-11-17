@@ -213,6 +213,21 @@ def _report_logs(request, *procs: Process) -> None:
 
 
 @pytest.fixture
+def cpp_manager(request, tmp_path):
+    """A fresh C++ MessageManager, for tests of what only it does.
+
+    Skipped when --managers leaves out cpp.
+    """
+    if "cpp" not in request.config.getoption("--managers").split(","):
+        pytest.skip("--managers leaves out cpp")
+    _require("cpp")
+    mm = Manager("cpp", free_port(), tmp_path)
+    yield mm
+    _report_logs(request, mm)
+    mm.stop()
+
+
+@pytest.fixture
 def manager(request, manager_kind, tmp_path):
     """A fresh message manager of each kind, on a free port."""
     _require(manager_kind)
