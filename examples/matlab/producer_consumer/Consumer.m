@@ -7,7 +7,7 @@ function Consumer(mm_ip)
 
     MessageTypes =  { 'TEST_DATA' };
 
-    ConnectArgs = {'CONSUMER', RTMA_BaseDir, ['./message_defs.mat']};
+    ConnectArgs = {'CONSUMER', 'Consumer', './message_defs.mat'};
     if exist('mm_ip','var') && ~isempty(mm_ip)
         ConnectArgs{end+1} = ['-server_name ' mm_ip];
     end

@@ -10,7 +10,7 @@ function Request(mm_ip)
                         'EXIT' ...
                     };
 
-    ConnectArgs = {'REQUEST', RTMA_BaseDir, ['./message_defs.mat']};
+    ConnectArgs = {'REQUEST', 'Request', './message_defs.mat'};
     if exist('mm_ip','var') && ~isempty(mm_ip)
         ConnectArgs{end+1} = ['-server_name ' mm_ip];
     end

@@ -7,7 +7,7 @@ function Producer(mm_ip)
 
     MessageTypes =  { 'REQUEST_TEST_DATA' };
 
-    ConnectArgs = {'PRODUCER', RTMA_BaseDir, ['./message_defs.mat']};
+    ConnectArgs = {'PRODUCER', 'Producer', './message_defs.mat'};
     if exist('mm_ip','var') && ~isempty(mm_ip)
         ConnectArgs{end+1} = ['-server_name ' mm_ip];
     end
