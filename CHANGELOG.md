@@ -39,6 +39,33 @@ stable release don't work unchanged with this release's managers:
   200) modules can connect.
 - Removed: MM_ERROR and MM_INFO, which the manager sent, and the handling of
   SHUTDOWN_RTMA and SHUTDOWN_APP.
+- Changed: the manager serves every client from one thread without
+  blocking, as pyrtma's manager does, so no client can hold up the others.
+  A client that stopped partway through a message stopped the manager until
+  it sent the rest, and a module that stopped reading could stop it in a
+  send. Each connection's bytes are now buffered until a whole message has
+  arrived, and a message is sent whole or not at all, finishing later what
+  a connection can't take at once.
+- Added: MessageManager [SERVER] [--stall-timeout SECONDS |
+  --no-stall-timeout] [--logger-timeout SECONDS], pyrtma's manager's
+  options. A client that sends part of a message and then nothing more for
+  the stall timeout (5 s by default) is dropped. A logger is waited for, so
+  it misses nothing; with --logger-timeout, a logger that takes no data for
+  that long is dropped. --help prints the usage, and a bad argument exits
+  with status 2.
+- Changed: a module whose connection can't take a message now misses it,
+  and FAILED_MESSAGE reports that; it isn't waited for or dropped. No
+  FAILED_MESSAGE is sent for a FAILED_MESSAGE or a log message.
+- Changed: a message to an invalid destination module or host isn't
+  forwarded, and is logged as an error. It used to go to every logger, or
+  to every subscriber. ALL_HOSTS is valid.
+- Changed: every logger is sent a copy of other modules' ACKs, not only
+  loggers subscribed to ACKNOWLEDGE.
+- Changed: a dropped module's GOODBYE is sent, and its connection closed,
+  once the message being handled has been sent, so a DISCONNECT is
+  forwarded before its sender's GOODBYE. The manager watches up to 1024
+  sockets, and refuses a connection beyond that with a warning. Its log
+  lines go to stderr, as "WARNING - DROPPING - module 21 ... - reason".
 - Fixed: a core message whose size didn't match its definition, such as a
   SUBSCRIBE with a long payload, overran the manager's stack. Every core
   message (type below 100) is now checked against its definition before it
@@ -202,7 +229,8 @@ stable release don't work unchanged with this release's managers:
   without most of the compiler warnings they had.
 - Added: tests/interop, which runs the same scenarios against both message
   managers, with the C++ client (rtma_test_client), QuickLogger, pyrtma's
-  data logger and, with --matlab, the MATLAB bindings. tests/core_types
+  data logger and, with --matlab, the MATLAB bindings, and how they cope
+  with slow and stalled clients (test_manager_io.py). tests/core_types
   checks the core headers against pyrtma's YAML. run_tests.sh and
   run_tests.bat run CTest and pytest. See tests/interop/README.md.
 - Changed: text files are stored with LF line endings (.gitattributes).

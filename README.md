@@ -154,7 +154,17 @@ bin/MessageManager 127.0.0.1:7112   # only on localhost, port 7112
 bin/QuickLogger                     # connects to localhost:7111
 bin/QuickLogger 192.168.1.10:7111
 ```
-`QuickLogger --help` shows its usage.
+`MessageManager --help` and `QuickLogger --help` show their usage. The MessageManager takes the same
+timeout options as pyrtma's manager:
+
+- `--stall-timeout SECONDS` drops a client that sends part of a message and then nothing more for that
+  long (default 5), and `--no-stall-timeout` never drops it, for example while it is paused in a
+  debugger.
+- `--logger-timeout SECONDS` drops a logger that takes no data for that long. By default the manager
+  waits for loggers as long as it takes, so they miss nothing.
+
+The manager serves every client without blocking: a module whose connection can't take a message
+misses it, and the manager reports that with FAILED_MESSAGE.
 
 
 ## Testing
