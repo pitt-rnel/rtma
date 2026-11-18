@@ -108,7 +108,7 @@ endif()
 if(RTMA_BUILD_MODULES)
     add_executable(MessageManager
         src/modules/MessageManager/MessageManager.cpp
-        src/modules/MessageManager/Net.cpp)
+        src/modules/MessageManager/NonBlockingSocket.cpp)
     target_include_directories(MessageManager PRIVATE include/internal)
     target_link_libraries(MessageManager PRIVATE RTMA)
     # The manager prints its version at startup.

@@ -161,19 +161,19 @@ CMessageManager::CMessageManager() {
 
 CMessageManager::~CMessageManager() {
   for (auto &conn : m_Connections)
-    net::Close(conn->sock);
-  net::Close(m_Listener);
+    NonBlockingSocket::Close(conn->sock);
+  NonBlockingSocket::Close(m_Listener);
 }
 
 void CMessageManager::MainLoop(const char *server_name) {
   try {
     printf("RTMA MessageManager %s\n", m_Version.GetContent());
-    m_Listener = net::Listen(server_name);
+    m_Listener = NonBlockingSocket::Listen(server_name);
     printf("server_addr = [%s]\n", server_name);
     fflush(stdout);
 
     std::mt19937 shuffle_rng(12345);
-    std::vector<net::Socket> rlist, wlist;
+    std::vector<NonBlockingSocket::Socket> rlist, wlist;
     std::vector<CConnection *> rconns, wconns;
     std::vector<char> readable, writable;
     Clock::time_point next_stall_check = Clock::now();
@@ -191,7 +191,7 @@ void CMessageManager::MainLoop(const char *server_name) {
           wconns.push_back(conn.get());
         }
       }
-      if (!net::Select(rlist, wlist, kSelectTimeout, readable, writable))
+      if (!NonBlockingSocket::Select(rlist, wlist, kSelectTimeout, readable, writable))
         throw MyCException("select() failed");
 
       // Randomly order the connections with data, so none is always
@@ -232,16 +232,16 @@ void CMessageManager::AcceptConnections() {
   for (;;) {
     std::string addr;
     uint16_t port = 0;
-    net::Socket s = net::Accept(m_Listener, addr, port);
-    if (s == net::kInvalid)
+    NonBlockingSocket::Socket s = NonBlockingSocket::Accept(m_Listener, addr, port);
+    if (s == NonBlockingSocket::kInvalid)
       return;
     // The listening socket and this one have to fit in one select().
-    if (m_Connections.size() + 2 > net::kMaxSockets || !net::Selectable(s)) {
+    if (m_Connections.size() + 2 > NonBlockingSocket::kMaxSockets || !NonBlockingSocket::Selectable(s)) {
       Log("WARNING",
           "Refusing a connection from %s:%u: select() can watch at most %u "
           "sockets.",
-          addr.c_str(), port, (unsigned)net::kMaxSockets);
-      net::Close(s);
+          addr.c_str(), port, (unsigned)NonBlockingSocket::kMaxSockets);
+      NonBlockingSocket::Close(s);
       continue;
     }
     std::unique_ptr<CConnection> conn(new CConnection);
@@ -275,7 +275,7 @@ void CMessageManager::ReadFrom(CConnection *conn) {
       conn->rx.resize(want);
 
     std::string error;
-    long n = net::Recv(conn->sock, conn->rx.data() + conn->rx_end,
+    long n = NonBlockingSocket::Recv(conn->sock, conn->rx.data() + conn->rx_end,
                        conn->rx.size() - conn->rx_end, error);
     if (n < 0) {
       Drop(conn, error, false);
@@ -341,7 +341,7 @@ void CMessageManager::Flush(CConnection *conn) {
   while (!conn->tx.empty()) {
     const std::string &chunk = conn->tx.front();
     std::string error;
-    long n = net::Send(conn->sock, chunk.data() + conn->tx_offset,
+    long n = NonBlockingSocket::Send(conn->sock, chunk.data() + conn->tx_offset,
                        chunk.size() - conn->tx_offset, error);
     if (n < 0) {
       Drop(conn, error);
@@ -411,7 +411,7 @@ void CMessageManager::FinishRemovals() {
     std::string error;
     while (!conn->tx.empty()) {
       const std::string &chunk = conn->tx.front();
-      long n = net::Send(conn->sock, chunk.data() + conn->tx_offset,
+      long n = NonBlockingSocket::Send(conn->sock, chunk.data() + conn->tx_offset,
                          chunk.size() - conn->tx_offset, error);
       if (n <= 0)
         break;
@@ -421,8 +421,8 @@ void CMessageManager::FinishRemovals() {
         conn->tx_offset = 0;
       }
     }
-    net::Close(conn->sock);
-    conn->sock = net::kInvalid;
+    NonBlockingSocket::Close(conn->sock);
+    conn->sock = NonBlockingSocket::kInvalid;
     for (auto it = m_Connections.begin(); it != m_Connections.end(); ++it) {
       if (it->get() == conn) {
         m_Connections.erase(it);
@@ -733,7 +733,7 @@ bool CMessageManager::TrySend(CModuleRecord *mod, const std::string &wire) {
       return false;
   }
   std::string error;
-  long n = net::Send(conn->sock, wire.data(), wire.size(), error);
+  long n = NonBlockingSocket::Send(conn->sock, wire.data(), wire.size(), error);
   if (n < 0) {
     Drop(conn, error);
     return true;
@@ -772,8 +772,8 @@ void CMessageManager::SendToLogger(CModuleRecord *mod, const std::string &wire) 
       wait = (std::min)(wait, left);
     }
     std::vector<char> readable, writable;
-    std::vector<net::Socket> none, sock(1, conn->sock);
-    net::Select(none, sock, wait, readable, writable);
+    std::vector<NonBlockingSocket::Socket> none, sock(1, conn->sock);
+    NonBlockingSocket::Select(none, sock, wait, readable, writable);
   }
 }
 

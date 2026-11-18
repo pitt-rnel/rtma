@@ -1,4 +1,4 @@
-// See Net.h.
+// See NonBlockingSocket.h.
 
 #ifdef _WIN32
 // select() on Windows takes at most FD_SETSIZE sockets, 64 unless it is
@@ -18,7 +18,7 @@
 #include <unistd.h>
 #endif
 
-#include "Net.h"
+#include "NonBlockingSocket.h"
 
 #include <MyCException.h>
 
@@ -29,7 +29,7 @@
 #define MSG_NOSIGNAL 0 // macOS: SO_NOSIGPIPE is set on each socket instead
 #endif
 
-namespace net {
+namespace NonBlockingSocket {
 
 #ifdef _WIN32
 const Socket kInvalid = INVALID_SOCKET;
@@ -246,4 +246,4 @@ bool Select(const std::vector<Socket> &read, const std::vector<Socket> &write,
   return true;
 }
 
-} // namespace net
+} // namespace NonBlockingSocket

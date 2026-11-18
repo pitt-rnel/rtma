@@ -19,7 +19,7 @@
 //   leaves the routing tables at once; its GOODBYE is sent and its socket
 //   closed after the current message.
 
-#include "Net.h"
+#include "NonBlockingSocket.h"
 
 #include <RTMA.h>
 #include <RTMA_types.h>
@@ -38,7 +38,7 @@ typedef std::chrono::steady_clock Clock;
 // One client connection: its socket, the bytes received of the message being
 // read, and the bytes still to send.
 struct CConnection {
-  net::Socket sock = net::kInvalid;
+  NonBlockingSocket::Socket sock = NonBlockingSocket::kInvalid;
   std::string addr;
   uint16_t port = 0;
 
@@ -102,7 +102,7 @@ public:
 
 private:
   MyCString m_Version;
-  net::Socket m_Listener = net::kInvalid;
+  NonBlockingSocket::Socket m_Listener = NonBlockingSocket::kInvalid;
   std::vector<std::unique_ptr<CConnection>> m_Connections;
   std::vector<CConnection *> m_PendingRemovals;
 

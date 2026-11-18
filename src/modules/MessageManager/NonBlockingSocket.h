@@ -6,15 +6,15 @@
 // return at once, and select(). The client library's UPipe classes are
 // unchanged.
 
-#ifndef _MM_NET_H_
-#define _MM_NET_H_
+#ifndef _MM_NONBLOCKING_SOCKET_H_
+#define _MM_NONBLOCKING_SOCKET_H_
 
 #include <cstddef>
 #include <cstdint>
 #include <string>
 #include <vector>
 
-namespace net {
+namespace NonBlockingSocket {
 
 #ifdef _WIN32
 typedef uintptr_t Socket; // SOCKET
@@ -57,6 +57,6 @@ bool Select(const std::vector<Socket> &read, const std::vector<Socket> &write,
             double timeout, std::vector<char> &readable,
             std::vector<char> &writable);
 
-} // namespace net
+} // namespace NonBlockingSocket
 
-#endif // _MM_NET_H_
+#endif // _MM_NONBLOCKING_SOCKET_H_
