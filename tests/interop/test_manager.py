@@ -124,23 +124,51 @@ def test_subscribe_all_receives_every_type(pair):
     assert consumer.user_types() == [A, B]
 
 
-def test_individual_unsubscribe_is_ignored_while_subscribed_to_all(pair):
-    consumer, producer = pair
-    consumer.subscribe(A)
-    consumer.subscribe(ALL_MESSAGE_TYPES)
-    consumer.control(MT_UNSUBSCRIBE, B)
-    producer.send(B, PAYLOAD)
-    assert consumer.user_types() == [B]
-
-
-def test_unsubscribe_all_removes_every_subscription(pair):
+def test_subscribing_all_keeps_other_subscriptions(pair):
+    # ALL_MESSAGE_TYPES is a subscription like any other.
     consumer, producer = pair
     consumer.subscribe(A)
     consumer.subscribe(ALL_MESSAGE_TYPES)
     consumer.control(MT_UNSUBSCRIBE, ALL_MESSAGE_TYPES)
     producer.send(A, PAYLOAD)
     producer.send(B, PAYLOAD)
-    assert consumer.user_types() == []
+    assert consumer.user_types() == [A]
+
+
+def test_type_subscribed_twice_is_delivered_once(pair):
+    consumer, producer = pair
+    consumer.subscribe(A)
+    consumer.subscribe(ALL_MESSAGE_TYPES)
+    producer.send(A, PAYLOAD)
+    assert consumer.user_types() == [A]
+
+
+def test_types_change_while_subscribed_to_all(pair):
+    consumer, producer = pair
+    consumer.subscribe(ALL_MESSAGE_TYPES)
+    consumer.subscribe(A)
+    consumer.subscribe(B)
+    consumer.control(MT_UNSUBSCRIBE, B)
+    # Every type still comes through ALL_MESSAGE_TYPES...
+    producer.send(B, PAYLOAD)
+    assert consumer.user_types() == [B]
+    # ...and only A after it ends.
+    consumer.control(MT_UNSUBSCRIBE, ALL_MESSAGE_TYPES)
+    producer.send(A, PAYLOAD)
+    producer.send(B, PAYLOAD)
+    assert consumer.user_types() == [A]
+
+
+def test_pausing_all_keeps_other_subscriptions(pair):
+    consumer, producer = pair
+    consumer.subscribe(A, ALL_MESSAGE_TYPES)
+    consumer.control(MT_PAUSE_SUBSCRIPTION, ALL_MESSAGE_TYPES)
+    producer.send(A, PAYLOAD)
+    producer.send(B, PAYLOAD)
+    assert consumer.user_types() == [A]
+    consumer.control(MT_RESUME_SUBSCRIPTION, ALL_MESSAGE_TYPES)
+    producer.send(B, PAYLOAD)
+    assert consumer.user_types() == [B]
 
 
 # Connecting -------------------------------------------------------------

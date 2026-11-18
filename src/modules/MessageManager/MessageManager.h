@@ -34,8 +34,9 @@ public:
   int32_t pid;
   char *addr;
   char *name;
-  // Message types this module subscribes to. ALL_MESSAGE_TYPES replaces the
-  // individual types, as in pyrtma's manager.
+  // Message types this module subscribes to, ALL_MESSAGE_TYPES among them. The
+  // routing table holds a module subscribed to ALL_MESSAGE_TYPES under that
+  // type alone.
   std::unordered_set<MSG_TYPE> subs;
 
   CModuleRecord() {
@@ -155,7 +156,7 @@ public:
 };
 
 // Module IDs subscribed to one message type. The key ALL_MESSAGE_TYPES holds
-// the modules subscribed to every type; they hold no other subscriptions.
+// the modules subscribed to every type, which no other key holds.
 typedef std::unordered_set<MODULE_ID> CSubscriberSet;
 
 class CMessageManager : public UPipeAutoServer {
@@ -249,9 +250,11 @@ private:
 
   void ResumeSubscription(CModuleRecord *mod, MSG_TYPE msg_type_to_resume);
 
-  void AddSubscriber(CModuleRecord *mod, MSG_TYPE message_type);
-
   void DropSubscriber(CModuleRecord *mod, MSG_TYPE message_type);
+
+  void Unroute(CModuleRecord *mod, MSG_TYPE message_type);
+  // Takes the module out of the routing table for the type, leaving its
+  // subscription to it.
 
   void RemoveAllSubscriptions(CModuleRecord *mod);
 

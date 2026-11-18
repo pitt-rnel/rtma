@@ -67,9 +67,12 @@ stable release don't work unchanged with this release's managers:
 - Changed: broadcasts from the manager, such as HELLO, GOODBYE and
   FAILED_MESSAGE, have dest_mod_id 0, and DISCONNECT is no longer
   acknowledged.
-- Changed: subscribing to ALL_MESSAGE_TYPES replaces a module's other
-  subscriptions, pausing a subscription removes it, and resuming one adds
-  it, as in pyrtma's manager.
+- Changed: ALL_MESSAGE_TYPES is a subscription like any other, as in
+  pyrtma's manager. Subscribing to it adds it beside a module's other
+  subscriptions; unsubscribing from it, or pausing it, ends only it; other
+  types can be subscribed and unsubscribed while it is in place; and a type
+  subscribed both ways is delivered once. Pausing a subscription removes it,
+  and resuming one adds it.
 - Changed: the listening socket can be bound again at once after the
   manager stops, while its old connections are in TIME_WAIT, but never
   shared: SO_REUSEADDR on Linux and macOS, SO_EXCLUSIVEADDRUSE on Windows,
