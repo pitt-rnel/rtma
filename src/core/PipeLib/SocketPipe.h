@@ -15,7 +15,6 @@
 // WINDOWS only h files
 #ifndef WINSOCK_H
 #define WINSOCK_H
-#define FD_SETSIZE UPipeServer::MAX_CLIENTS
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #endif
@@ -79,40 +78,6 @@ public:
 
 private:
   SocketHandle _hPipe; // Handle to underlying OS socket
-};
-
-class SocketPipeServer : public UPipeServer {
-public:
-  // Constructor/destructor
-  SocketPipeServer(char *host_addr, short port_no);
-  ~SocketPipeServer();
-
-  //
-  // Overrides of abstract base methods
-  //
-public:
-  int WaitForDataAndClients(UPipe *pipes[], double timeout,
-                            bool *connection_request);
-
-  // Disconnects all clients
-  void DisconnectAllClients(void) {
-    TRY {
-      for (int i = 0; i < MAX_CLIENTS; i++) {
-        if (_clientList[i] != NULL) {
-          DisconnectClient(_clientList[i]);
-        }
-      }
-    }
-    CATCH_and_THROW("SocketPipeServer::DisconnectAllClients");
-  }
-
-protected:
-  void DoDisconnectClient(UPipe *client_pipe);
-  UPipe *DoAcceptClient(void);
-
-private:
-  SocketHandle _hListeningSocket;
-  SocketHandle _hClientSockets[MAX_CLIENTS] = {};
 };
 
 class SocketPipeClient : public UPipeClient {

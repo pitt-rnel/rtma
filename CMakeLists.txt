@@ -106,11 +106,16 @@ if(WIN32)
 endif()
 
 if(RTMA_BUILD_MODULES)
-    add_executable(MessageManager src/modules/MessageManager/MessageManager.cpp)
+    add_executable(MessageManager
+        src/modules/MessageManager/MessageManager.cpp
+        src/modules/MessageManager/NonBlockingSocket.cpp)
     target_include_directories(MessageManager PRIVATE include/internal)
     target_link_libraries(MessageManager PRIVATE RTMA)
     # The manager prints its version at startup.
     target_compile_definitions(MessageManager PRIVATE RTMA_VERSION="${PROJECT_VERSION}")
+    if(WIN32)
+        target_link_libraries(MessageManager PRIVATE ws2_32)
+    endif()
     set_target_properties(MessageManager PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${RTMA_BINARY_OUTPUT_DIRECTORY}
     )
