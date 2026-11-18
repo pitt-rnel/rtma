@@ -31,7 +31,9 @@ if( ~format_correct)
 end
 
 % Send the message
-[status, send_time, msg_count] = MatlabRTMA( RTMA.mex_opcode.SEND_MESSAGE, MessageType, Data, DestModuleID, DestHostID);
+% The header carries the definition's hash as its version, as pyrtma's
+% client sends it.
+[status, send_time, msg_count] = MatlabRTMA( RTMA.mex_opcode.SEND_MESSAGE, MessageType, Data, DestModuleID, DestHostID, GetHash_by_MT( MessageType));
 if( status == 0); error( 'Could not send message'); end
 
 

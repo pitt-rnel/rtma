@@ -12,7 +12,7 @@ function Reply(mm_ip)
                         'EXIT' ...
                     };
 
-    ConnectArgs = {'REPLY', RTMA_BaseDir, ['./message_defs.mat']};
+    ConnectArgs = {'REPLY', 'Reply', './message_defs.mat'};
     if exist('mm_ip','var') && ~isempty(mm_ip)
         ConnectArgs{end+1} = ['-server_name ' mm_ip];
     end

@@ -553,42 +553,31 @@ SocketPipeServer::SocketPipeServer(char *host_addr, short port_no) {
       throw e;
     }
 
-#ifndef _LINUX_C
-    // Set socket address reusable for parallel runs of this program
-    const char optval = 1;
-    status = setsockopt(_hListeningSocket.id, SOL_SOCKET, SO_REUSEADDR, &optval,
-                        sizeof(optval));
+    // Let the manager listen again at once after it stops, while its side of
+    // the connections it closed waits in TIME_WAIT, as each does when its
+    // module disconnects. Never let a second socket share the port.
+#ifdef _WINDOWS_C
+    // SO_REUSEADDR would let another socket bind the port while this one
+    // listens. SO_EXCLUSIVEADDRUSE refuses it, and connections in TIME_WAIT
+    // don't stop a later bind.
+    BOOL exclusive = TRUE;
+    status = setsockopt(_hListeningSocket.id, SOL_SOCKET, SO_EXCLUSIVEADDRUSE,
+                        (const char *)&exclusive, sizeof(exclusive));
+    if (status == SOCKET_ERROR) {
+      CloseSocket(_hListeningSocket);
+      throw UPipeException("Could not set socket option SO_EXCLUSIVEADDRUSE");
+    }
+#else
+    // On Linux and macOS, SO_REUSEADDR allows the bind while connections are
+    // in TIME_WAIT, but not while another socket listens on the port.
+    int reuse = 1;
+    status = setsockopt(_hListeningSocket.id, SOL_SOCKET, SO_REUSEADDR, &reuse,
+                        sizeof(reuse));
     if (status < 0) {
       CloseSocket(_hListeningSocket);
       throw UPipeException("Could not set socket option SO_REUSEADDR");
     }
-
-#ifdef SO_REUSEPORT
-    status = setsockopt(_hListeningSocket.id, SOL_SOCKET, SO_REUSEPORT, &optval,
-                        sizeof(optval));
-    if (status < 0) {
-      CloseSocket(_hListeningSocket);
-      throw UPipeException("Could not set socket option SO_REUSEPORT");
-    }
 #endif
-#endif // _LINUX_C
-
-#ifdef _LINUX_C
-#ifdef SO_LINGER
-    struct linger Linger;
-    Linger.l_onoff =
-        1; /* enable linger option: If nonzero, close blocks until the data are
-              transmitted or the timeout period has expired. */
-    Linger.l_linger = 0; /* timeout in seconds */
-    status = setsockopt(_hListeningSocket.id, SOL_SOCKET, SO_LINGER, &Linger,
-                        sizeof(Linger));
-    if (status < 0) {
-      CloseSocket(_hListeningSocket);
-      throw UPipeException("Could not set socket option SO_LINGER");
-    }
-
-#endif
-#endif // _LINUX_C
 
 #ifdef _MAC_C
 #ifdef RTMA_USE_SO_NOSIGPIPE

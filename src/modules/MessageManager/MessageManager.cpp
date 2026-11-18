@@ -8,6 +8,12 @@
  */
 
 #include "MessageManager.h"
+#include "CoreMessages.h"
+
+// Defined by CMake from the project's version.
+#ifndef RTMA_VERSION
+#define RTMA_VERSION "unknown"
+#endif
 #include "Debug.h"
 #include <MyCException.h>
 #include <OS_defines.h>
@@ -15,6 +21,7 @@
 #include <RTMA_types.h>
 #include <Timing.h>
 #include <UPipe.h>
+#include <cstdarg>
 #include <cstdio>
 #include <string.h>
 #include <vector>
@@ -41,12 +48,15 @@ int main(int argc, char *argv[])
   } catch (MyCException &E) {
     E.AddToStack("MM WinMain- aborting");
     E.ReportToFile();
-    return 0;
+    MyCString err("MessageManager: fatal error:");
+    E.AppendTraceToString(err);
+    fprintf(stderr, "%s\n", err.GetContent());
+    return 1;
   }
 }
 
 CMessageManager::CMessageManager() {
-  m_Version = "3.0bci";
+  m_Version = RTMA_VERSION;
   m_NextDynamicModId = DYN_MOD_ID_START;
 
   InitializeAbsTime();
@@ -56,6 +66,7 @@ CMessageManager::~CMessageManager() {}
 
 void CMessageManager::MainLoop(char *cmd_line_options) {
   try {
+    printf("RTMA MessageManager %s\n", m_Version.GetContent());
     DEBUG_TEXT("Entering Main Loop");
 
     // Elevate process priority
@@ -84,15 +95,88 @@ void CMessageManager::MainLoop(char *cmd_line_options) {
   }
 }
 
+CModuleRecord *CMessageManager::GetRecordByPipe(UPipe *pipe) {
+  auto it = m_ModuleByPipe.find(pipe);
+  if (it == m_ModuleByPipe.end())
+    return NULL;
+  return GetRecord(it->second);
+}
+
+void CMessageManager::DropSender(UPipe *pSourcePipe, const char *format, ...) {
+  char reason[512];
+  va_list args;
+  va_start(args, format);
+  vsnprintf(reason, sizeof(reason), format, args);
+  va_end(args);
+
+  CModuleRecord *mod = GetRecordByPipe(pSourcePipe);
+  char addr[MAX_NAME_LEN] = "";
+  uint16_t port = 0;
+  try {
+    pSourcePipe->GetIpAddress(addr, &port, sizeof(addr));
+  } catch (...) {
+  }
+  if (mod != NULL)
+    fprintf(stderr, "DROPPING - module %d (%s:%u) - %s\n", mod->ModuleID,
+            addr, port, reason);
+  else
+    fprintf(stderr, "DROPPING - %s:%u - %s\n", addr, port, reason);
+  throw UPipeClosedException(reason);
+}
+
 void CMessageManager::HandleData(UPipe *pSourcePipe) {
   SetMyPriority(THIS_MODULE_BASE_PRIORITY);
   DEBUG_TEXT_("Receiving message from pipe " << pSourcePipe << "... ");
   CMessage M;
-  M.Receive(pSourcePipe);
+  int status;
+  try {
+    status = M.Receive(pSourcePipe);
+  } catch (UPipeClosedException &) {
+    throw;
+  } catch (MyCException &E) {
+    MyCString err;
+    E.AppendTraceToString(err);
+    DropSender(pSourcePipe, "Failed to read a message: %s", err.GetContent());
+  }
+  if (status == -3)
+    DropSender(pSourcePipe,
+               "Invalid num_data_bytes (%d) for MT=%d; it must be 0 to %d. "
+               "Header may be corrupted.",
+               M.num_data_bytes, M.msg_type, RTMA_MAX_DATA_BYTES);
+  if (status < 0)
+    DropSender(pSourcePipe, "Failed to read a message (status %d)", status);
   DEBUG_TEXT("Received message of type " << M.msg_type);
 
-  ProcessMessage(&M, pSourcePipe);
-  DistributeMessage(&M);
+  // Core messages must match their definitions, as in pyrtma's manager. A
+  // client whose core definitions don't match the manager's is dropped
+  // before its message is acted on or forwarded.
+  if (M.msg_type <= MAX_RTMA_MSG_TYPE) {
+    int expected = CoreMessageSize(M.msg_type);
+    if (expected < 0)
+      DropSender(pSourcePipe, "Unknown core message type MT=%d received.",
+                 M.msg_type);
+    if (M.num_data_bytes != expected)
+      DropSender(pSourcePipe,
+                 "MT=%d announced %d data bytes, but its core definition has "
+                 "%d. The client's core definitions don't match the "
+                 "manager's.",
+                 M.msg_type, M.num_data_bytes, expected);
+  }
+
+  // Failures to send to other modules are caught where they are sent, so an
+  // exception here is about this module's message: drop it, rather than
+  // stop the manager.
+  try {
+    ProcessMessage(&M, pSourcePipe);
+    DistributeMessage(&M);
+  } catch (UPipeClosedException &) {
+    throw;
+  } catch (MyCException &E) {
+    MyCString err;
+    E.AppendTraceToString(err);
+    DropSender(pSourcePipe, "Unexpected error while handling MT=%d: %s",
+               M.msg_type, err.GetContent());
+  }
   SetMyPriority(NORMAL_PRIORITY_CLASS);
 }
 
@@ -103,12 +187,13 @@ void CMessageManager::HandleDisconnect(UPipe *pModulePipe) {
     CModuleRecord *mod = &it->second;
     if (mod->pModulePipe == pModulePipe) {
       // Make sure not to send anything to disconnected client
-      RemoveSubscription(mod, ALL_MESSAGE_TYPES);
+      RemoveAllSubscriptions(mod);
 
       // Notify that the module has left
       SendGoodbye(mod);
 
       // Delete module record
+      m_ModuleByPipe.erase(pModulePipe);
       CleanUpModuleRecord(mod);
       DEBUG_TEXT_(", disconnected module " << mod->ModuleID);
 
@@ -122,24 +207,38 @@ void CMessageManager::HandleDisconnect(UPipe *pModulePipe) {
 void CMessageManager::ProcessMessage(CMessage *M, UPipe *pSourcePipe) {
   DEBUG_TEXT_("Processing message... ");
 
+  // The sender is the module connected on this pipe, whatever the header's
+  // src_mod_id says. A module must connect before it does anything else.
+  CModuleRecord *src = GetRecordByPipe(pSourcePipe);
+  if (src == NULL && M->msg_type != MT_CONNECT &&
+      M->msg_type != MT_CONNECT_V2)
+    DropSender(pSourcePipe,
+               "Sent MT=%d before CONNECT; a module must connect first.",
+               M->msg_type);
+
   switch (M->msg_type) {
   case MT_CONNECT:
-    HandleConnect(M, pSourcePipe);
+    // A CONNECT from a connected module carries nothing new.
+    if (src == NULL)
+      HandleConnect(M, pSourcePipe);
     break;
 
   case MT_CONNECT_V2:
-    HandleConnectV2(M, pSourcePipe);
+    if (src == NULL)
+      HandleConnectV2(M, pSourcePipe);
+    else
+      UpdateConnection(M, src);
     break;
 
   case MT_CLIENT_SET_NAME:
-    HandleSetName(M);
+    HandleSetName(M, src);
     break;
 
   case MT_PONG:
     break;
 
   case MT_INTRODUCE:
-    SendIntroductions(M->src_mod_id);
+    SendIntroductions(src);
     break;
 
   case MT_FORCE_DISCONNECT:
@@ -147,27 +246,31 @@ void CMessageManager::ProcessMessage(CMessage *M, UPipe *pSourcePipe) {
     break;
 
   case MT_DISCONNECT:
-    HandleModuleDisconnect(M);
+    DisconnectModule(src->ModuleID);
     break;
 
   case MT_MODULE_READY:
-    HandleModuleReady(M);
+    HandleModuleReady(M, src);
     break;
 
   case MT_SUBSCRIBE:
-    HandleSubscribe(M);
+    AddSubscription(src, SubscriptionType(M));
+    SendAcknowledge(src);
     break;
 
   case MT_UNSUBSCRIBE:
-    HandleUnsubscribe(M);
+    RemoveSubscription(src, SubscriptionType(M));
+    SendAcknowledge(src);
     break;
 
   case MT_PAUSE_SUBSCRIPTION:
-    HandlePauseSubscription(M);
+    PauseSubscription(src, SubscriptionType(M));
+    SendAcknowledge(src);
     break;
 
   case MT_RESUME_SUBSCRIPTION:
-    HandleResumeSubscription(M);
+    ResumeSubscription(src, SubscriptionType(M));
+    SendAcknowledge(src);
     break;
 
   default:
@@ -175,6 +278,14 @@ void CMessageManager::ProcessMessage(CMessage *M, UPipe *pSourcePipe) {
     return;
   }
   DEBUG_TEXT("Processed!");
+}
+
+MSG_TYPE CMessageManager::SubscriptionType(CMessage *M) {
+  // SUBSCRIBE, UNSUBSCRIBE, PAUSE_SUBSCRIPTION and RESUME_SUBSCRIPTION share
+  // this layout, and HandleData() has checked the size.
+  MDF_SUBSCRIBE data;
+  M->GetData(&data);
+  return data.msg_type;
 }
 
 void CMessageManager::SendHello(CModuleRecord *mod) {
@@ -208,17 +319,12 @@ void CMessageManager::SendPing(MODULE_ID mod_id) {
   }
 }
 
-void CMessageManager::HandleSetName(CMessage *M) {
+void CMessageManager::HandleSetName(CMessage *M, CModuleRecord *mod) {
   MDF_CLIENT_SET_NAME set_name;
-  if (M->num_data_bytes != sizeof(set_name))
-    return;
   M->GetData((void *)&set_name);
-  CModuleRecord *mod = GetRecord(M->src_mod_id);
-  if (mod != NULL) {
-    mod->SetName(&(set_name.name[0]));
-    // printf("SetName: %d -> %s\n", mod->ModuleID, mod->name);
-    SendHello(mod);
-  }
+  set_name.name[MAX_NAME_LEN - 1] = 0;
+  mod->SetName(&(set_name.name[0]));
+  SendHello(mod);
 }
 
 /*
@@ -232,60 +338,35 @@ void CMessageManager::HandleSetName(CMessage *M) {
  */
 void CMessageManager::DistributeMessage(CMessage *M) {
   DEBUG_TEXT("Distributing Message...");
-  int timing_set = 0;
 
-  CSubscriberList *SL = GetSubscriberList(M->msg_type);
-  if (SL != NULL) {
-    for (auto it = SL->begin(); it != SL->end(); ++it) {
-      MODULE_ID module_id = SL->GetModuleID(it);
-      auto mod_it = m_ConnectedModules.find(module_id);
-      if (mod_it == m_ConnectedModules.end()) {
-        DEBUG_TEXT("Skipping invalid subscriber module id " << module_id);
-        continue;
-      }
+  std::vector<MODULE_ID> subscribers;
+  GetSubscribers(M->msg_type, subscribers);
+  for (MODULE_ID module_id : subscribers) {
+    auto mod_it = m_ConnectedModules.find(module_id);
+    if (mod_it == m_ConnectedModules.end()) {
+      DEBUG_TEXT("Skipping invalid subscriber module id " << module_id);
+      continue;
+    }
+    CModuleRecord *mod = &mod_it->second;
 
-      /* the order of the code in this while loop is important
-         don't modify it unless you know what you're doing
-       */
-      CModuleRecord *mod = &mod_it->second;
+    // A message with a destination goes only there, and to logger modules.
+    if (M->dest_mod_id != 0 && mod->ModuleID != M->dest_mod_id &&
+        !mod->LoggerStatus)
+      continue;
 
-      int send_it = 0;
-      int has_specific_dest = (M->dest_mod_id == 0) ? 0 : 1;
-
-      if (has_specific_dest) {
-        // send only to the specific destination
-        if (mod->ModuleID == M->dest_mod_id)
-          send_it = 1;
-        else
-          send_it = 0;
+    DEBUG_TEXT_("Forwarding message to module " << mod->ModuleID << "... ");
+    try {
+      int status = ForwardMessage(M, mod);
+      if (status == 0) {
+        LogFailedMessage(M, mod->ModuleID);
+        DEBUG_TEXT("Failed to Forward Message!");
       } else {
-        // no specific destination address- so should be forwarded to all
-        // subscribers for this MT
-        send_it = 1;
+        DEBUG_TEXT("Forwarded!");
       }
-
-      // forward everything to logger modules
-      if (mod->LoggerStatus)
-        send_it = 1;
-
-      if (SL->IsPaused(it))
-        send_it = 0;
-
-      if (send_it) {
-        DEBUG_TEXT_("Forwarding message to module " << mod->ModuleID << "... ");
-        try {
-          int status = ForwardMessage(M, mod);
-          if (status == 0) {
-            LogFailedMessage(M, mod->ModuleID);
-            DEBUG_TEXT("Failed to Forward Message!");
-          } else {
-            DEBUG_TEXT("Forwarded!");
-          }
-        } catch (UPipeClosedException) {
-          DEBUG_TEXT("Failed to Forward Message, destination module socket is "
-                     "closed/dead");
-        }
-      }
+    } catch (MyCException &) {
+      // The module is removed when its socket reports the failure.
+      DEBUG_TEXT("Failed to Forward Message, destination module socket is "
+                 "closed/dead");
     }
   }
   DEBUG_TEXT("Done distributing!");
@@ -296,24 +377,22 @@ void CMessageManager::DistributeMessage(CMessage *M) {
  * cares The message will be sent to all subscribed modules including loggers
  */
 void CMessageManager::DispatchMessage(CMessage *M) {
-  CSubscriberList *SL = GetSubscriberList(M->msg_type);
-  if (SL != NULL) {
-    // Send message to all subscribers
-    for (auto it = SL->begin(); it != SL->end(); ++it) {
-      MODULE_ID module_id = SL->GetModuleID(it);
-      auto mod_it = m_ConnectedModules.find(module_id);
-      if (mod_it == m_ConnectedModules.end()) {
-        DEBUG_TEXT("Skipping invalid subscriber module id " << module_id);
-        continue;
-      }
+  std::vector<MODULE_ID> subscribers;
+  GetSubscribers(M->msg_type, subscribers);
+  for (MODULE_ID module_id : subscribers) {
+    auto mod_it = m_ConnectedModules.find(module_id);
+    if (mod_it == m_ConnectedModules.end()) {
+      DEBUG_TEXT("Skipping invalid subscriber module id " << module_id);
+      continue;
+    }
 
-      CModuleRecord *mod = &mod_it->second;
-      try {
-        SendMessage(M, mod);
-      }
-      catch (UPipeClosedException&) {
-        DEBUG_TEXT("Failed to send MM message, destination module socket is closed/dead");
-      }
+    CModuleRecord *mod = &mod_it->second;
+    try {
+      // A broadcast has no destination, as in pyrtma's manager.
+      SendMessage(M, mod, 0);
+    } catch (MyCException &) {
+      // The module is removed when its socket reports the failure.
+      DEBUG_TEXT("Failed to send MM message, destination module socket is closed/dead");
     }
   }
 }
@@ -324,29 +403,35 @@ void CMessageManager::DispatchMessage(CMessage *M) {
  *  The message will also be forwarded to all subscribed logger modules
  */
 void CMessageManager::DispatchMessage(CMessage *M, CModuleRecord *dest_mod) {
-  CSubscriberList *SL;
-
   // send the message to the module it is intended to, disregarding
   // subscriptions
   //(enables MM to send system message to modules)
-  SendMessage(M, dest_mod);
+  // A failed send is ignored here: the module is removed when its socket
+  // reports the failure, and the module being handled isn't dropped for it.
+  try {
+    SendMessage(M, dest_mod, dest_mod->ModuleID);
+  } catch (MyCException &) {
+    DEBUG_TEXT("Failed to send MM message, destination module socket is closed/dead");
+  }
 
   // CC all logger modules
-  SL = GetSubscriberList(M->msg_type);
-  if (SL != NULL) {
-    for (auto it = SL->begin(); it != SL->end(); ++it) {
-      MODULE_ID module_id = SL->GetModuleID(it);
-      auto mod_it = m_ConnectedModules.find(module_id);
-      if (mod_it == m_ConnectedModules.end()) {
-        DEBUG_TEXT("Skipping invalid subscriber module id " << module_id);
-        continue;
-      }
+  std::vector<MODULE_ID> subscribers;
+  GetSubscribers(M->msg_type, subscribers);
+  for (MODULE_ID module_id : subscribers) {
+    auto mod_it = m_ConnectedModules.find(module_id);
+    if (mod_it == m_ConnectedModules.end()) {
+      DEBUG_TEXT("Skipping invalid subscriber module id " << module_id);
+      continue;
+    }
 
-      CModuleRecord *mod = &mod_it->second;
-      if (mod->LoggerStatus)
-        if (mod->ModuleID !=
-            dest_mod->ModuleID) // don't send to destination module again
-          ForwardMessage(M, mod);
+    CModuleRecord *mod = &mod_it->second;
+    if (mod->LoggerStatus && mod->ModuleID != dest_mod->ModuleID) {
+      // don't send to destination module again
+      try {
+        ForwardMessage(M, mod);
+      } catch (MyCException &) {
+        DEBUG_TEXT("Failed to copy MM message to logger, socket is closed/dead");
+      }
     }
   }
 }
@@ -378,7 +463,8 @@ void CMessageManager::DispatchSignalToAll(MSG_TYPE sig) {
   DispatchMessageToAll(&R);
 }
 
-int CMessageManager::SendMessage(CMessage *M, CModuleRecord *mod)
+int CMessageManager::SendMessage(CMessage *M, CModuleRecord *mod,
+                                 MODULE_ID dest_mod_id)
 // overloaded function for RTMA_Module::SendMessage()
 // Sends a message to a module, specifying the MessageManager itself as the
 // source module
@@ -393,7 +479,7 @@ int CMessageManager::SendMessage(CMessage *M, CModuleRecord *mod)
   M->recv_time = 0.0;
   M->src_host_id = HID_LOCAL_HOST;
   M->src_mod_id = MID_MESSAGE_MANAGER;
-  M->dest_mod_id = mod->ModuleID;
+  M->dest_mod_id = dest_mod_id;
 
   double timeout = 0; // By default use non-blocking write so MM does not get
                       // stuck on a frozen module
@@ -429,88 +515,57 @@ int CMessageManager::SendSignal(MSG_TYPE sig, CModuleRecord *dest_mod)
 // success
 {
   m_OutMsg.Set(sig);
-  return SendMessage(&m_OutMsg, dest_mod);
+  return SendMessage(&m_OutMsg, dest_mod, dest_mod->ModuleID);
 }
 
-MODULE_ID
-CMessageManager::ConnectModule(MODULE_ID module_id, UPipe *pSourcePipe,
-                               short logger_status, short daemon_status) {
+CModuleRecord *CMessageManager::ConnectModule(UPipe *pSourcePipe,
+                                             MODULE_ID requested_id,
+                                             short logger_status, int32_t pid,
+                                             const char *name) {
+  // A refused module is dropped before it takes an ID, so it gets no ACK,
+  // HELLO or GOODBYE, as in pyrtma's manager.
+  if (m_ConnectedModules.size() >= MAX_MODULES)
+    DropSender(pSourcePipe,
+               "The limit of %d modules (MAX_MODULES) is reached. Closing "
+               "connection.",
+               MAX_MODULES);
 
-  if ((module_id <= MAX_MODULE_ID) && (module_id >= 0) &&
-      !ModuleIsConnected(module_id)) {
-    if (pSourcePipe != NULL) {
-      // get the next available module ID from "dynamic" pool
-      if (module_id == 0)
-        module_id = GetDynamicModuleId();
+  MODULE_ID module_id = requested_id;
+  if (module_id == 0) {
+    // get the next available module ID from "dynamic" pool
+    module_id = GetDynamicModuleId();
+    if (module_id <= 0)
+      DropSender(pSourcePipe, "All dynamic module IDs are in use.");
+  } else if (module_id < 1 || module_id >= DYN_MOD_ID_START) {
+    // DYN_MOD_ID_START is the first dynamic ID, so it can't be static.
+    DropSender(pSourcePipe,
+               "Invalid module ID %d. Static module IDs must be 1 to %d.",
+               module_id, DYN_MOD_ID_START - 1);
+  } else if (ModuleIsConnected(module_id)) {
+    DropSender(pSourcePipe, "Module ID %d is already in use. Closing connection.",
+               module_id);
+  }
 
-      if (module_id > 0) {
-        DEBUG_TEXT("Connecting module " << module_id << " on pipe "
-                                        << pSourcePipe);
+  DEBUG_TEXT("Connecting module " << module_id << " on pipe " << pSourcePipe);
 
-        auto insert_result = m_ConnectedModules.emplace(module_id, CModuleRecord{});
-        if (!insert_result.second) {
-          return 0;
-        }
+  auto insert_result = m_ConnectedModules.emplace(module_id, CModuleRecord{});
 
-        CModuleRecord *mod = &insert_result.first->second;
-        // Create a module record
-        mod->ModuleID = module_id;
-        mod->SetUPipe(pSourcePipe);
-        mod->LoggerStatus = logger_status;
-        mod->DaemonStatus = daemon_status;
+  CModuleRecord *mod = &insert_result.first->second;
+  mod->ModuleID = module_id;
+  mod->SetUPipe(pSourcePipe);
+  mod->LoggerStatus = logger_status;
+  mod->pid = pid;
+  if (name != NULL)
+    mod->SetName(name);
+  m_ModuleByPipe[pSourcePipe] = module_id;
 
-        SendAcknowledge(mod);
+  SendAcknowledge(mod);
 
-        // Notify that a client has connected
-        // Note: PID and Name will not be filled in
-        // Additional HELLO msgs will be sent with
-        // CLIENT_SET_NAME and MODULE_READY
-        SendHello(mod);
-      }
-    }
-  } else
-    module_id = 0; // something went wrong, don't allow the new connection
-
-  return module_id;
-}
-
-MODULE_ID
-CMessageManager::ConnectModuleV2(MODULE_ID module_id, UPipe *pSourcePipe,
-                                 MDF_CONNECT_V2 *data) {
-
-  if ((module_id <= MAX_MODULE_ID) && (module_id >= 0) &&
-      !ModuleIsConnected(module_id)) {
-    if (pSourcePipe != NULL) {
-      // get the next available module ID from "dynamic" pool
-      if (module_id == 0)
-        module_id = GetDynamicModuleId();
-
-      if (module_id > 0) {
-        DEBUG_TEXT("Connecting module " << module_id << " on pipe "
-                                        << pSourcePipe);
-
-        auto insert_result = m_ConnectedModules.emplace(module_id, CModuleRecord{});
-        if (!insert_result.second) {
-          return 0;
-        }
-
-        CModuleRecord *mod = &insert_result.first->second;
-        mod->ModuleID = module_id;
-        mod->SetUPipe(pSourcePipe);
-        mod->LoggerStatus = data->logger_status;
-        mod->pid = data->pid;
-        mod->SetName(&(data->name[0]));
-
-        SendAcknowledge(mod);
-
-        // Notify that a V2 client has connected
-        SendHello(mod);
-      }
-    }
-  } else
-    module_id = 0; // something went wrong, don't allow the new connection
-
-  return module_id;
+  // Notify that a client has connected. A module that connected with CONNECT
+  // has no name or PID yet; CLIENT_SET_NAME and MODULE_READY send further
+  // HELLOs with them.
+  SendHello(mod);
+  return mod;
 }
 
 CModuleRecord *CMessageManager::GetRecord(MODULE_ID module_id) {
@@ -526,16 +581,14 @@ void CMessageManager::DisconnectModule(MODULE_ID module_id) {
   if (mod == NULL)
     return;
 
-  // Send ACK
-  SendAcknowledge(mod);
-
   // Make sure not to send anything to disconnected client
-  RemoveSubscription(mod, ALL_MESSAGE_TYPES);
+  RemoveAllSubscriptions(mod);
 
   // Notify that the module has left
   SendGoodbye(mod);
 
   // Close module's pipe
+  m_ModuleByPipe.erase(mod->pModulePipe);
   UPipeAutoServer::_server->DisconnectClient(mod->pModulePipe);
 
   // Clean up module record
@@ -589,122 +642,147 @@ void CMessageManager::ShutdownAllModules(int shutdown_RTMA,
   }
 }
 
+void CMessageManager::DropSubscriber(CModuleRecord *mod,
+                                     MSG_TYPE message_type) {
+  auto it = m_Subscribers.find(message_type);
+  if (it != m_Subscribers.end()) {
+    it->second.erase(mod->ModuleID);
+    if (it->second.empty())
+      m_Subscribers.erase(it);
+  }
+  mod->subs.erase(message_type);
+}
+
+void CMessageManager::RemoveAllSubscriptions(CModuleRecord *mod) {
+  if (mod == NULL)
+    return;
+  std::vector<MSG_TYPE> types(mod->subs.begin(), mod->subs.end());
+  for (MSG_TYPE mt : types)
+    DropSubscriber(mod, mt);
+}
+
+void CMessageManager::GetSubscribers(MSG_TYPE message_type,
+                                     std::vector<MODULE_ID> &ids) const {
+  ids.clear();
+  auto it = m_Subscribers.find(message_type);
+  if (it != m_Subscribers.end())
+    ids.insert(ids.end(), it->second.begin(), it->second.end());
+  if (message_type != ALL_MESSAGE_TYPES) {
+    it = m_Subscribers.find(ALL_MESSAGE_TYPES);
+    if (it != m_Subscribers.end())
+      ids.insert(ids.end(), it->second.begin(), it->second.end());
+  }
+}
+
+// Subscriptions work as in pyrtma's manager: ALL_MESSAGE_TYPES is a
+// subscription like any other. Subscribing to it adds it beside a module's
+// other subscriptions, unsubscribing from it ends only it, and other types can
+// be subscribed and unsubscribed while it is in place. A module's subs hold
+// every type it subscribes to, ALL_MESSAGE_TYPES among them; the routing
+// table holds a module subscribed to ALL_MESSAGE_TYPES under that type alone,
+// so a message reaches it once, and its other types return to the table when
+// it unsubscribes from ALL_MESSAGE_TYPES.
 void CMessageManager::AddSubscription(CModuleRecord *mod,
                                       MSG_TYPE message_type) {
-  MSG_TYPE mt;
+  if (mod == NULL)
+    return;
 
-  if (mod != NULL) {
-    if (((message_type < 0) || (message_type >= MAX_MESSAGE_TYPES)) &&
-        (message_type != ALL_MESSAGE_TYPES)) {
-      // send MDF_FAIL_SUBSCRIBE instead of ACK so the module's subscribe
-      // function will fail
-      MDF_FAIL_SUBSCRIBE data{};
-      data.mod_id = mod->ModuleID;
-      data.msg_type = message_type;
-      CMessage R(MT_FAIL_SUBSCRIBE, (void *)&data, sizeof(data));
-      DispatchMessage(&R, mod);
-      return;
-    }
+  if (((message_type < 0) || (message_type >= MAX_MESSAGE_TYPES)) &&
+      (message_type != ALL_MESSAGE_TYPES)) {
+    // send MDF_FAIL_SUBSCRIBE instead of ACK so the module's subscribe
+    // function will fail
+    MDF_FAIL_SUBSCRIBE data{};
+    data.mod_id = mod->ModuleID;
+    data.msg_type = message_type;
+    CMessage R(MT_FAIL_SUBSCRIBE, (void *)&data, sizeof(data));
+    DispatchMessage(&R, mod);
+    return;
+  }
 
-    MODULE_ID module_id = mod->ModuleID;
-    switch (message_type) {
-    case ALL_MESSAGE_TYPES:
-      for (mt = 0; mt < MAX_MESSAGE_TYPES; mt++) {
-        CSubscriberList *list = GetSubscriberList(mt);
-        if (!list->IsSubscribed(module_id))
-          list->AddSubscriber(module_id);
-      }
-      break;
-    default:
-      CSubscriberList *list = GetSubscriberList(message_type);
-      if (!list->IsSubscribed(module_id))
-        list->AddSubscriber(module_id);
-    }
+  mod->subs.insert(message_type);
+  if (message_type == ALL_MESSAGE_TYPES) {
+    for (MSG_TYPE other : mod->subs)
+      if (other != ALL_MESSAGE_TYPES)
+        Unroute(mod, other);
+    m_Subscribers[ALL_MESSAGE_TYPES].insert(mod->ModuleID);
+  } else if (!mod->SubAll()) {
+    m_Subscribers[message_type].insert(mod->ModuleID);
   }
 }
 
 void CMessageManager::RemoveSubscription(CModuleRecord *mod,
                                          MSG_TYPE message_type) {
-  MSG_TYPE mt;
-
-  if (mod != NULL) {
-    MODULE_ID module_id = mod->ModuleID;
-    switch (message_type) {
-    case ALL_MESSAGE_TYPES:
-      for (mt = 0; mt < MAX_MESSAGE_TYPES; mt++) {
-        GetSubscriberList(mt)->RemoveSubscriber(module_id);
-      }
-      break;
-    default:
-      GetSubscriberList(message_type)->RemoveSubscriber(module_id);
-    }
-  }
-}
-
-void CMessageManager::PauseSubscription(CModuleRecord *mod,
-                                        MSG_TYPE message_type) {
-  MSG_TYPE mt;
-
   if (mod == NULL)
     return;
 
-  MODULE_ID module_id = mod->ModuleID;
-  switch (message_type) {
-  case ALL_MESSAGE_TYPES:
-    for (mt = 0; mt < MAX_MESSAGE_TYPES; mt++) {
-      GetSubscriberList(mt)->PauseSubscriber(module_id);
-    }
-    break;
-  default:
-    GetSubscriberList(message_type)->PauseSubscriber(module_id);
+  mod->subs.erase(message_type);
+  Unroute(mod, message_type);
+  if (message_type == ALL_MESSAGE_TYPES)
+    for (MSG_TYPE other : mod->subs)
+      m_Subscribers[other].insert(mod->ModuleID);
+}
+
+void CMessageManager::Unroute(CModuleRecord *mod, MSG_TYPE message_type) {
+  auto it = m_Subscribers.find(message_type);
+  if (it != m_Subscribers.end()) {
+    it->second.erase(mod->ModuleID);
+    if (it->second.empty())
+      m_Subscribers.erase(it);
   }
+}
+
+// As in pyrtma's manager, a paused subscription is removed, and resuming
+// subscribes again. Clients keep track of what they paused.
+void CMessageManager::PauseSubscription(CModuleRecord *mod,
+                                        MSG_TYPE message_type) {
+  RemoveSubscription(mod, message_type);
 }
 
 void CMessageManager::ResumeSubscription(CModuleRecord *mod,
                                          MSG_TYPE message_type) {
-  MSG_TYPE mt;
-
-  if (mod == NULL)
-    return;
-
-  MODULE_ID module_id = mod->ModuleID;
-  switch (message_type) {
-  case ALL_MESSAGE_TYPES:
-    for (mt = 0; mt < MAX_MESSAGE_TYPES; mt++) {
-      GetSubscriberList(mt)->ResumeSubscriber(module_id);
-    }
-    break;
-  default:
-    GetSubscriberList(message_type)->ResumeSubscriber(module_id);
-  }
+  AddSubscription(mod, message_type);
 }
 
 void CMessageManager::HandleConnect(CMessage *M, UPipe *pSourcePipe) {
+  // CONNECT asks for the module ID in its header.
   MDF_CONNECT data;
-  memset(&data, 0, sizeof(data));
   M->GetData((void *)&data);
-  int prev_priority_class = GetMyPriority();
-  // SetMyPriority(NORMAL_PRIORITY_CLASS);
-  MODULE_ID mod_id = ConnectModule(M->src_mod_id, pSourcePipe,
-                                   data.logger_status, 0);
-  // printf("Connect: %d\n", mod_id);
-  // if (mod_id > 0) {
-  //   SetMyPriority(prev_priority_class);
-  // }
+  ConnectModule(pSourcePipe, M->src_mod_id, data.logger_status, 0, NULL);
 }
 
 void CMessageManager::HandleConnectV2(CMessage *M, UPipe *pSourcePipe) {
-  MDF_CONNECT_V2 connect_v2;
-  if (M->num_data_bytes != sizeof(connect_v2))
-    return;
-  M->GetData((void *)&connect_v2);
-  int prev_priority_class = GetMyPriority();
-  // SetMyPriority(NORMAL_PRIORITY_CLASS);
-  MODULE_ID mod_id = ConnectModuleV2(M->src_mod_id, pSourcePipe, &connect_v2);
-  // printf("ConnectV2: %d\n", mod_id);
-  // if (mod_id > 0) {
-  //   SetMyPriority(prev_priority_class);
-  // }
+  // CONNECT_V2 asks for the module ID in its data, as in pyrtma.
+  MDF_CONNECT_V2 data;
+  M->GetData((void *)&data);
+  data.name[MAX_NAME_LEN - 1] = 0;
+  ConnectModule(pSourcePipe, data.mod_id, data.logger_status, data.pid,
+                data.name);
+}
+
+// Clients used to send both CONNECT and CONNECT_V2, in either order, for
+// managers that didn't support CONNECT_V2. The first one connects the module
+// and is acknowledged. A CONNECT_V2 after that updates the module's name and
+// process ID, and a HELLO announces them; no ACK is sent, because the client
+// waits for only one. The module ID and logger status can't change while the
+// module is connected, so a different request is logged and ignored. This is
+// what pyrtma's manager does.
+void CMessageManager::UpdateConnection(CMessage *M, CModuleRecord *mod) {
+  MDF_CONNECT_V2 data;
+  M->GetData((void *)&data);
+  data.name[MAX_NAME_LEN - 1] = 0;
+  if (data.mod_id != 0 && data.mod_id != mod->ModuleID)
+    fprintf(stderr,
+            "WARNING - module %d - Already connected; ignoring the requested "
+            "ID %d.\n",
+            mod->ModuleID, data.mod_id);
+  if ((data.logger_status != 0) != (mod->LoggerStatus != 0))
+    fprintf(stderr,
+            "WARNING - module %d - Already connected; ignoring the change of "
+            "logger status to %d.\n",
+            mod->ModuleID, data.logger_status);
+  mod->SetName(data.name);
+  mod->pid = data.pid;
+  SendHello(mod);
 }
 
 void CMessageManager::HandleForceDisconnect(CMessage *M) {
@@ -714,88 +792,13 @@ void CMessageManager::HandleForceDisconnect(CMessage *M) {
   ShutdownModule(mod_id);
 }
 
-void CMessageManager::HandleModuleDisconnect(CMessage *M) {
-  int prev_priority_class = GetMyPriority();
-  // SetMyPriority(NORMAL_PRIORITY_CLASS);
-  DisconnectModule(M->src_mod_id);
-  // SetMyPriority(prev_priority_class);
-}
-
-void CMessageManager::HandleModuleReady(CMessage *M) {
+void CMessageManager::HandleModuleReady(CMessage *M, CModuleRecord *mod) {
   MDF_MODULE_READY module_ready;
   M->GetData(&module_ready);
+  mod->pid = module_ready.pid;
 
-  CModuleRecord *mod = GetRecord(M->src_mod_id);
-  if (mod != NULL) {
-    mod->pid = module_ready.pid;
-
-    // Notify that the module has joined and ready
-    SendHello(mod);
-  }
-}
-
-void CMessageManager::HandleSubscribe(CMessage *M) {
-  MSG_TYPE msg_type_to_subscribe;
-  M->GetData(&msg_type_to_subscribe);
-
-  CModuleRecord *mod = GetRecord(M->src_mod_id);
-  if (mod != NULL) {
-    AddSubscription(mod, msg_type_to_subscribe);
-    DEBUG_TEXT_(" Added subscription to msg type "
-                << msg_type_to_subscribe << " for module " << M->src_mod_id
-                << "... ");
-    SendAcknowledge(mod);
-  }
-}
-
-void CMessageManager::HandleUnsubscribe(CMessage *M) {
-  MSG_TYPE msg_type_to_unsubscribe;
-  M->GetData(&msg_type_to_unsubscribe);
-  CModuleRecord *mod = GetRecord(M->src_mod_id);
-  if (mod != NULL) {
-    RemoveSubscription(mod, msg_type_to_unsubscribe);
-    SendAcknowledge(mod);
-  }
-}
-
-void CMessageManager::HandlePauseSubscription(CMessage *M) {
-  MSG_TYPE msg_type_to_pause;
-  M->GetData(&msg_type_to_pause);
-  CModuleRecord *mod = GetRecord(M->src_mod_id);
-  if (mod != NULL) {
-    PauseSubscription(mod, msg_type_to_pause);
-    SendAcknowledge(mod);
-  }
-}
-
-void CMessageManager::HandleResumeSubscription(CMessage *M) {
-
-  MSG_TYPE msg_type_to_resume;
-  M->GetData(&msg_type_to_resume);
-  CModuleRecord *mod = GetRecord(M->src_mod_id);
-  if (mod != NULL) {
-    ResumeSubscription(mod, msg_type_to_resume);
-    SendAcknowledge(mod);
-  }
-}
-
-CSubscriberList *CMessageManager::GetSubscriberList(MSG_TYPE message_type) {
-  if (message_type >= MAX_MESSAGE_TYPES || message_type < 0)
-    return &m_EmptySubscriberList;
-
-  auto it = m_SubscribersToMessageType.find(message_type);
-  if (it == m_SubscribersToMessageType.end())
-    return &m_EmptySubscriberList;
-
-  return &it->second;
-}
-
-bool CMessageManager::IsModuleSubscribed(MODULE_ID module_id,
-                                         MSG_TYPE message_type) {
-  if (message_type >= MAX_MESSAGE_TYPES || message_type < 0)
-    return false;
-
-  return GetSubscriberList(message_type)->IsSubscribed(module_id);
+  // Notify that the module has joined and ready
+  SendHello(mod);
 }
 
 void CMessageManager::SendAcknowledge(CModuleRecord *mod) {
@@ -806,9 +809,8 @@ void CMessageManager::SendAcknowledge(CModuleRecord *mod) {
   }
 }
 
-void CMessageManager::SendIntroductions(MODULE_ID mod_id) {
+void CMessageManager::SendIntroductions(CModuleRecord *dest_mod) {
   MDF_HELLO hello;
-  CModuleRecord *dest_mod = GetRecord(mod_id);
   if (dest_mod) {
     for (auto &entry : m_ConnectedModules) {
       CModuleRecord *mod = &entry.second;
@@ -816,7 +818,7 @@ void CMessageManager::SendIntroductions(MODULE_ID mod_id) {
         mod->SetHello(&hello);
         // printf("Hello: %d\n", hello.mod_id);
         m_OutMsg.Set(MT_HELLO, &hello, sizeof(hello));
-        SendMessage(&m_OutMsg, dest_mod);
+        SendMessage(&m_OutMsg, dest_mod, dest_mod->ModuleID);
       }
     }
   }

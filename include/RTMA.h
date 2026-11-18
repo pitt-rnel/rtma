@@ -41,6 +41,18 @@
   ":7111" // MessageManager accepts connections from any incoming interface by
           // default
 
+// Largest message payload, in bytes. Both message managers drop a client that
+// announces a larger one, and CMessage::Receive refuses one.
+#define RTMA_MAX_DATA_BYTES MAX_DATA_BYTES // 1 MiB, from core_types.h
+
+// Seconds ConnectToMMM() waits for the message manager's ACK, as pyrtma's
+// client does by default.
+#define RTMA_CONNECT_TIMEOUT 5.0
+
+// Seconds DisconnectFromMMM() waits, at most, for the message manager to
+// close its end of the connection, as pyrtma's client does.
+#define RTMA_DISCONNECT_WAIT 0.1
+
 /*#ifdef _UNIX_C
         #define THIS_MODULE_BASE_PRIORITY  0
         #define NORMAL_PRIORITY_CLASS      1
@@ -68,13 +80,13 @@ public:
   int num_data_bytes;
   int remaining_bytes;
   int is_dynamic;
-  int reserved;
+  uint32_t reserved; // The message definition's version (its HASH_ value), or 0
   char data[MAX_CONTIGUOUS_MESSAGE_DATA];
   char *large_data;
 
   CMessage();
   CMessage(MSG_TYPE mt);
-  CMessage(MSG_TYPE mt, void *pData, int num_bytes);
+  CMessage(MSG_TYPE mt, void *pData, int num_bytes, uint32_t version = 0);
   ~CMessage();
 
   void *GetDataPointer(void);
@@ -85,7 +97,12 @@ public:
 
   int AllocateData(int num_bytes);
 
-  int Set(MSG_TYPE mt, void *pData = NULL, int num_bytes = 0);
+  int Set(MSG_TYPE mt, void *pData = NULL, int num_bytes = 0,
+          uint32_t version = 0);
+  // version is the message definition's hash, the HASH_ define that pyrtma's
+  // compiler writes for each message, which pyrtma clients can check against
+  // their own definitions. 0 means no version; SendMessage() fills in the
+  // hash of a core message.
 
   int Receive(UPipe *input_pipe);
 
@@ -112,15 +129,20 @@ private:
   UPipeClient *_pipeClient;
   UPipe *_MMpipe;
   MODULE_ID m_ModuleID;
+  bool m_DynamicID; // asks for a dynamic ID each time it connects
   HOST_ID m_HostID;
   double m_StartTime;
   int m_Pid;
+  std::string m_ModuleName;
   std::unique_ptr<RTMA_Logger> m_Logger;
 
 #if (RTMA_PROFILE == TRUE)
   int m_NumProfiledMsgs;
   RTMA_MSG_HEADER m_ProfileData[MAX_PROFILED_MSGS];
 #endif
+
+  void CloseConnection(void);
+  // Closes the connection without sending DISCONNECT, as when it is lost.
 
   int NBReadMessage(CMessage *M);
   // Non block read: returns -1 if there was no message in the pipe, or the
@@ -136,6 +158,13 @@ protected:
       double timeout = -1,
       CMessage *rcvMsg =
           NULL); // Waits for MT_ACKNOWLEDGE for up to timeout seconds
+  // Only an ACK for this module counts: with a static ID, one addressed to
+  // that ID or to 0. A logger is sent copies of other modules' ACKs, which are
+  // skipped. A module asking for a dynamic ID can't tell its own ACK by
+  // address, and takes the first; the manager sends it first on a new
+  // connection. Other messages are discarded.
+
+  bool IsOwnAck(const CMessage &M) const;
 
   int SendMessage(CMessage *M, UPipe *pOutputPipe, MODULE_ID dest_mod_id = 0,
                   HOST_ID dest_host_id = 0);
@@ -155,7 +184,9 @@ public:
 
   RTMA_Module();
 
-  RTMA_Module(MODULE_ID ModuleID, HOST_ID HostID);
+  RTMA_Module(MODULE_ID ModuleID, HOST_ID HostID, const std::string &name = "");
+  // name is the module's name, which the message manager announces in HELLO
+  // and GOODBYE messages; see SetModuleName().
 
   ~RTMA_Module();
 
@@ -164,8 +195,19 @@ public:
 
   void InitVariables(MODULE_ID ModuleID, HOST_ID HostID);
 
+  void SetModuleName(const std::string &name);
+  // Sets the module's name, at most MAX_NAME_LEN - 1 characters; a longer one
+  // is cut. It is sent in CONNECT_V2 when connecting, and with
+  // CLIENT_SET_NAME if the module is already connected. The logger takes it as
+  // its default name.
+
+  const std::string &GetModuleName() const { return m_ModuleName; }
+
   int ConnectToMMM(int logger_status = 0, int read_dd_file = 0,
                    int daemon_status = 0);
+  // Connects with CONNECT_V2, which carries the module's name and process ID.
+  // daemon_status is unused: CONNECT_V2 has no such field, and no message
+  // manager acts on it.
   // Opens a read and a write connection to the Message Management Module on
   // localhost:7111
 
@@ -231,7 +273,8 @@ public:
   // timeout seconds or till message available. If timeout is 0, then does not
   // block, reads message only if immediately available. Returns 1 if message
   // was read, 0 if no message available, and throws MyCException if there was
-  // an error.
+  // an error. A lost connection, or a message that can't be read, closes the
+  // connection before throwing, so IsConnected() returns 0 afterwards.
 
   int WaitForSignal(MSG_TYPE SigType, int blocking = 1);
   // Waits for SigType message: if blocking- will not return until the requested

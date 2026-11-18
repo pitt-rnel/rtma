@@ -2,6 +2,7 @@
 
 #include "MyCException.h"
 
+#include "CoreMessages.h"
 #include "Debug.h"
 
 #include <MyCString.h>
@@ -52,13 +53,13 @@ CMessage::CMessage(MSG_TYPE mt) {
   CATCH_and_THROW("CMessage::CMessage( MSG_TYPE mt)");
 }
 
-CMessage::CMessage(MSG_TYPE mt, void *pData, int num_bytes) {
+CMessage::CMessage(MSG_TYPE mt, void *pData, int num_bytes, uint32_t version) {
   TRY {
     large_data = NULL;
-    Set(mt, pData, num_bytes);
+    Set(mt, pData, num_bytes, version);
   }
-  CATCH_and_THROW(
-      "CMessage::CMessage( MSG_TYPE mt, void *pData, int num_bytes)");
+  CATCH_and_THROW("CMessage::CMessage( MSG_TYPE mt, void *pData, int "
+                  "num_bytes, uint32_t version)");
 }
 
 CMessage::~CMessage() {
@@ -140,7 +141,7 @@ int CMessage::AllocateData(int num_bytes) {
   CATCH_and_THROW("CMessage::AllocateData( int num_bytes)");
 }
 
-int CMessage::Set(MSG_TYPE mt, void *pData, int num_bytes) {
+int CMessage::Set(MSG_TYPE mt, void *pData, int num_bytes, uint32_t version) {
   TRY {
     msg_type = mt;
 
@@ -155,11 +156,12 @@ int CMessage::Set(MSG_TYPE mt, void *pData, int num_bytes) {
     num_data_bytes = 0;
     remaining_bytes = -1;
     is_dynamic = 0;
-    reserved = 0;
+    reserved = version;
 
     return SetData(pData, num_bytes);
   }
-  CATCH_and_THROW("CMessage::Set( MSG_TYPE mt, void *pData, int num_bytes)");
+  CATCH_and_THROW(
+      "CMessage::Set( MSG_TYPE mt, void *pData, int num_bytes, uint32_t version)");
 }
 
 #ifdef USE_DYNAMIC_DATA
@@ -217,7 +219,8 @@ int CMessage::Receive(UPipe *input_pipe, double timeout)
     if (nbytes_read < nbytes_to_read)
       return -2;
     total_bytes_read = nbytes_read;
-    if (num_data_bytes < 0)
+    // The payload isn't read, so the stream can't be read any further.
+    if (num_data_bytes < 0 || num_data_bytes > RTMA_MAX_DATA_BYTES)
       return -3;
     if (num_data_bytes > 0) {
       void *pData = (void *)&data[0];
@@ -308,6 +311,7 @@ CMessage::GetHeader(void) const {
     header.src_host_id = src_host_id;
     header.src_mod_id = src_mod_id;
     header.is_dynamic = is_dynamic;
+    header.reserved = reserved;
 
     return header;
   }
@@ -323,10 +327,30 @@ RTMA_Module::RTMA_Module() {
   CATCH_and_THROW("RTMA_Module::RTMA_Module( )");
 }
 
-RTMA_Module::RTMA_Module(MODULE_ID ModuleID, HOST_ID HostID) {
-  TRY { InitVariables(ModuleID, HostID); }
-  CATCH_and_THROW(
-      "RTMA_Module::RTMA_Module( MODULE_ID ModuleID, HOST_ID HostID)");
+RTMA_Module::RTMA_Module(MODULE_ID ModuleID, HOST_ID HostID,
+                         const std::string &name) {
+  TRY {
+    InitVariables(ModuleID, HostID);
+    if (!name.empty())
+      SetModuleName(name);
+  }
+  CATCH_and_THROW("RTMA_Module::RTMA_Module( MODULE_ID ModuleID, HOST_ID "
+                  "HostID, const std::string &name)");
+}
+
+void RTMA_Module::SetModuleName(const std::string &name) {
+  TRY {
+    m_ModuleName = name.substr(0, MAX_NAME_LEN - 1);
+    if (!m_ModuleName.empty())
+      m_Logger->SetDefaultLogName(m_ModuleName);
+    if (m_Connected) {
+      MDF_CLIENT_SET_NAME data{};
+      strncpy(data.name, m_ModuleName.c_str(), sizeof(data.name) - 1);
+      CMessage M(MT_CLIENT_SET_NAME, &data, sizeof(data));
+      SendMessage(&M);
+    }
+  }
+  CATCH_and_THROW("RTMA_Module::SetModuleName( const std::string &name)");
 }
 
 void RTMA_Module::InitVariables(MODULE_ID ModuleID, HOST_ID HostID) {
@@ -334,6 +358,7 @@ void RTMA_Module::InitVariables(MODULE_ID ModuleID, HOST_ID HostID) {
     _pipeClient = NULL;
     _MMpipe = NULL;
     m_ModuleID = ModuleID;
+    m_DynamicID = (ModuleID == 0);
     m_HostID = HostID;
     m_MessageCount = 0;
     m_SelfMessageCount = 0;
@@ -408,41 +433,43 @@ int RTMA_Module::ConnectToMMM(char *server_name, int logger_status,
     _pipeClient = UPipeFactory::CreateClient(server_name);
     _MMpipe = _pipeClient->Connect();
 
-    MDF_CONNECT data{};
+    (void)daemon_status; // CONNECT_V2 has no daemon status
 
-    if (logger_status) {
-      data.logger_status = 1;
-    } else {
-      data.logger_status = 0;
-    }
+    // A module that was given a dynamic ID asks for one again: the ID it had
+    // is in the dynamic range, which the managers refuse as a static ID.
+    if (m_DynamicID)
+      m_ModuleID = 0;
 
-    if (daemon_status) {
-      data.daemon_status = 1;
-    } else {
-      data.daemon_status = 0;
-    }
+    // CONNECT_V2 carries the module's name and process ID, so the manager's
+    // first HELLO for it has them. Both message managers support it.
+    MDF_CONNECT_V2 data{};
+    data.logger_status = logger_status ? 1 : 0;
+    data.mod_id = m_ModuleID;
+    data.pid = m_Pid;
+    strncpy(data.name, m_ModuleName.c_str(), sizeof(data.name) - 1);
 
     m_MessageCount = 1;
     m_SelfMessageCount = 1;
-    CMessage M(MT_CONNECT, (void *)&data, sizeof(MDF_CONNECT));
+    CMessage M(MT_CONNECT_V2, (void *)&data, sizeof(data));
 
     try {
       SendMessage(&M);
 
       std::unique_ptr<CMessage> ack_msg(
           new CMessage()); // Use smart pointer for acknowledgment message
-      status =
-          WaitForAcknowledgement(1, ack_msg.get()); // Wait for up to 3 seconds
+      status = WaitForAcknowledgement(RTMA_CONNECT_TIMEOUT, ack_msg.get());
       if (status == 0) {
         throw MyCException(
-            "Did not receive ACK from MessageManager upon CONNECT");
+            "Did not receive ACK from MessageManager upon CONNECT_V2");
       }
 
       // save own module ID from ACK if asked to be assigned dynamic ID
       if (m_ModuleID == 0)
         m_ModuleID = ack_msg->dest_mod_id;
 
-      m_Logger->SetDefaultLogName("Module " + std::to_string(m_ModuleID));
+      m_Logger->SetDefaultLogName(m_ModuleName.empty()
+                                      ? "Module " + std::to_string(m_ModuleID)
+                                      : m_ModuleName);
 
       m_Connected = 1;
 
@@ -500,11 +527,32 @@ int RTMA_Module::DisconnectFromMMM(void) {
         // Try to disconnect cleanly at RTMA level
         SendSignal(MT_DISCONNECT); // this could go to a dead pipe- but it won't
                                    // be blocking
+
+        // Wait briefly for the manager to close its end, as pyrtma's client
+        // does, usually about a millisecond. Until it has, the manager still
+        // has this module's ID, and refuses a module connecting with it, such
+        // as this one connecting again. Messages still arriving are
+        // discarded.
+        double deadline = GetAbsTime() + RTMA_DISCONNECT_WAIT;
+        CMessage M;
+        for (;;) {
+          double remaining = deadline - GetAbsTime();
+          if (remaining <= 0 || M.Receive(_MMpipe, remaining) <= 0)
+            break;
+        }
       } catch (...) {
-        // If clean disconnect fails then we must be already disconnected
+        // The manager closed the connection, or it had failed already
       }
     }
 
+    CloseConnection();
+    return 1;
+  }
+  CATCH_and_THROW("RTMA_Module::DisconnectFromMMM( void)");
+}
+
+void RTMA_Module::CloseConnection(void) {
+  TRY {
     if (_pipeClient != NULL) {
       try {
         // Try to disconnect cleanly at Pipe level
@@ -525,9 +573,8 @@ int RTMA_Module::DisconnectFromMMM(void) {
     m_Connected = 0;
     _pipeClient = NULL;
     _MMpipe = NULL;
-    return 1;
   }
-  CATCH_and_THROW("RTMA_Module::DisconnectFromMMM( void)");
+  CATCH_and_THROW("RTMA_Module::CloseConnection( void)");
 }
 
 int RTMA_Module::IsConnected(void) {
@@ -617,6 +664,11 @@ int RTMA_Module::ResumeSubscription(MSG_TYPE MessageType)
   CATCH_and_THROW("RTMA_Module::ResumeSubscription( MSG_TYPE MessageType)");
 }
 
+bool RTMA_Module::IsOwnAck(const CMessage &M) const {
+  return M.msg_type == MT_ACKNOWLEDGE &&
+         (m_ModuleID == 0 || M.dest_mod_id == 0 || M.dest_mod_id == m_ModuleID);
+}
+
 int RTMA_Module::WaitForAcknowledgement(double timeout, CMessage *rcvMsg) {
   TRY {
     int ret = 0;
@@ -626,7 +678,7 @@ int RTMA_Module::WaitForAcknowledgement(double timeout, CMessage *rcvMsg) {
     if (timeout == -1) { // Wait forever
       do {
         ReadMessage(&M);
-      } while (M.msg_type != MT_ACKNOWLEDGE);
+      } while (!IsOwnAck(M));
 
       DEBUG_TEXT("Got ACK!");
       ret = 1; // return 1;
@@ -639,7 +691,7 @@ int RTMA_Module::WaitForAcknowledgement(double timeout, CMessage *rcvMsg) {
           break;
         if (status < 0)
           throw MyCException("Error while waiting for MT_ACKNOWLEDGE");
-        if (M.msg_type == MT_ACKNOWLEDGE) {
+        if (IsOwnAck(M)) {
           DEBUG_TEXT("Got ACK!");
           ret = 1; // return 1;
           break;
@@ -681,11 +733,23 @@ int RTMA_Module::SendMessage(CMessage *M, UPipe *output_pipe,
       throw E;
     }
 
-    if (dest_host_id < 0 || dest_host_id > MAX_HOSTS) {
+    // ALL_HOSTS is valid too, as in pyrtma.
+    if (dest_host_id != HID_ALL_HOSTS &&
+        (dest_host_id < 0 || dest_host_id > MAX_HOSTS)) {
       MyCString err("RTMA_Module::SendMessage: Got invalid dest_host_id [");
       err += MyCString(dest_host_id) + "]";
       MyCException E(err);
       throw E;
+    }
+
+    // The message managers drop a module that sends more.
+    if (M->num_data_bytes < 0 || M->num_data_bytes > RTMA_MAX_DATA_BYTES) {
+      char err[200];
+      snprintf(err, sizeof(err),
+               "RTMA_Module::SendMessage: a message of %d data bytes is "
+               "larger than RTMA_MAX_DATA_BYTES (%d)",
+               M->num_data_bytes, RTMA_MAX_DATA_BYTES);
+      throw MyCException(err);
     }
 
     // Assume that msg_type, num_data_bytes, data - have been filled in
@@ -696,6 +760,10 @@ int RTMA_Module::SendMessage(CMessage *M, UPipe *output_pipe,
     M->src_mod_id = m_ModuleID;
     M->dest_host_id = dest_host_id;
     M->dest_mod_id = dest_mod_id;
+    // Core messages carry their definition's hash, as pyrtma's client sends
+    // them. Other messages keep the version they were given, if any.
+    if (M->reserved == 0)
+      M->reserved = CoreMessageHash(M->msg_type);
 
     int status = M->Send(output_pipe);
 
@@ -780,9 +848,33 @@ int RTMA_Module::ReadMessage(CMessage *M, double timeout) {
   TRY {
     int status;
 
-    status = M->Receive(_MMpipe, timeout);
-    if (status < 0)
-      throw MyCException("Failed to read message");
+    // A connection that fails, or a message that can't be read, which leaves
+    // the rest of the stream unreadable, is treated as a lost connection, as
+    // in pyrtma's client: the connection is closed, and the error raised.
+    try {
+      status = M->Receive(_MMpipe, timeout);
+    } catch (UPipeSignalException &) {
+      throw; // interrupted by a signal; the read can be retried
+    } catch (UPipeException &) {
+      CloseConnection();
+      throw;
+    }
+    if (status < 0) {
+      char err[256];
+      if (status == -3)
+        snprintf(err, sizeof(err),
+                 "Failed to read message: MT=%d announced %d data bytes; it "
+                 "must be 0 to RTMA_MAX_DATA_BYTES (%d). Disconnected.",
+                 M->msg_type, M->num_data_bytes, RTMA_MAX_DATA_BYTES);
+      else if (status == -4)
+        snprintf(err, sizeof(err), "Failed to read message: not connected");
+      else
+        snprintf(err, sizeof(err),
+                 "Failed to read message (status %d). Disconnected.", status);
+      M->Set(-1); // leave no half-read message behind
+      CloseConnection();
+      throw MyCException(err);
+    }
 
     M->recv_time = GetAbsTime();
 

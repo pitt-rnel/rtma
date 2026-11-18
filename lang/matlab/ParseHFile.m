@@ -382,7 +382,10 @@ function h = ParseDefineText( text, h)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function value = ConvertToNumber( str)
 
-    if( regexp( str, '^0x[0-9A-Fa-f]+$')) %If hexadecimal
+    quoted = regexp( strtrim( str), '^"(?<text>[^"]*)"$', 'names', 'once');
+    if( ~isempty( quoted)) % A string literal: its text, as pyrtma's compiler gives it
+        value = string( quoted.text);
+    elseif( regexp( str, '^0x[0-9A-Fa-f]+$')) %If hexadecimal
         value = sscanf( str, '%x');
     else
         value = str2double( str); % If a decimal number

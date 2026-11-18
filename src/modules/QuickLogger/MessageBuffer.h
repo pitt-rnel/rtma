@@ -124,6 +124,15 @@ public:
       throw MyCException((MyCString) "CMessageBuffer::SaveDatafile: Unable to "
                                      "open data file '" +
                          filename + "'");
+    // Closes the file however this returns, so a failed write doesn't leak
+    // it.
+    struct Closer {
+      FILE *f;
+      ~Closer() {
+        if (f != NULL)
+          fclose(f);
+      }
+    } closer{f};
     unsigned int num_items_written;
     // Write a file header, containing, number of messages and number of data
     // bytes etc.
@@ -158,7 +167,10 @@ public:
     if (num_items_written != TotalDataBytes)
       throw MyCException(
           "CMessageBuffer::SaveDatafile: Could not write data blocks to file");
-    fclose(f);
+    closer.f = NULL;
+    if (fclose(f) != 0)
+      throw MyCException(
+          "CMessageBuffer::SaveDatafile: Could not finish writing the file");
   }
   void LoadDatafile(char *filename) {
     FILE *f = fopen(filename, "rb");

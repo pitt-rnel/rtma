@@ -5,13 +5,19 @@ Please report any issues by reporting on github or bugging your preferred RNEL e
 
 RTMA is a simple messaging system that helps programmers create modular distributed 
 applications rapidly. It hides the complexities of socket programming and data translation, also provides a uniform 
-high-level API in each of the supported programming languages (C++, C#, Python, Matlab) 
-and operating systems (Windows, Linux). Therefore, programmers are able to write each part of 
+high-level API in each of the supported programming languages (C++, MATLAB, Python, JavaScript) 
+and operating systems (Windows, Linux, macOS). Therefore, programmers are able to write each part of 
 their application in their programming language of choice and on their operating system of choice 
 without having to worry about how the modules will communicate with each other.
 
 RTMA consists of several components: a central message exchange daemon (MessageManager), 
-a data logger daemon (Logger), and utilities to create message definitions in all supported programming languages.
+a data logger daemon (QuickLogger), and utilities to create message definitions in all supported programming languages.
+
+This repository holds the C++ MessageManager, the C++ client library, QuickLogger and the MATLAB bindings.
+The Python client, a Python message manager, a data logger, the message definition compiler and a
+web manager for JavaScript clients are in [pyrtma](https://github.com/pitt-rnel/pyrtma), and the
+JavaScript client is [rtma-js](https://github.com/pitt-rnel/rtma-js). rtma 4 is released together
+with pyrtma 4; see [Compatibility](#compatibility) and [CHANGELOG.md](CHANGELOG.md).
 
 RTMA uses a client-server architecture where MessageManager is the central server and software 
 modules that would like to talk to each other are the clients. MessageManager keeps a listening socket for modules 
@@ -40,6 +46,8 @@ RTMA supports MSVC on Windows and GCC or Clang on Linux and macOS. If you'd like
 have support for other languages, see below for their separate requirements:
 
 #### Python
+The Python bindings in `lang/python` are obsolete: use [pyrtma](https://github.com/pitt-rnel/pyrtma) instead.
+These instructions are kept for existing users of the bindings.
 - Version >= 2.6 (python3.7 preferred)
 - Install swig >= 2.0.3 (make sure swig executable is on Path. Latest SWIG 4.1 works.) (http://www.swig.org/download.html)
 - Install Clang and ctypeslib2 python packages (ctypeslib2 v2.2.2 known to work)
@@ -53,10 +61,14 @@ have support for other languages, see below for their separate requirements:
 
 #### C&#35;
 - Windows only, Visual Studio 2005 or later. Latest VS2022 preferred.
+- The .NET bindings are not maintained, and haven't been tested with this release.
 
 #### Matlab 
-- Version >= 2007b
-- Configure Matlab to recognize the Visual Studio C++ compiler
+- Version R2017b or newer
+- Configure Matlab to recognize the Visual Studio C++ compiler (`mex -setup C++`)
+
+#### Tests
+- Python 3.10 or newer with pyrtma 4 and pytest 8.4 or newer, for example in a conda environment
 
 
 ## Installation
@@ -65,7 +77,7 @@ have support for other languages, see below for their separate requirements:
 
 Clone the repository and compile the source as follows:
 
-1. In a terminal execute the following from the repository root:
+1. In a terminal execute the following from the repository root, or run `./make.sh`, which does the same:
 ```shell
 cmake -S . -B build/cmake -DCMAKE_BUILD_TYPE=Release
 cmake --build build/cmake --parallel
@@ -77,26 +89,36 @@ cmake --install build/cmake --prefix /desired/install/prefix
 
 2. Create `RTMA` environment variable and set it to where your RTMA folder is (optional but can be used when building C++ modules)
 
-5. If you plan to use the matlab interface, start matlab and execute the following:
+3. If you plan to use the matlab interface, build the repository first (step 1): the mex compiles the
+   client library's logger with the fmt library, which CMake downloads into `build/cmake/_deps`. Set
+   `RTMA_FMT_INCLUDE` to the include folder of another copy of fmt to use that instead. Then start
+   matlab and execute the following:
 ```matlab
 cd RTMA/lang/matlab
 make
 cd RTMA/src/modules/QuickLogger/LogReader
 make
 ```
+   The LogReader's `make` needs the `RTMA` environment variable (step 2).
 
-6. If you plan to use the python interface, append `RTMA/lang/python` to `PYTHONPATH` environment variable
+4. If you plan to use the obsolete python interface, append `RTMA/lang/python` to `PYTHONPATH` environment variable
         
 
 #### Windows
 
 If you'd like to compile from source, clone the repository and follow these instructions:
 
-1. Generate and build a Visual Studio solution from the repository root:
+1. Generate and build a Visual Studio solution from the repository root, or run `build_msvc_2026.bat`,
+   which does the same:
 ```shell
 cmake -S . -B build/cmake -G "Visual Studio 18 2026" -A x64
 cmake --build build/cmake --config Release
 ```
+   The library is built into `lib` and the modules into `bin`, where the repository also tracks
+   prebuilt Windows binaries. A `git checkout`, `reset` or `stash` that restores a tracked
+   `lib/RTMA.lib` can leave it newer than the sources, so that the build doesn't rebuild it and links
+   the modules against the old library. If that happens, rebuild everything with
+   `cmake --build build/cmake --config Release --clean-first`.
 To install in a desired prefix directory, run:
 ```shell
 cmake --install build/cmake --config Release --prefix C:\desired\install\prefix
@@ -104,14 +126,15 @@ cmake --install build/cmake --config Release --prefix C:\desired\install\prefix
 
 2. Create `RTMA` environment variable and set it to where your RTMA folder is (optional, but can be used to build C++ modules)
 
-3. If you plan to use the python 2/3 interfaces, 
+3. If you plan to use the obsolete python 2/3 interfaces, 
     * Set `PYTHON2_BASE` and `PYTHON3_BASE` environment variables to respective python 2 and 3 install locations (e.g. C:\Python\Anaconda3 and C:\Python\Anaconda3\envs\py27)
     * Set `PYTHON2_LIB` and `PYTHON3_LIB` environment variables (ex: %PYTHON3_BASE%\libs)
     * Set `PYTHON2_INCLUDE` and `PYTHON3_INCLUDE` environment variables (ex: %PYTHON3_BASE%\include)
     * Build `RTMA\lang\python\PyRTMA.sln` with Visual Studio (tested with VS 2019)
     * Add `%RTMA%\lang\python` to `PYTHONPATH` environment variable
 	
-4. If you plan to use the Matlab interface, start matlab and execute the following:
+4. If you plan to use the Matlab interface, build the repository first (step 1), then start matlab and
+   execute the following (see the Linux/Mac instructions about fmt and the `RTMA` variable):
 ```matlab
 cd RTMA\lang\matlab
 make
@@ -119,6 +142,50 @@ cd RTMA\src\modules\QuickLogger\LogReader
 make
 ```
     Note that 64-bit Windows mex files are tracked in the repo and this step is usually unecessary when running 64-bit Windows
+
+
+## Running
+
+Start the message manager, then the modules. The C++ MessageManager and QuickLogger take the server
+address as their first argument, `host:port`, or `:port` for every interface:
+```shell
+bin/MessageManager                  # listens on :7111, every interface
+bin/MessageManager 127.0.0.1:7112   # only on localhost, port 7112
+bin/QuickLogger                     # connects to localhost:7111
+bin/QuickLogger 192.168.1.10:7111
+```
+`QuickLogger --help` shows its usage.
+
+
+## Testing
+
+The tests run the same scenarios against pyrtma's message manager and the C++ one, with clients in
+each language. With pyrtma and pytest installed in the active Python environment, build the repository,
+then run every test, CTest and pytest:
+```shell
+./run_tests.sh             # Linux or macOS
+run_tests.bat              # Windows
+run_tests.bat --matlab     # also the MATLAB tests, slower to start
+```
+Arguments go to pytest. See [tests/interop/README.md](tests/interop/README.md).
+
+
+## Compatibility
+
+Clients in every language work with either message manager of this release:
+
+| Client | pyrtma manager 4 | C++ MessageManager 4 |
+|---|---|---|
+| pyrtma client 4, and its data logger | Yes | Yes |
+| C++ client library 4, and QuickLogger | Yes | Yes |
+| MATLAB, with the mex built from this release | Yes | Yes |
+| rtma-js, through pyrtma's web manager | Yes | Yes |
+
+The interop tests check each of these but rtma-js. Modules built against the last stable release
+(`master`) have to be rebuilt: both managers drop a client that sends a core message (type below 100)
+this release doesn't define, such as the DEBUG_TEXT the last release's QuickLogger sends, several core
+message types and module IDs now have new meanings, and dynamic module IDs start at 10000. See
+[CHANGELOG.md](CHANGELOG.md).
 
 
 ## Directory Organization
@@ -136,6 +203,8 @@ make
     library files for the C++ API
 - `src`      
     source code for C++ API and executable modules
+- `tests`      
+    tests of the C++ API, the message definitions and interoperability with pyrtma
 
 
 ## API Summary
@@ -154,6 +223,19 @@ in each example folder for further information.
 
 
 ## Creating Message Definitions
+Message definitions are written in YAML and compiled by pyrtma's compiler into definitions for C/C++,
+MATLAB, Python and JavaScript:
+```shell
+python -m pyrtma.compile -i my_messages.defs --c --matlab --python --javascript -o out -n my_messages
+```
+See pyrtma's documentation for the YAML format. The compiled C header includes a `HASH_` define for
+each message, which a C++ module can pass to `CMessage::Set()` as the message's version, and the MATLAB
+definitions function can be passed to `ConnectToMMM` directly. The core definitions, in `RTMA_types.h`,
+mirror pyrtma's core YAML files.
+
+The rest of this section describes the older way, still supported: C header files, which
+`lang/matlab/TranslateRTMAConfigFiles2Matlab.m` translates into a MAT file for MATLAB.
+
 RTMA uses standard C header files to describe message definitions.
 
 Each message consists of a message type and an optional message body. 

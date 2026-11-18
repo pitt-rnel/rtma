@@ -2,7 +2,6 @@
 #define _MESSAGEMANAGER_H_
 
 #include "RTMA.h"
-#include "bit_operations.h"
 #include <MyCString.h>
 #include <OS_defines.h>
 #include <RTMA_types.h>
@@ -12,6 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 #ifdef _WINDOWS_C
 #include <Windows.h>
@@ -33,6 +34,10 @@ public:
   int32_t pid;
   char *addr;
   char *name;
+  // Message types this module subscribes to, ALL_MESSAGE_TYPES among them. The
+  // routing table holds a module subscribed to ALL_MESSAGE_TYPES under that
+  // type alone.
+  std::unordered_set<MSG_TYPE> subs;
 
   CModuleRecord() {
     name = NULL;
@@ -142,64 +147,17 @@ public:
     port = 0;
 
     pid = 0;
+    subs.clear();
   }
+
+  bool SubAll() const { return subs.count(ALL_MESSAGE_TYPES) != 0; }
 
   ~CModuleRecord() { Reset(); }
 };
 
-constexpr auto SUBSCRIBER_FLAG_PAUSE = 0x01;
-
-class CSubscriberList {
-public:
-  struct Subscriber {
-    int flags;
-  };
-
-private:
-  std::unordered_map<MODULE_ID, Subscriber> m_Subscribers;
-
-public:
-  CSubscriberList() {}
-
-  void AddSubscriber(MODULE_ID module_id) {
-    m_Subscribers.emplace(module_id, Subscriber{});
-  }
-
-  void RemoveSubscriber(MODULE_ID module_id) {
-    m_Subscribers.erase(module_id);
-  }
-
-  void PauseSubscriber(MODULE_ID module_id) {
-    auto item = m_Subscribers.find(module_id);
-    if (item != m_Subscribers.end()) {
-      set_flag_bits(item->second.flags, SUBSCRIBER_FLAG_PAUSE);
-    }
-  }
-
-  void ResumeSubscriber(MODULE_ID module_id) {
-    auto item = m_Subscribers.find(module_id);
-    if (item != m_Subscribers.end()) {
-      clear_flag_bits(item->second.flags, SUBSCRIBER_FLAG_PAUSE);
-    }
-  }
-
-  using const_iterator = std::unordered_map<MODULE_ID, Subscriber>::const_iterator;
-
-  // Iterator access for range-based iteration
-  const_iterator begin() const { return m_Subscribers.begin(); }
-  const_iterator end() const { return m_Subscribers.end(); }
-
-  // Helper methods to access iterator data
-  MODULE_ID GetModuleID(const_iterator it) const { return it->first; }
-
-  bool IsPaused(const_iterator it) const {
-    return check_flag_bits(it->second.flags, SUBSCRIBER_FLAG_PAUSE);
-  }
-
-  bool IsSubscribed(MODULE_ID module_id) const {
-    return m_Subscribers.find(module_id) != m_Subscribers.end();
-  }
-};
+// Module IDs subscribed to one message type. The key ALL_MESSAGE_TYPES holds
+// the modules subscribed to every type, which no other key holds.
+typedef std::unordered_set<MODULE_ID> CSubscriberSet;
 
 class CMessageManager : public UPipeAutoServer {
 public:
@@ -211,8 +169,10 @@ public:
 private:
   MODULE_ID m_NextDynamicModId;
   std::unordered_map<MODULE_ID, CModuleRecord> m_ConnectedModules;
-  std::unordered_map<MSG_TYPE, CSubscriberList> m_SubscribersToMessageType;
-  CSubscriberList m_EmptySubscriberList;
+  // The connected module on each pipe. A pipe that hasn't connected has none.
+  std::unordered_map<UPipe *, MODULE_ID> m_ModuleByPipe;
+  // Only types with subscribers have an entry.
+  std::unordered_map<MSG_TYPE, CSubscriberSet> m_Subscribers;
   CMessage m_OutMsg;
   MyCString m_Version;
 
@@ -224,9 +184,15 @@ private:
       if (!ModuleIsConnected(curr_id))
         return curr_id;
     }
-    printf("All dynamic IDs are in use.\n");
-    return 0;
+    return 0; // all dynamic IDs are in use
   }
+
+  [[noreturn]] void DropSender(UPipe *pSourcePipe, const char *format, ...);
+  // Logs why the module on pSourcePipe is dropped, and throws
+  // UPipeClosedException, so that UPipeAutoServer::Run() disconnects it and
+  // HandleDisconnect() sends its GOODBYE. Only for the pipe being handled.
+
+  CModuleRecord *GetRecordByPipe(UPipe *pipe);
 
   void HandleData(UPipe *pClientPipe);
   // Override of abstract base class method. Gets called whenever data is ready
@@ -260,13 +226,11 @@ private:
   void DispatchSignalToAll(MSG_TYPE sig);
   // Dispatches a signal to each connected module (and each Logger module)
 
-  MODULE_ID
-  ConnectModule(MODULE_ID module_id, UPipe *pSourcePipe, short logger_status,
-                short daemon_status);
-
-  MODULE_ID
-  ConnectModuleV2(MODULE_ID module_id, UPipe *pSourcePipe,
-                  MDF_CONNECT_V2 *connect);
+  CModuleRecord *ConnectModule(UPipe *pSourcePipe, MODULE_ID requested_id,
+                               short logger_status, int32_t pid,
+                               const char *name);
+  // Connects the module on pSourcePipe, sends its ACK and HELLO, and returns
+  // its record. A refused module is dropped with DropSender().
 
   CModuleRecord *GetRecord(MODULE_ID module_id);
 
@@ -286,13 +250,21 @@ private:
 
   void ResumeSubscription(CModuleRecord *mod, MSG_TYPE msg_type_to_resume);
 
-  CSubscriberList *GetSubscriberList(MSG_TYPE message_type);
+  void DropSubscriber(CModuleRecord *mod, MSG_TYPE message_type);
 
-  bool IsModuleSubscribed(MODULE_ID module_id, MSG_TYPE message_type);
+  void Unroute(CModuleRecord *mod, MSG_TYPE message_type);
+  // Takes the module out of the routing table for the type, leaving its
+  // subscription to it.
+
+  void RemoveAllSubscriptions(CModuleRecord *mod);
+
+  void GetSubscribers(MSG_TYPE message_type, std::vector<MODULE_ID> &ids) const;
+  // The modules subscribed to message_type or to ALL_MESSAGE_TYPES. A copy,
+  // so that sending to them can't invalidate it.
 
   void SendAcknowledge(CModuleRecord *mod);
 
-  void SendIntroductions(MODULE_ID mod_id);
+  void SendIntroductions(CModuleRecord *dest_mod);
 
   void SendHello(CModuleRecord *mod);
 
@@ -300,27 +272,23 @@ private:
 
   void SendPing(MODULE_ID mod_id);
 
-  void HandleSetName(CMessage *m);
+  void HandleSetName(CMessage *m, CModuleRecord *mod);
 
   void HandleForceDisconnect(CMessage *m);
 
-  void HandleModuleDisconnect(CMessage *m);
+  void HandleModuleReady(CMessage *m, CModuleRecord *mod);
 
-  void HandleModuleReady(CMessage *m);
-
-  void HandleSubscribe(CMessage *m);
-
-  void HandleUnsubscribe(CMessage *m);
-
-  void HandlePauseSubscription(CMessage *m);
-
-  void HandleResumeSubscription(CMessage *m);
+  MSG_TYPE SubscriptionType(CMessage *m);
 
   void HandleConnect(CMessage *m, UPipe *pSourcePipe);
 
   void HandleConnectV2(CMessage *m, UPipe *PSourcePipe);
 
-  int SendMessage(CMessage *m, CModuleRecord *dest_mod);
+  void UpdateConnection(CMessage *m, CModuleRecord *mod);
+
+  int SendMessage(CMessage *m, CModuleRecord *dest_mod, MODULE_ID dest_mod_id);
+  // Sends a message from the manager to dest_mod, with dest_mod_id in its
+  // header: the module's ID, or 0 for a broadcast.
 
   int SendSignal(MSG_TYPE sig, CModuleRecord *dest_mod);
   // dest_mod_id= module id that should be put in dest_mod_id in message header

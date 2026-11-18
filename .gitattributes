@@ -1,0 +1,24 @@
+# Store text files with LF line endings, whatever each clone's
+# core.autocrlf setting. Windows checkouts with core.autocrlf=true still get
+# CRLF in the working tree.
+* text=auto
+
+# Windows batch files are checked out with CRLF everywhere, as cmd.exe expects,
+# and shell scripts with LF everywhere, as bash expects, including Git Bash or
+# WSL on a Windows checkout with core.autocrlf=true.
+*.bat text eol=crlf
+*.sh text eol=lf
+
+# Binaries committed to the repository.
+*.exe binary
+*.dll binary
+*.lib binary
+*.mat binary
+*.mexw32 binary
+*.mexw64 binary
+*.mexmaci64 binary
+*.pdb binary
+*.res binary
+*.vi binary
+# UTF-16 resource scripts
+*.rc binary

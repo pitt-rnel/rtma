@@ -1,0 +1,14 @@
+# Message definitions for the MATLAB interop test (test_matlab.py), indexed
+# by interop.defs.
+message_defs:
+  MATLAB_TEST_REQUEST:
+    id: 1001
+    fields:
+      value: int32
+      values: int32[3]
+
+  MATLAB_TEST_REPLY:
+    id: 1002
+    fields:
+      value: int32
+      values: int32[3]

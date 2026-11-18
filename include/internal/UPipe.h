@@ -166,6 +166,15 @@ public:
 
   unsigned int GetNumClients() const { return _numClients; }
 
+  // Returns true if client_pipe is a connected client of this server.
+  bool HasClient(const UPipe *client_pipe) const {
+    for (unsigned int i = 0; i < _numClients; i++) {
+      if (_clientList[i] == client_pipe)
+        return true;
+    }
+    return false;
+  }
+
   // Accepts a client from the listening socket and returns a pointer to a pipe
   // object that represents the new connection. This pipe object can be used to
   // excange data with the client. If a connection request has not yet been
@@ -494,6 +503,11 @@ public:
       for (int i = 0; i < num_ready; i++) {
         int r = random_order[i];
         UPipe *p = pipes[r];
+        // Handling an earlier pipe can disconnect this one, which deletes
+        // it. No pipe is created in this loop, so a pipe that is still a
+        // client is the one that had data.
+        if (!_server->HasClient(p))
+          continue;
         try {
           HandleData(p);
         } catch (UPipeClosedException) {

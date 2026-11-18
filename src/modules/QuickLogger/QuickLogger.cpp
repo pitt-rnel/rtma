@@ -11,6 +11,7 @@
 #include <RTMA_types.h>
 #include <UPipe.h>
 #include <cstdio>
+#include <cstring>
 #include <ctime>
 #include <iostream>
 #include <ostream>
@@ -21,12 +22,24 @@
 
 CQuickLogger QL;
 
-int main(void) {
-  try {
-    // std::cout << "[main] QuickLogger started..." << std::endl;
+// QuickLogger [SERVER]
+//
+// SERVER is the message manager's address, host:port, as for
+// RTMA_Module::ConnectToMMM(). The default is localhost:7111.
+int main(int argc, char *argv[]) {
+  if (argc > 2 || (argc == 2 && (strcmp(argv[1], "-h") == 0 ||
+                                 strcmp(argv[1], "--help") == 0))) {
+    std::cout << "usage: QuickLogger [SERVER]\n\n"
+                 "SERVER is the message manager's address, host:port. The "
+                 "default is " DEFAULT_PIPE_SERVER_NAME_FOR_MODULES ".\n";
+    return argc > 2 ? 2 : 0;
+  }
+  char default_server[] = DEFAULT_PIPE_SERVER_NAME_FOR_MODULES;
+  char *server = argc == 2 ? argv[1] : default_server;
 
+  try {
     // Run the module
-    QL.MainFunction();
+    QL.MainFunction(server);
   } catch (MyCException &E) {
     MyCString err("QuickLogger: main():");
     E.AppendTraceToString(err);
@@ -49,7 +62,7 @@ CQuickLogger::CQuickLogger() {
 
 CQuickLogger::~CQuickLogger() {}
 
-void CQuickLogger::MainFunction() {
+void CQuickLogger::MainFunction(char *server) {
   TRY {
     CMessage M;
     MDF_SAVE_MESSAGE_LOG FilenameData;
@@ -57,10 +70,10 @@ void CQuickLogger::MainFunction() {
 
     // Get connected
     int logger_status = 1;
-    RTMA_Logger *logger = &Logger();
-    InitVariables(MID_QUICKLOGGER, 0);
-    logger->SetLogName("Quicklogger");
-    ConnectToMMM(logger_status);
+    InitVariables(MID_QUICK_LOGGER, 0);
+    // The name the managers announce it by, and its log name.
+    SetModuleName("QuickLogger");
+    ConnectToMMM(server, logger_status);
     Subscribe(ALL_MESSAGE_TYPES);
     //if (SetMyPriority(NORMAL_PRIORITY_CLASS) == 0)
     //  throw MyCException("SetMyPriority failed");
@@ -79,7 +92,9 @@ void CQuickLogger::MainFunction() {
       while (1) {
         ReadMessage(&M);
         debug("Received Message (msg_type = {})", M.msg_type);
-        int saved = _MessageBufrr.SaveMessage(&M);
+        // While logging is paused, messages aren't added to the log; the
+        // control messages below are still acted on.
+        int saved = _logging ? _MessageBufrr.SaveMessage(&M) : 0;
         if (saved != 0) {
           if (saved == -1) { // msg count overflow
             warning(
@@ -96,11 +111,30 @@ void CQuickLogger::MainFunction() {
           _MessageBufrr.SaveMessage(&M);
         }
         switch (M.msg_type) {
-        case MT_SAVE_MESSAGE_LOG:
+        case MT_SAVE_MESSAGE_LOG: {
+          if (M.num_data_bytes != (int)sizeof(FilenameData)) {
+            error("SAVE_MESSAGE_LOG has {} data bytes, not {}; ignored",
+                  M.num_data_bytes, sizeof(FilenameData));
+            break;
+          }
           M.GetData(&FilenameData);
-          FilenameData.pathname[FilenameData.pathname_length] =
-              0; // Make sure string is zero-terminated
-          _MessageBufrr.SaveDatafile(FilenameData.pathname);
+          // The path is its first pathname_length characters, up to a null,
+          // and at most MAX_LOGGER_FILENAME_LENGTH - 1 of them.
+          int length = FilenameData.pathname_length;
+          if (length < 0 || length > MAX_LOGGER_FILENAME_LENGTH - 1)
+            length = MAX_LOGGER_FILENAME_LENGTH - 1;
+          FilenameData.pathname[length] = 0;
+          // A file that can't be written, such as one in a folder that
+          // doesn't exist, is reported, and the log is kept for the next
+          // SAVE_MESSAGE_LOG; it used to stop QuickLogger.
+          try {
+            _MessageBufrr.SaveDatafile(FilenameData.pathname);
+          } catch (MyCException &E) {
+            error("Failed to save the message log to '{}': {}",
+                  FilenameData.pathname,
+                  E.GetNumTraceLevels() > 0 ? E.GetTrace(0) : "");
+            break;
+          }
           SendSignal(MT_MESSAGE_LOG_SAVED);
           info("Saved Data to '{}'", FilenameData.pathname);
           info("    Num messages: {}",
@@ -109,6 +143,7 @@ void CQuickLogger::MainFunction() {
                _MessageBufrr.GetNumDataBytes());
           _MessageBufrr.ClearBuffer();
           break;
+        }
         case MT_PAUSE_MESSAGE_LOGGING:
           info("Logging paused!");
           _logging = false;
@@ -146,7 +181,7 @@ void CQuickLogger::MainFunction() {
                          "QuickLoggerDump.bin");
     }
   }
-  CATCH_and_THROW("void CQuickLogger::MainFunction()");
+  CATCH_and_THROW("void CQuickLogger::MainFunction(char *server)");
 }
 
 void CQuickLogger::DumpBuffer(char *Filename) {

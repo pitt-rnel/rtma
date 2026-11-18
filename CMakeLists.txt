@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(RTMA VERSION 1.0.0 LANGUAGES CXX)
+project(RTMA VERSION 4.0.0 LANGUAGES CXX)
 
 include(CMakePackageConfigHelpers)
 include(CTest)
@@ -79,6 +79,16 @@ target_link_libraries(RTMA
     PUBLIC fmt::fmt
 )
 
+if(MSVC)
+    # Since Visual Studio 2022 17.10, std::mutex's constructor is constexpr and
+    # needs a matching msvcp140.dll; code built with it crashes on its first
+    # lock when an older msvcp140.dll is loaded, as in hosts that ship their
+    # own, such as MATLAB. This keeps the logger's mutex working with any
+    # msvcp140.dll, for programs and libraries that link RTMA.lib into such a
+    # host.
+    target_compile_definitions(RTMA PRIVATE _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
+endif()
+
 if(WIN32)
     target_link_libraries(RTMA PRIVATE ws2_32)
 
@@ -99,6 +109,8 @@ if(RTMA_BUILD_MODULES)
     add_executable(MessageManager src/modules/MessageManager/MessageManager.cpp)
     target_include_directories(MessageManager PRIVATE include/internal)
     target_link_libraries(MessageManager PRIVATE RTMA)
+    # The manager prints its version at startup.
+    target_compile_definitions(MessageManager PRIVATE RTMA_VERSION="${PROJECT_VERSION}")
     set_target_properties(MessageManager PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${RTMA_BINARY_OUTPUT_DIRECTORY}
     )
@@ -122,6 +134,29 @@ if(BUILD_TESTING)
     add_executable(rtma_public_api_test tests/public_api_test.cpp)
     target_link_libraries(rtma_public_api_test PRIVATE RTMA Threads::Threads)
     add_test(NAME rtma_public_api COMMAND rtma_public_api_test)
+
+    # Compiling this checks the core type headers against pyrtma's core
+    # definitions. Regenerate it with tests/core_types/generate.py.
+    add_executable(rtma_core_types_test tests/core_types/core_types_test.cpp)
+    target_include_directories(rtma_core_types_test PRIVATE
+        include include/internal)
+    add_test(NAME rtma_core_types COMMAND rtma_core_types_test)
+
+    # The interop tests drive the C++ client library with this; see
+    # tests/interop/README.md. It goes in bin/ beside the modules, where the
+    # tests look for it.
+    add_executable(rtma_test_client tests/interop/test_client.cpp)
+    target_include_directories(rtma_test_client PRIVATE include/internal)
+    target_link_libraries(rtma_test_client PRIVATE RTMA)
+    set_target_properties(rtma_test_client PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${RTMA_BINARY_OUTPUT_DIRECTORY}
+    )
+    foreach(configuration Debug Release RelWithDebInfo MinSizeRel)
+        string(TOUPPER ${configuration} configuration_upper)
+        set_target_properties(rtma_test_client PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY_${configuration_upper} ${RTMA_BINARY_OUTPUT_DIRECTORY}
+        )
+    endforeach()
 endif()
 
 install(TARGETS RTMA
