@@ -114,60 +114,8 @@ UPipeFactory::ParseServerAddress(const char *server_addr, char *server_name,
   CATCH_and_THROW("UPipe::ParseServerAddress");
 }
 
-static bool gRandSeeded = false;
-
-UPipeServer *UPipeFactory::CreateServer(char *server_addr) {
-  TRY {
-    // Seed the random numbers with current time
-    if (!gRandSeeded) {
-      srand((unsigned)time(NULL));
-      gRandSeeded = true;
-      // std::cout << "Random initialized, random number = " << rand() <<
-      // std::endl;
-    }
-
-    if ((int)strlen(server_addr) > MAX_SERVER_ADDR_LENGTH)
-      throw UPipeException("Server address string exceeds max length");
-
-    char server_name[MAX_SERVER_ADDR_LENGTH];
-    short port_no;
-    ServerType type = ParseServerAddress(server_addr, server_name, &port_no);
-    std::cout << "server_addr = [" << server_addr << "]" << std::endl;
-    printf("server_name = <%s>\n", server_name);
-    printf("port_no = %u\n", (unsigned short)port_no);
-    switch (type) {
-    case NamedPipe: {
-      // #ifdef _UNIX_C
-      // UnixNamedPipeServer *pNamedPipeServer = new UnixNamedPipeServer(
-      // server_name); #else WinNamedPipeServer pNamedPipeServer = new
-      // WinNamedPipeServer( server_name); #endif return (UPipeServer*)
-      // pNamedPipeServer;
-      throw UPipeException("Named pipes not yet implemented");
-      break;
-    }
-    case Socket: {
-      SocketPipeServer *pSocketServer =
-          new SocketPipeServer(server_name, port_no);
-      return (UPipeServer *)pSocketServer;
-      break;
-    }
-    default:
-      throw UPipeException("Unhandled server type");
-    }
-  }
-  CATCH_and_THROW("UPipeServer::Create");
-}
-
 UPipeClient *UPipeFactory::CreateClient(char *server_addr) {
   TRY {
-    // Seed the random numbers with current time
-    if (!gRandSeeded) {
-      srand((unsigned)time(NULL));
-      gRandSeeded = true;
-      // std::cout << "Random initialized, random number = " << rand() <<
-      // std::endl;
-    }
-
     if ((int)strlen(server_addr) > MAX_SERVER_ADDR_LENGTH)
       throw UPipeException("Server address string exceeds max length");
 

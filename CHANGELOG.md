@@ -114,6 +114,12 @@ stable release don't work unchanged with this release's managers:
   to the console in color, to files, and to other modules as RTMA_LOG
   messages, as pyrtma's client logger does. It replaces Status().
 - Removed: the timers (SetTimer(), CancelTimer() and the timer messages).
+- Removed: PipeLib's server side, which only the MessageManager used, from
+  include/internal/UPipe.h and SocketPipe: UPipeServer, SocketPipeServer,
+  UPipeAutoServer and UPipeFactory::CreateServer(). The MessageManager has
+  its own non-blocking sockets. The client side is unchanged, except that
+  UPipeFactory::CreateClient() no longer seeds rand(), which only the
+  server's random ordering of clients used.
 - Changed: GetAbsTime(), and so message headers' send_time and recv_time,
   read the clock pyrtma's time.perf_counter() reads: CLOCK_MONOTONIC on
   Linux and CLOCK_UPTIME_RAW (mach_absolute_time()) on macOS, where they
