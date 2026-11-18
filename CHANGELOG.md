@@ -57,6 +57,15 @@ this one. See "Compatibility" in README.md.
 
 ### C++ client library
 
+- Changed: GetAbsTime(), and so message headers' send_time and recv_time,
+  read the clock pyrtma's time.perf_counter() reads: CLOCK_MONOTONIC on
+  Linux and CLOCK_UPTIME_RAW (mach_absolute_time()) on macOS, where they
+  were seconds since 1970, and QueryPerformanceCounter() on Windows, as
+  before. Times stamped by C++, MATLAB and Python modules on one machine can
+  be compared, and the client's timeouts aren't upset by changes to the
+  system time. The clock's zero is arbitrary, usually when the machine
+  booted: code that took these times for dates on Linux or macOS must use
+  the system time instead. MATLAB's GetAbsTime reads the same clock.
 - Added: RTMA_Module(ModuleID, HostID, name), SetModuleName() and
   GetModuleName(). A module's name is sent in CONNECT_V2 and announced in
   HELLO and GOODBYE; set while connected, it is sent with CLIENT_SET_NAME.

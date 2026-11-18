@@ -440,3 +440,27 @@ def test_disconnects_when_the_manager_closes_the_connection():
     fake.close()
     assert "error" in out
     assert out["connected"] == "0"
+
+
+def test_send_time_is_on_pythons_perf_counter_clock(manager):
+    # Modules in every language stamp messages with the clock pyrtma's
+    # time.perf_counter() reads, so their times can be compared.
+    watcher = RawClient.connect(manager.port, 20)
+    watcher.subscribe(MT_TEST_REQUEST)
+    run(manager.port, "send", 31, 8, 0, 0)
+    msg = watcher.wait_for(MT_TEST_REQUEST)
+    now = time.perf_counter()
+    assert msg is not None
+    assert 0 <= now - msg.header.send_time < 10
+
+
+def test_cpp_manager_send_time_is_on_pythons_perf_counter_clock(cpp_manager):
+    watcher = RawClient.connect(cpp_manager.port, 20)
+    watcher.subscribe(MT_HELLO)
+    RawClient.connect(cpp_manager.port, 21)
+    msg = watcher.wait_for(
+        MT_HELLO, where=lambda m: Hello.parse(m.payload).mod_id == 21
+    )
+    now = time.perf_counter()
+    assert msg is not None
+    assert 0 <= now - msg.header.send_time < 10
