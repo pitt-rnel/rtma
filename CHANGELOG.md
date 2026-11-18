@@ -158,6 +158,11 @@ this one. See "Compatibility" in README.md.
   checks the core headers against pyrtma's YAML. run_tests.sh and
   run_tests.bat run CTest and pytest. See tests/interop/README.md.
 - Changed: text files are stored with LF line endings (.gitattributes).
+- Removed: the Visual Studio project files for the library, MessageManager,
+  QuickLogger and LogReader, which CMake replaced, the Visual Studio
+  2005/2008 projects beside the .NET and LabVIEW projects, and PipeLib's old
+  pipe tests (src/core/PipeLib/Test), which had no other build and which the
+  interop tests replace.
 - Changed: the Windows binaries in the repository, lib/RTMA.lib,
   bin/MessageManager.exe, bin/QuickLogger.exe and the 64-bit mex files, are
   built from this release.
