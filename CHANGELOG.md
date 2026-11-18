@@ -7,16 +7,38 @@ pyrtma 4, and both should be released together.
 
 ## Unreleased
 
-Compatible with pyrtma 4: clients in C++, MATLAB, Python and JavaScript
+Changes since the last stable release, on `master`. This release is
+compatible with pyrtma 4: clients in C++, MATLAB, Python and JavaScript
 (through pyrtma's web manager) work with either pyrtma's message manager or
 this one. See "Compatibility" in README.md.
 
+### Modules from the last stable release
+
+Rebuild every module against this release. Modules built against the last
+stable release don't work unchanged with this release's managers:
+
+- Both managers drop a client that sends a core message (type below 100)
+  this release doesn't define. The last stable release's QuickLogger sends
+  DEBUG_TEXT (91), and its MessageManager sent MM_ERROR (83) and MM_INFO
+  (84); other modules may send SHUTDOWN_RTMA (17), SHUTDOWN_APP (18), or the
+  application module's and timer module's messages, which are gone.
+- Several core message types and module IDs are reused with new meanings:
+  module 4, the status module, is now the data logger, and types 34, 44,
+  54 and 62 to 79, among others, now carry the client name, log messages,
+  QuickLogger's status and the data logger's messages.
+- Dynamic module IDs start at 10000, not 100, so static IDs are 1 to 9999.
+
 ### Message manager
 
-- Fixed: subscribers were sent every message type. Since the subscriber
-  lists became maps, every subscription went into one shared list, so a
-  module subscribed to anything was sent everything, and pausing one type
-  paused them all.
+- Added: modules' names, process IDs and addresses. CONNECT_V2 connects
+  with them, CLIENT_SET_NAME sets the name, the manager announces each
+  module that joins or leaves with HELLO and GOODBYE, and INTRODUCE asks it
+  for a HELLO for every connected module.
+- Changed: dynamic module IDs start at 10000 (DYN_MOD_ID_START, which was
+  100), up to MAX_MODULE_ID (32000), and up to MAX_MODULES (256, which was
+  200) modules can connect.
+- Removed: MM_ERROR and MM_INFO, which the manager sent, and the handling of
+  SHUTDOWN_RTMA and SHUTDOWN_APP.
 - Fixed: a core message whose size didn't match its definition, such as a
   SUBSCRIBE with a long payload, overran the manager's stack. Every core
   message (type below 100) is now checked against its definition before it
@@ -57,6 +79,11 @@ this one. See "Compatibility" in README.md.
 
 ### C++ client library
 
+- Added: a client logger, RTMA_Logger, through RTMA_Module::Logger() and
+  the module's debug(), info(), warning(), error() and critical(). It logs
+  to the console in color, to files, and to other modules as RTMA_LOG
+  messages, as pyrtma's client logger does. It replaces Status().
+- Removed: the timers (SetTimer(), CancelTimer() and the timer messages).
 - Changed: GetAbsTime(), and so message headers' send_time and recv_time,
   read the clock pyrtma's time.perf_counter() reads: CLOCK_MONOTONIC on
   Linux and CLOCK_UPTIME_RAW (mach_absolute_time()) on macOS, where they
@@ -94,6 +121,8 @@ this one. See "Compatibility" in README.md.
   under MSVC, so programs and libraries that link RTMA.lib into a host with
   an older msvcp140.dll, such as MATLAB, don't crash on the logger's first
   lock.
+- Fixed: destructors no longer throw, and MyCString frees its arrays with
+  delete[].
 - Fixed: streaming an empty MyCString streamed a null pointer, which crashed
   under MSVC.
 
@@ -116,12 +145,16 @@ this one. See "Compatibility" in README.md.
   RTMA_MESSAGE, which pyrtma doesn't define, are in a legacy section of
   core_types.h. Don't send MM_READY or SUBSCRIPTION_OPTION: both managers
   drop a client that does.
+- Removed: the application module's, status module's, timer module's and
+  network relay's definitions, the timers', DEBUG_TEXT, MM_ERROR, MM_INFO,
+  STRING_DATA, SHUTDOWN_RTMA and SHUTDOWN_APP.
 
 ### QuickLogger
 
 - Added: QuickLogger [SERVER] takes the message manager's address, host:port.
   The default is still localhost:7111.
-- Changed: QuickLogger connects with the name QuickLogger.
+- Changed: QuickLogger connects with the name QuickLogger, and logs
+  through the client logger instead of sending DEBUG_TEXT.
 - Fixed: PAUSE_MESSAGE_LOGGING didn't pause logging.
 - Fixed: SAVE_MESSAGE_LOG's pathname_length wasn't checked, and a log that
   couldn't be saved, such as to a folder that doesn't exist, stopped
@@ -143,21 +176,32 @@ this one. See "Compatibility" in README.md.
 - Changed: the legacy translator (TranslateRTMAConfigFiles2Matlab) gives
   the same structure as pyrtma's compiler: RTMA.hash, empty structs for
   signals, and string constants without their quotes.
-- Fixed: make.m builds the mex again. It compiles the client logger, with
-  fmt header-only, from the copy CMake downloads into build/cmake/_deps
-  (build the repository first) or from RTMA_FMT_INCLUDE, with /utf-8 and
-  _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR under MSVC.
-- Removed: the timer opcodes from pyrtma's compiled definitions (a pyrtma
-  change), which MatlabRTMA rejects.
+- Changed: make.m compiles the client logger into the mex, with fmt
+  header-only, so build the repository first: it uses the copy of fmt CMake
+  downloads into build/cmake/_deps, or the one RTMA_FMT_INCLUDE points to.
+  Under MSVC it compiles with /utf-8 and
+  _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR, without which the mex crashed in
+  MATLAB.
+- Removed: the timers, event loops and state log, and the SET_TIMER and
+  CANCEL_TIMER opcodes. pyrtma's compiled definitions no longer offer them
+  either.
 
 ### Build and tests
 
+- Changed: CMake builds the library, modules and tests, replacing qmake and
+  the Visual Studio solutions, on Linux, macOS and Windows; make.sh and
+  build_msvc_2026.bat build with it. The library is built into lib/ and the
+  modules into bin/. GitHub Actions builds and runs CTest on each
+  platform.
+- Changed: the C++ sources are formatted with clang-format, and compile
+  without most of the compiler warnings they had.
 - Added: tests/interop, which runs the same scenarios against both message
   managers, with the C++ client (rtma_test_client), QuickLogger, pyrtma's
   data logger and, with --matlab, the MATLAB bindings. tests/core_types
   checks the core headers against pyrtma's YAML. run_tests.sh and
   run_tests.bat run CTest and pytest. See tests/interop/README.md.
 - Changed: text files are stored with LF line endings (.gitattributes).
+- Removed: the .NET bindings' timer functions.
 - Removed: the Visual Studio project files for the library, MessageManager,
   QuickLogger and LogReader, which CMake replaced, the Visual Studio
   2005/2008 projects beside the .NET and LabVIEW projects, and PipeLib's old

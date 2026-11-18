@@ -181,12 +181,11 @@ Clients in every language work with either message manager of this release:
 | MATLAB, with the mex built from this release | Yes | Yes |
 | rtma-js, through pyrtma's web manager | Yes | Yes |
 
-The interop tests check each of these but rtma-js. Clients of earlier releases mostly work too, but
-both managers now refuse what they used to accept: a core message (type below 100) of the wrong size
-or an undefined core type, such as MM_READY or SUBSCRIPTION_OPTION, a static module ID of 10000 or
-more, and a message before CONNECT. A C++ module of an earlier release that
-connects again after getting a dynamic ID is refused, because it asks for its old ID as a static one.
-Rebuild modules against this release.
+The interop tests check each of these but rtma-js. Modules built against the last stable release
+(`master`) have to be rebuilt: both managers drop a client that sends a core message (type below 100)
+this release doesn't define, such as the DEBUG_TEXT the last release's QuickLogger sends, several core
+message types and module IDs now have new meanings, and dynamic module IDs start at 10000. See
+[CHANGELOG.md](CHANGELOG.md).
 
 
 ## Directory Organization
