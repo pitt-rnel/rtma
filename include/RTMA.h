@@ -43,7 +43,7 @@
 
 // Largest message payload, in bytes. Both message managers drop a client that
 // announces a larger one, and CMessage::Receive refuses one.
-#define RTMA_MAX_DATA_BYTES (1024 * 1024)
+#define RTMA_MAX_DATA_BYTES MAX_DATA_BYTES // 1 MiB, from core_types.h
 
 // Seconds ConnectToMMM() waits for the message manager's ACK, as pyrtma's
 // client does by default.

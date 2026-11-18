@@ -18,17 +18,25 @@
 // Constants
 #define MAX_DATASETS 6
 #define DATASET_NAME_LEN 32
-#define DATASET_MAX_SIZE_MB 500 // Largest allowed DATASET max_size_mb
+#define DATASET_SAVE_PATH_LEN 256 // DATASET save_path, with its null terminator
+#define DATASET_FILENAME_LEN 128  // DATASET filename, with its null terminator
+#define DATASET_FORMATTER_LEN 32  // DATASET formatter, with its null terminator
+#define DATASET_MAX_MSG_TYPES 64  // Message types one DATASET can list
+// Largest allowed DATASET max_size_mb: 1 GB, in MB of 1,000,000 bytes
+#define DATASET_MAX_SIZE_MB 1000
 
 // Struct definitions
 typedef struct {
   char name[DATASET_NAME_LEN];
-  char save_path[256];   // Dataset save directory
-  char filename[128];    // Dataset saved file name without the file extension
-  char formatter[32];    // Builtin options: quicklogger, json, raw, msg_header
-  int32_t max_size_mb;   // Largest file in MB (1 to DATASET_MAX_SIZE_MB); a full
-                         // file continues in a new one
-  int32_t msg_types[64]; // Message type IDs passed to the dataset formatter
+  char save_path[DATASET_SAVE_PATH_LEN]; // Dataset save directory
+  char filename[DATASET_FILENAME_LEN];   // Dataset saved file name without the
+                                         // file extension
+  char formatter[DATASET_FORMATTER_LEN]; // Builtin options: quicklogger, json,
+                                         // raw, msg_header
+  int32_t max_size_mb; // Largest file in MB (1 to DATASET_MAX_SIZE_MB, or 0 for
+                       // DATASET_MAX_SIZE_MB); a full file continues in a new one
+  int32_t msg_types[DATASET_MAX_MSG_TYPES]; // Message type IDs passed to the
+                                            // dataset formatter
 } DATASET;
 
 // Message types and data
@@ -72,7 +80,7 @@ typedef struct {
 #define MT_DATA_LOGGER_CONFIG 69
 typedef struct {
   int32_t num_datasets;
-  DATASET datasets[6];
+  DATASET datasets[MAX_DATASETS];
 } MDF_DATA_LOGGER_CONFIG;
 
 #define MT_DATASET_STARTED 70
@@ -128,12 +136,12 @@ typedef struct {
 // Message definition hashes, as pyrtma computes them
 #define HASH_DATASET_STATUS_REQUEST 0x6b13e892
 #define HASH_DATASET_STATUS 0x5ce37a06
-#define HASH_DATASET_ADD 0xa90bcee9
+#define HASH_DATASET_ADD 0x03268c94
 #define HASH_DATASET_ADDED 0x4473eef7
 #define HASH_DATASET_REMOVE 0xd3110ef2
 #define HASH_DATASET_REMOVED 0x0d497a31
 #define HASH_DATA_LOGGER_CONFIG_REQUEST 0x91598f0a
-#define HASH_DATA_LOGGER_CONFIG 0xeae8779d
+#define HASH_DATA_LOGGER_CONFIG 0xaa9749f7
 #define HASH_DATASET_STARTED 0xe73fb9e1
 #define HASH_DATASET_STOPPED 0x541af8e5
 #define HASH_DATASET_SAVED 0x8d5f717f

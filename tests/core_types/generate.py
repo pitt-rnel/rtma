@@ -1,6 +1,7 @@
 """Generate core_types_test.cpp from pyrtma's core message definitions.
 
-The test asserts, at compile time, that the C++ headers define everything
+The test asserts, at compile time and for string constants when it runs, that
+the C++ headers define everything
 in pyrtma's core_defs YAML files with the same values and layouts, and, when
 it runs, that CoreMessageSize() and CoreMessageHash() in
 include/internal/CoreMessages.h give every core message type its size and
@@ -61,24 +62,26 @@ def c_type(obj: NativeType | TypeAlias | SDF | MDF) -> str:
 
 
 def struct_asserts(c_name: str, fields: list[Field], size: int) -> list[str]:
-    out = [f"static_assert(sizeof({c_name}) == {size}, \"{c_name} size\");"]
+    out = [f'static_assert(sizeof({c_name}) == {size}, "{c_name} size");']
     for f in fields:
         if f.padding:
             continue
         member = f"decltype({c_name}::{f.name})"
         where = f"{c_name}::{f.name}"
         out.append(
-            f"static_assert(offsetof({c_name}, {f.name}) == {f.offset}, \"{where} offset\");"
+            f'static_assert(offsetof({c_name}, {f.name}) == {f.offset}, "{where} offset");'
         )
         out.append(
             f"static_assert(std::is_same<std::remove_all_extents<{member}>::type, "
-            f"{c_type(f.type_obj)}>::value, \"{where} type\");"
+            f'{c_type(f.type_obj)}>::value, "{where} type");'
         )
         rank = 1 if f.length else 0
-        out.append(f"static_assert(std::rank<{member}>::value == {rank}, \"{where} rank\");")
+        out.append(
+            f'static_assert(std::rank<{member}>::value == {rank}, "{where} rank");'
+        )
         if f.length:
             out.append(
-                f"static_assert(std::extent<{member}>::value == {f.length}, \"{where} length\");"
+                f'static_assert(std::extent<{member}>::value == {f.length}, "{where} length");'
             )
     return out
 
@@ -89,22 +92,28 @@ def section(p: Parser, src: str) -> list[str]:
 
     out = []
     for c in mine(p.constants):
-        out.append(f"static_assert({c.name} == {c.value}, \"{c.name}\");")
+        out.append(f'static_assert({c.name} == {c.value}, "{c.name}");')
+    # A string constant can't be compared in a static_assert; main() checks
+    # it with strcmp(). Here, only that it is a string literal of its length.
+    for c in mine(p.string_constants):
+        out.append(
+            f'static_assert(sizeof({c.name}) == sizeof({c.value}), "{c.name} length");'
+        )
     for a in mine(p.aliases):
         out.append(
-            f"static_assert(std::is_same<{a.name}, {c_type(a.type_obj)}>::value, \"{a.name}\");"
+            f'static_assert(std::is_same<{a.name}, {c_type(a.type_obj)}>::value, "{a.name}");'
         )
     for h in mine(p.host_ids):
-        out.append(f"static_assert(HID_{h.name} == {h.value}, \"HID_{h.name}\");")
+        out.append(f'static_assert(HID_{h.name} == {h.value}, "HID_{h.name}");')
     for m in mine(p.module_ids):
-        out.append(f"static_assert(MID_{m.name} == {m.value}, \"MID_{m.name}\");")
+        out.append(f'static_assert(MID_{m.name} == {m.value}, "MID_{m.name}");')
     for s in mine(p.struct_defs):
         out.append("")
         out += struct_asserts(s.name, s.fields, s.size)
     for m in mine(p.message_defs):
         out.append("")
-        out.append(f"static_assert(MT_{m.name} == {m.type_id}, \"MT_{m.name}\");")
-        out.append(f"static_assert(HASH_{m.name} == 0x{m.hash[:8]}u, \"HASH_{m.name}\");")
+        out.append(f'static_assert(MT_{m.name} == {m.type_id}, "MT_{m.name}");')
+        out.append(f'static_assert(HASH_{m.name} == 0x{m.hash[:8]}u, "HASH_{m.name}");')
         if m.fields:
             out += struct_asserts(f"MDF_{m.name}", m.fields, m.size)
     return out
@@ -124,6 +133,7 @@ def generate() -> str:
         "",
         "#include <cstddef>",
         "#include <cstdio>",
+        "#include <cstring>",
         "#include <type_traits>",
     ]
     for src, header in HEADERS.items():
@@ -135,9 +145,18 @@ def generate() -> str:
 
 def main_function(p: Parser) -> list[str]:
     """Check the core message tables, CoreMessageSize() and CoreMessageHash()."""
-    core = {m.type_id: m for m in p.message_defs.values() if m.type_id <= MAX_RTMA_MSG_TYPE}
+    core = {
+        m.type_id: m for m in p.message_defs.values() if m.type_id <= MAX_RTMA_MSG_TYPE
+    }
     out = [
         "static int failures = 0;",
+        "",
+        "static void check_text(const char *name, const char *actual, const char *expected) {",
+        "  if (std::strcmp(actual, expected) != 0) {",
+        '    std::printf("%s is \\"%s\\", expected \\"%s\\"\\n", name, actual, expected);',
+        "    ++failures;",
+        "  }",
+        "}",
         "",
         "static void check(int msg_type, int size, uint32_t hash) {",
         "  if (CoreMessageSize(msg_type) != size) {",
@@ -153,6 +172,13 @@ def main_function(p: Parser) -> list[str]:
         "}",
         "",
         "int main() {",
+        "  // Every string constant.",
+    ]
+    for c in p.string_constants.values():
+        if c.src.name in HEADERS:
+            out.append(f'  check_text("{c.name}", {c.name}, {c.value});')
+    out += [
+        "",
         "  // Every core message type, and -1 and 0 for every other type below 100.",
     ]
     for t in range(-1, MAX_RTMA_MSG_TYPE + 1):

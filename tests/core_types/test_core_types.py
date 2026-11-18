@@ -45,6 +45,7 @@ def expected_names(p, src: str) -> set[str]:
         return [o for o in objs.values() if o.src.name == src]
 
     names = {c.name for c in mine(p.constants)}
+    names |= {c.name for c in mine(p.string_constants)}
     names |= {a.name for a in mine(p.aliases)}
     names |= {f"HID_{h.name}" for h in mine(p.host_ids)}
     names |= {f"MID_{m.name}" for m in mine(p.module_ids)}
@@ -72,8 +73,12 @@ def test_header_defines_only_its_yaml(parser, src, header):
     defined |= {a or b for a, b in TYPEDEF.findall(text)}
     expected = expected_names(parser, src)
     legacy = LEGACY.get(header, set())
-    assert sorted(defined - expected - legacy) == [], f"{header} defines names not in {src}.yaml"
-    assert sorted(expected - defined) == [], f"{header} is missing names from {src}.yaml"
+    assert (
+        sorted(defined - expected - legacy) == []
+    ), f"{header} defines names not in {src}.yaml"
+    assert (
+        sorted(expected - defined) == []
+    ), f"{header} is missing names from {src}.yaml"
     assert sorted(legacy - defined) == [], f"legacy names no longer in {header}"
 
 

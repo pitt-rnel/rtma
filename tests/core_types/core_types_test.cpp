@@ -9,6 +9,7 @@
 
 #include <cstddef>
 #include <cstdio>
+#include <cstring>
 #include <type_traits>
 
 // core_types.h: rtma_core.yaml
@@ -28,7 +29,9 @@ static_assert(MAX_SUBS == 256, "MAX_SUBS");
 static_assert(MAX_NAME_LEN == 32, "MAX_NAME_LEN");
 static_assert(MAX_LOG_LENGTH == 1024, "MAX_LOG_LENGTH");
 static_assert(MESSAGE_TRAFFIC_SIZE == 64, "MESSAGE_TRAFFIC_SIZE");
-static_assert(MAX_MESSAGE_SIZE == 65535, "MAX_MESSAGE_SIZE");
+static_assert(MAX_DATA_BYTES == 1048576, "MAX_DATA_BYTES");
+static_assert(DEFAULT_PORT == 7111, "DEFAULT_PORT");
+static_assert(sizeof(DEFAULT_HOST) == sizeof("localhost"), "DEFAULT_HOST length");
 static_assert(std::is_same<MODULE_ID, int16_t>::value, "MODULE_ID");
 static_assert(std::is_same<HOST_ID, int16_t>::value, "HOST_ID");
 static_assert(std::is_same<MSG_TYPE, int32_t>::value, "MSG_TYPE");
@@ -503,7 +506,11 @@ static_assert(HASH_LM_READY == 0x4863b960u, "HASH_LM_READY");
 
 static_assert(MAX_DATASETS == 6, "MAX_DATASETS");
 static_assert(DATASET_NAME_LEN == 32, "DATASET_NAME_LEN");
-static_assert(DATASET_MAX_SIZE_MB == 500, "DATASET_MAX_SIZE_MB");
+static_assert(DATASET_SAVE_PATH_LEN == 256, "DATASET_SAVE_PATH_LEN");
+static_assert(DATASET_FILENAME_LEN == 128, "DATASET_FILENAME_LEN");
+static_assert(DATASET_FORMATTER_LEN == 32, "DATASET_FORMATTER_LEN");
+static_assert(DATASET_MAX_MSG_TYPES == 64, "DATASET_MAX_MSG_TYPES");
+static_assert(DATASET_MAX_SIZE_MB == 1000, "DATASET_MAX_SIZE_MB");
 
 static_assert(sizeof(DATASET) == 708, "DATASET size");
 static_assert(offsetof(DATASET, name) == 0, "DATASET::name offset");
@@ -559,7 +566,7 @@ static_assert(std::is_same<std::remove_all_extents<decltype(MDF_DATASET_STATUS::
 static_assert(std::rank<decltype(MDF_DATASET_STATUS::is_paused)>::value == 0, "MDF_DATASET_STATUS::is_paused rank");
 
 static_assert(MT_DATASET_ADD == 64, "MT_DATASET_ADD");
-static_assert(HASH_DATASET_ADD == 0xa90bcee9u, "HASH_DATASET_ADD");
+static_assert(HASH_DATASET_ADD == 0x03268c94u, "HASH_DATASET_ADD");
 static_assert(sizeof(MDF_DATASET_ADD) == 708, "MDF_DATASET_ADD size");
 static_assert(offsetof(MDF_DATASET_ADD, dataset) == 0, "MDF_DATASET_ADD::dataset offset");
 static_assert(std::is_same<std::remove_all_extents<decltype(MDF_DATASET_ADD::dataset)>::type, DATASET>::value, "MDF_DATASET_ADD::dataset type");
@@ -593,7 +600,7 @@ static_assert(MT_DATA_LOGGER_CONFIG_REQUEST == 68, "MT_DATA_LOGGER_CONFIG_REQUES
 static_assert(HASH_DATA_LOGGER_CONFIG_REQUEST == 0x91598f0au, "HASH_DATA_LOGGER_CONFIG_REQUEST");
 
 static_assert(MT_DATA_LOGGER_CONFIG == 69, "MT_DATA_LOGGER_CONFIG");
-static_assert(HASH_DATA_LOGGER_CONFIG == 0xeae8779du, "HASH_DATA_LOGGER_CONFIG");
+static_assert(HASH_DATA_LOGGER_CONFIG == 0xaa9749f7u, "HASH_DATA_LOGGER_CONFIG");
 static_assert(sizeof(MDF_DATA_LOGGER_CONFIG) == 4252, "MDF_DATA_LOGGER_CONFIG size");
 static_assert(offsetof(MDF_DATA_LOGGER_CONFIG, num_datasets) == 0, "MDF_DATA_LOGGER_CONFIG::num_datasets offset");
 static_assert(std::is_same<std::remove_all_extents<decltype(MDF_DATA_LOGGER_CONFIG::num_datasets)>::type, int32_t>::value, "MDF_DATA_LOGGER_CONFIG::num_datasets type");
@@ -692,6 +699,13 @@ static_assert(std::extent<decltype(MDF_DATA_LOG_TEST_2048::raw)>::value == 2048,
 
 static int failures = 0;
 
+static void check_text(const char *name, const char *actual, const char *expected) {
+  if (std::strcmp(actual, expected) != 0) {
+    std::printf("%s is \"%s\", expected \"%s\"\n", name, actual, expected);
+    ++failures;
+  }
+}
+
 static void check(int msg_type, int size, uint32_t hash) {
   if (CoreMessageSize(msg_type) != size) {
     std::printf("CoreMessageSize(%d) is %d, expected %d\n", msg_type,
@@ -706,6 +720,9 @@ static void check(int msg_type, int size, uint32_t hash) {
 }
 
 int main() {
+  // Every string constant.
+  check_text("DEFAULT_HOST", DEFAULT_HOST, "localhost");
+
   // Every core message type, and -1 and 0 for every other type below 100.
   check(-1, -1, 0x00000000u);
   check(0, 0, 0x095e0546u);
@@ -772,12 +789,12 @@ int main() {
   check(61, 0, 0xf9d7e2bfu);
   check(62, 32, 0x6b13e892u);
   check(63, 56, 0x5ce37a06u);
-  check(64, 708, 0xa90bcee9u);
+  check(64, 708, 0x03268c94u);
   check(65, 32, 0x4473eef7u);
   check(66, 32, 0xd3110ef2u);
   check(67, 32, 0x0d497a31u);
   check(68, 0, 0x91598f0au);
-  check(69, 4252, 0xeae8779du);
+  check(69, 4252, 0xaa9749f7u);
   check(70, 32, 0xe73fb9e1u);
   check(71, 32, 0x541af8e5u);
   check(72, 1056, 0x8d5f717fu);

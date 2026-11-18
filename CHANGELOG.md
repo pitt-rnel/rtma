@@ -134,8 +134,10 @@ stable release don't work unchanged with this release's managers:
   (data_logger.yaml). Existing includes of RTMA_types.h are unchanged.
 - Added: the definitions pyrtma has and the old header lacked:
   MID_DATA_LOGGER, MID_QUICK_LOGGER (MID_QUICKLOGGER is kept as an alias),
-  LM_STATUS, the data logger's messages and DATASET, a HASH_ define for every
-  core message, and pyrtma's constants. The data logger definitions are for
+  LM_STATUS, the data logger's messages, DATASET and its size constants, a
+  HASH_ define for every core message, and pyrtma's constants, among them
+  MAX_DATA_BYTES (1 MiB, which RTMA_MAX_DATA_BYTES now equals), DEFAULT_PORT
+  (7111) and the string constant DEFAULT_HOST ("localhost"). The data logger definitions are for
   controlling pyrtma's data logger, which has no C++ implementation.
 - Changed: the aliases are fixed-width types, and MDF_SUBSCRIBE,
   MDF_UNSUBSCRIBE, MDF_PAUSE_SUBSCRIPTION and MDF_RESUME_SUBSCRIPTION are

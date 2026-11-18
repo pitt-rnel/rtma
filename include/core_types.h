@@ -27,7 +27,15 @@
 #define MAX_NAME_LEN 32         // Module name length limit
 #define MAX_LOG_LENGTH 1024
 #define MESSAGE_TRAFFIC_SIZE 64
-#define MAX_MESSAGE_SIZE 65535
+// The largest message payload (num_data_bytes) that the message managers and
+// clients accept: 1 MiB.
+#define MAX_DATA_BYTES 1048576
+// The TCP port the message manager listens on unless told otherwise.
+#define DEFAULT_PORT 7111
+
+// String constants
+// The host clients connect to when a server name doesn't give one.
+#define DEFAULT_HOST "localhost"
 
 // Type aliases
 typedef int16_t MODULE_ID;
