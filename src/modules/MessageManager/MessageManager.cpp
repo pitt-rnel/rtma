@@ -645,11 +645,6 @@ MSG_TYPE CMessageManager::SubscriptionType(CMessage *M) {
   return data.msg_type;
 }
 
-void CMessageManager::AddSubscriber(CModuleRecord *mod, MSG_TYPE message_type) {
-  m_Subscribers[message_type].insert(mod->ModuleID);
-  mod->subs.insert(message_type);
-}
-
 void CMessageManager::DropSubscriber(CModuleRecord *mod, MSG_TYPE message_type) {
   auto it = m_Subscribers.find(message_type);
   if (it != m_Subscribers.end()) {
@@ -666,10 +661,14 @@ void CMessageManager::RemoveAllSubscriptions(CModuleRecord *mod) {
     DropSubscriber(mod, mt);
 }
 
-// Subscriptions work as in pyrtma's manager. ALL_MESSAGE_TYPES replaces a
-// module's individual subscriptions, and while it is in place, individual
-// SUBSCRIBE and UNSUBSCRIBE requests are ignored. Unsubscribing from
-// ALL_MESSAGE_TYPES removes every subscription.
+// Subscriptions work as in pyrtma's manager: ALL_MESSAGE_TYPES is a
+// subscription like any other. Subscribing to it adds it beside a module's
+// other subscriptions, unsubscribing from it ends only it, and other types can
+// be subscribed and unsubscribed while it is in place. A module's subs hold
+// every type it subscribes to, ALL_MESSAGE_TYPES among them; the routing
+// table holds a module subscribed to ALL_MESSAGE_TYPES under that type alone,
+// so a message reaches it once, and its other types return to the table when
+// it unsubscribes from ALL_MESSAGE_TYPES.
 void CMessageManager::AddSubscription(CModuleRecord *mod, MSG_TYPE message_type) {
   if ((message_type < 0 || message_type >= MAX_MESSAGE_TYPES) &&
       message_type != ALL_MESSAGE_TYPES) {
@@ -681,19 +680,32 @@ void CMessageManager::AddSubscription(CModuleRecord *mod, MSG_TYPE message_type)
     SendFromManager(&R, mod);
     return;
   }
+  mod->subs.insert(message_type);
   if (message_type == ALL_MESSAGE_TYPES) {
-    RemoveAllSubscriptions(mod);
-    AddSubscriber(mod, ALL_MESSAGE_TYPES);
+    for (MSG_TYPE other : mod->subs)
+      if (other != ALL_MESSAGE_TYPES)
+        Unroute(mod, other);
+    m_Subscribers[ALL_MESSAGE_TYPES].insert(mod->ModuleID);
   } else if (!mod->SubAll()) {
-    AddSubscriber(mod, message_type);
+    m_Subscribers[message_type].insert(mod->ModuleID);
   }
 }
 
 void CMessageManager::RemoveSubscription(CModuleRecord *mod, MSG_TYPE message_type) {
+  mod->subs.erase(message_type);
+  Unroute(mod, message_type);
   if (message_type == ALL_MESSAGE_TYPES)
-    RemoveAllSubscriptions(mod);
-  else if (!mod->SubAll())
-    DropSubscriber(mod, message_type);
+    for (MSG_TYPE other : mod->subs)
+      m_Subscribers[other].insert(mod->ModuleID);
+}
+
+void CMessageManager::Unroute(CModuleRecord *mod, MSG_TYPE message_type) {
+  auto it = m_Subscribers.find(message_type);
+  if (it != m_Subscribers.end()) {
+    it->second.erase(mod->ModuleID);
+    if (it->second.empty())
+      m_Subscribers.erase(it);
+  }
 }
 
 void CMessageManager::GetSubscribers(MSG_TYPE message_type,
