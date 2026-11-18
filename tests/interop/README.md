@@ -89,6 +89,14 @@ The pytest header shows which pyrtma, MessageManager and QuickLogger were
 found. When a test fails, the logs of the processes it started are printed
 after it.
 
+## In CI
+
+The `Interop tests` GitHub Actions workflow (`.github/workflows/interop.yml`)
+builds rtma and runs every test, with a pyrtma branch, tag or commit you
+choose, on Linux, macOS and Windows. It runs only when started by hand, from
+the repository's Actions tab: Interop tests, then Run workflow. The MATLAB
+tests are skipped there.
+
 ## Ports
 
 Managers listen on `127.0.0.1` only, so no firewall prompt should appear on
